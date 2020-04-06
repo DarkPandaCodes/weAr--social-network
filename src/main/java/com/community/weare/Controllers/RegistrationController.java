@@ -21,7 +21,6 @@ public class RegistrationController {
     private UserDetailsManager userDetailsManager;
     private PasswordEncoder passwordEncoder;
 
-
     public RegistrationController(UserDetailsManager userDetailsManager,
                                   PasswordEncoder passwordEncoder) {
         this.userDetailsManager = userDetailsManager;
