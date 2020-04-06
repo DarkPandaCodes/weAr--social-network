@@ -22,22 +22,21 @@ public class Post {
     @Column(name = "picture")
     private String picture;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
 
     @Column(name = "likes")
     private int likes = 0;
 
+    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     @Column(name = "date_time")
     private String date;
 
     public Post() {
         Date date = new Date();
-
         this.date = formatter.format(date);
     }
-    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
 
     public int getPostId() {
