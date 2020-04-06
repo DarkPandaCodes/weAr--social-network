@@ -4,6 +4,7 @@ package com.community.weare.Controllers;
 import com.community.weare.Models.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,15 @@ import java.util.List;
 @Controller
 public class RegistrationController {
     private UserDetailsManager userDetailsManager;
+    private PasswordEncoder passwordEncoder;
+
+
+    public RegistrationController(UserDetailsManager userDetailsManager,
+                                  PasswordEncoder passwordEncoder) {
+        this.userDetailsManager = userDetailsManager;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
         model.addAttribute("user", new User());
@@ -33,7 +43,7 @@ public class RegistrationController {
         List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_USER");
         org.springframework.security.core.userdetails.User newUser =
                 new org.springframework.security.core.userdetails.User(
-            user.getUsername(), "{noop}" + user.getPassword(), authorities);
+            user.getUsername(), passwordEncoder.encode(user.getPassword()), authorities);
         userDetailsManager.createUser(newUser);
         return "register-confirmation";
     }
