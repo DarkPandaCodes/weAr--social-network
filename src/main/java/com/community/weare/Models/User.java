@@ -20,28 +20,27 @@ public class User implements UserDetails {
     private int userId;
 
     @Size(min = 2, message = "The username must have at least 2 symbols!")
-    @Column(name = "username",unique = true,nullable = false)
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
     @ValidPassword
-    @Column(name = "password",nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
 
-    @Column(name = "email",nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
 
-    @ManyToMany(targetEntity = Role.class , fetch = FetchType.EAGER)
+    @ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER)
     @JoinTable(
             name = "authorities",
-            joinColumns = @JoinColumn(name = "username",referencedColumnName = "username"),
-            inverseJoinColumns = @JoinColumn(name = "authority",referencedColumnName = "authority")
-    )
-    private Set<Role> authorities ;
+            joinColumns = @JoinColumn(name = "username"),
+            inverseJoinColumns = @JoinColumn(name = "authority"))
+    private Set<Role> authorities;
 
     @OneToOne
-    @JoinColumn(name = "profile_id",referencedColumnName = "id")
+    @JoinColumn(name = "profile_id", referencedColumnName = "id")
     private PersonalProfile personalProfile;
 
     @Column(name = "enabled")
@@ -79,7 +78,7 @@ public class User implements UserDetails {
     @Transient
     @Override
     public boolean isEnabled() {
-        if (enabled!=1){
+        if (enabled != 1) {
             return false;
         }
         return true;
@@ -121,7 +120,6 @@ public class User implements UserDetails {
     public void setPersonalProfile(PersonalProfile personalProfile) {
         this.personalProfile = personalProfile;
     }
-
 
 
     public void setEnabled(int enabled) {

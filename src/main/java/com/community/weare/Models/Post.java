@@ -27,19 +27,19 @@ public class Post {
     private String picture;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_Id",referencedColumnName = "user_Id")
     @JsonBackReference
     private User user;
 
     @Column(name = "likes")
     private int likes = 0;
 
-    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     @Column(name = "date_time")
     private String date;
 
     public Post() {
         Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         this.date = formatter.format(date);
     }
 
