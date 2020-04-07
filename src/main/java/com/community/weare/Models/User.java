@@ -44,6 +44,9 @@ public class User implements UserDetails {
     @JoinColumn(name = "profile_id",referencedColumnName = "id")
     private PersonalProfile personalProfile;
 
+    @Column(name = "enabled")
+    private int enabled;
+
     public User() {
     }
 
@@ -76,6 +79,9 @@ public class User implements UserDetails {
     @Transient
     @Override
     public boolean isEnabled() {
+        if (enabled!=1){
+            return false;
+        }
         return true;
     }
 
@@ -118,4 +124,7 @@ public class User implements UserDetails {
 
 
 
+    public void setEnabled(int enabled) {
+        this.enabled = enabled;
+    }
 }
