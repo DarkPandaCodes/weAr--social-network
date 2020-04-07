@@ -19,6 +19,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compile group: 'org.json', name: 'json', version: '20190722'
     compile 'org.webjars:bootstrap:3.3.7'
+    compile group: 'org.modelmapper', name: 'modelmapper', version: '0.7.5'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {

@@ -2,6 +2,9 @@ package com.community.weare.Controllers;
 
 
 import com.community.weare.Models.User;
+import com.community.weare.Models.dto.UserDTO;
+import com.community.weare.Services.models.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,32 +21,29 @@ import java.util.List;
 
 @Controller
 public class RegistrationController {
-    private UserDetailsManager userDetailsManager;
-    private PasswordEncoder passwordEncoder;
+    private UserService userService;
 
-    public RegistrationController(UserDetailsManager userDetailsManager,
-                                  PasswordEncoder passwordEncoder) {
-        this.userDetailsManager = userDetailsManager;
-        this.passwordEncoder = passwordEncoder;
+    @Autowired
+    public RegistrationController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
-        model.addAttribute("user", new User());
+        model.addAttribute("user", new UserDTO());
         return "register";
     }
 
     @PostMapping("/register")
-    public String registerUser(@Valid @ModelAttribute User user, BindingResult bindingResult, Model model) {
+    public String registerUser(@Valid @ModelAttribute UserDTO user, BindingResult bindingResult, Model model) {
+
+        //TODO password confirmation
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("error", "Username/password can't be empty!");
             return "register";
         }
-        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_USER");
-        org.springframework.security.core.userdetails.User newUser =
-                new org.springframework.security.core.userdetails.User(
-            user.getUsername(), passwordEncoder.encode(user.getPassword()), authorities);
-        userDetailsManager.createUser(newUser);
+       userService.registerUser(user);
         return "register-confirmation";
     }
 }
