@@ -1,5 +1,6 @@
 package com.community.weare.Models;
 
+import com.community.weare.Constrains.ValidPassword;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,7 +22,7 @@ public class User implements UserDetails {
     @Column(name = "username")
     private String username;
 
-    @Size(min = 2, message = "The username must have at least 2 symbols!")
+    @ValidPassword
     @Column(name = "password")
     private String password;
 

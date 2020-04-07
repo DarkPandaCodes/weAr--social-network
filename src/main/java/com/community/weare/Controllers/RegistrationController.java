@@ -35,15 +35,18 @@ public class RegistrationController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@Valid @ModelAttribute UserDTO user, BindingResult bindingResult, Model model) {
+    public String registerUser( @ModelAttribute @Valid UserDTO user, BindingResult bindingResult, Model model) {
 
-        //TODO password confirmation
-
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("error", "Username/password can't be empty!");
+        if (!user.getPassword().equals(user.getConfirmPassword())) {
+            model.addAttribute("error", "Your password is not confirmed");
             return "register";
         }
-       userService.registerUser(user);
+
+        if (bindingResult.hasErrors()) {
+            return "register";
+        }
+
+        userService.registerUser(user);
         return "register-confirmation";
     }
 }
