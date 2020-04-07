@@ -1,6 +1,7 @@
 package com.community.weare.Models;
 
 import com.community.weare.Constrains.ValidPassword;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -19,37 +20,29 @@ public class User implements UserDetails {
     private int userId;
 
     @Size(min = 2, message = "The username must have at least 2 symbols!")
-    @Column(name = "username")
+    @Column(name = "username",unique = true,nullable = false)
     private String username;
 
     @ValidPassword
-    @Column(name = "password")
+    @Column(name = "password",nullable = false)
     private String password;
 
 
-    @Column(name = "email")
+    @Column(name = "email",nullable = false)
     private String email;
 
-    @Column(columnDefinition = "boolean default true")
-    private boolean isAccountNonExpired;
-
-    @Column(columnDefinition = "boolean default true")
-    private boolean isAccountNonLocked;
-
-    @Column(columnDefinition = "boolean default true")
-    private boolean isCredentialsNonExpired;
-
-    @Column(columnDefinition = "boolean default true")
-    private boolean isEnabled;
 
     @ManyToMany(targetEntity = Role.class , fetch = FetchType.EAGER)
     @JoinTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id",referencedColumnName = "role_id")
+            name = "authorities",
+            joinColumns = @JoinColumn(name = "username",referencedColumnName = "username"),
+            inverseJoinColumns = @JoinColumn(name = "authority",referencedColumnName = "authority")
     )
     private Set<Role> authorities ;
 
+    @OneToOne
+    @JoinColumn(name = "profile_id",referencedColumnName = "id")
+    private PersonalProfile personalProfile;
 
     public User() {
     }
@@ -62,28 +55,28 @@ public class User implements UserDetails {
         return username;
     }
 
-
+    @Transient
     @Override
     public boolean isAccountNonExpired() {
-        return isAccountNonExpired;
+        return true;
     }
 
-
+    @Transient
     @Override
     public boolean isAccountNonLocked() {
-        return isAccountNonLocked;
+        return true;
     }
 
-
+    @Transient
     @Override
     public boolean isCredentialsNonExpired() {
-        return isCredentialsNonExpired;
+        return true;
     }
 
-
+    @Transient
     @Override
     public boolean isEnabled() {
-        return isEnabled;
+        return true;
     }
 
     public void setUsername(String username) {
@@ -114,4 +107,15 @@ public class User implements UserDetails {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public PersonalProfile getPersonalProfile() {
+        return personalProfile;
+    }
+
+    public void setPersonalProfile(PersonalProfile personalProfile) {
+        this.personalProfile = personalProfile;
+    }
+
+
+
 }

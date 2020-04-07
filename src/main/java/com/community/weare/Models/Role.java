@@ -7,11 +7,11 @@ import java.util.Collection;
 import java.util.Set;
 
 @Entity
-@Table(name = "roles")
+@Table(name = "authority")
 public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id")
+    @Column(name = "id")
     private int id;
 
 
