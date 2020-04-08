@@ -20,7 +20,7 @@ public class User implements UserDetails {
     private int userId;
 
     @Size(min = 2, message = "The username must have at least 2 symbols!")
-    @Column(name = "username", unique = true, nullable = false)
+    @Column(name = "username", unique = true, nullable = false, length = 30)
     private String username;
 
     @ValidPassword
@@ -35,8 +35,8 @@ public class User implements UserDetails {
     @ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER)
     @JoinTable(
             name = "authorities",
-            joinColumns = @JoinColumn(name = "username"),
-            inverseJoinColumns = @JoinColumn(name = "authority"))
+            joinColumns = @JoinColumn(name = "username", referencedColumnName = "username"),
+            inverseJoinColumns = @JoinColumn(name = "authority", referencedColumnName = "authority"))
     private Set<Role> authorities;
 
     @OneToOne

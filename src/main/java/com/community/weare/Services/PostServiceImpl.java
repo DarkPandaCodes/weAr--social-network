@@ -2,9 +2,9 @@ package com.community.weare.Services;
 
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
+import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Repositories.PostRepository;
 import com.community.weare.Repositories.UserRepository;
-import com.community.weare.Services.models.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -34,6 +34,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Post getOne(int postId) {
+        return postRepository.getOne(postId);
+    }
+
+    @Override
     public Post save(Post post) {
         return postRepository.save(post);
     }
@@ -44,10 +49,27 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void likeAPost(int postId) {
+    public void likePost(int postId) {
         Post postToLike = postRepository.getOne(postId);
         int currentLikes = postToLike.getLikes();
         postToLike.setLikes(currentLikes + 1);
         postRepository.save(postToLike);
     }
+
+    @Override
+    public void editPost(int postId, PostDTO postDTO) {
+        Post postToEdit = getOne(postId);
+        postToEdit.setPublic(postDTO.isPublic());
+        postToEdit.setContent(postDTO.getContent());
+        postToEdit.setPicture(postDTO.getPicture());
+        postRepository.save(postToEdit);
+    }
+
+    @Override
+    public void deletePost(int postId) {
+        Post postToDelete = getOne(postId);
+        postRepository.delete(postToDelete);
+    }
+
+
 }

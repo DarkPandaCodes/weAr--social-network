@@ -1,5 +1,7 @@
 package com.community.weare.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 
 @Entity
@@ -11,12 +13,19 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int commentId;
 
+    //    @ManyToOne
+    //    @JoinColumn(name = "user_Id",referencedColumnName = "user_Id")
+    //    @JsonBackReference
+    //    private User user;
+
     @ManyToOne
-    @JoinColumn(name = "post_Id")
+    @JoinColumn(name = "post_Id", referencedColumnName = "post_Id")
+//    @JsonBackReference
     private Post post;
 
     @ManyToOne
-    @JoinColumn(name = "user_Id")
+    @JoinColumn(name = "user_Id", referencedColumnName = "user_Id")
+    @JsonBackReference
     private User user;
 
     @Column(name = "content")

@@ -1,10 +1,10 @@
 package com.community.weare.Controllers.REST;
 
+import com.community.weare.Models.Mapper;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Services.PostService;
 import com.community.weare.Services.models.UserService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
@@ -12,17 +12,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/post")
-public class PostController {
+@RequestMapping("/api/post")
+public class RESTPostController {
     private PostService postService;
     private UserService userService;
-    private final ModelMapper modelMapper;
 
     @Autowired
-    public PostController(PostService postService, UserService userService, ModelMapper modelMapper) {
+    public RESTPostController(PostService postService, UserService userService) {
         this.postService = postService;
         this.userService = userService;
-        this.modelMapper = modelMapper;
     }
 
     @GetMapping
@@ -32,14 +30,23 @@ public class PostController {
 
     @PostMapping("/create")
     public Post save(@RequestBody PostDTO postDTO) {
-        Post newPost = modelMapper.map(postDTO, Post.class);
-        newPost.setUser(postService.getUserById(postDTO.getUserId()));
+        Post newPost = Mapper.createPostFromDTO(postDTO);
         return postService.save(newPost);
     }
 
     @PutMapping("/like")
     public void likeAPost(int postId) {
-        postService.likeAPost(postId);
+        postService.likePost(postId);
+    }
+
+    @PutMapping("/edit")
+    public void editPost(@RequestParam int postId, @RequestBody PostDTO postDTO) {
+        postService.editPost(postId, postDTO);
+    }
+
+    @DeleteMapping("/delete")
+    public void deletePost(int postId) {
+        postService.deletePost(postId);
     }
 
 }
