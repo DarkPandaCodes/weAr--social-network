@@ -1,5 +1,6 @@
 package com.community.weare.Services;
 
+import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dto.PostDTO;
@@ -25,4 +26,6 @@ public interface PostService {
     void editPost(int postId, PostDTO postDTO);
 
     void deletePost(int postId);
+
+    List<Comment> showComments(int postId);
 }

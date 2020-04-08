@@ -16,5 +16,22 @@ public class Skill {
     @Column(name = "skill")
     private String skill;
 
+    public Skill() {
+    }
 
+    public int getSkillId() {
+        return skillId;
+    }
+
+    public void setSkillId(int skillId) {
+        this.skillId = skillId;
+    }
+
+    public String getSkill() {
+        return skill;
+    }
+
+    public void setSkill(String skill) {
+        this.skill = skill;
+    }
 }

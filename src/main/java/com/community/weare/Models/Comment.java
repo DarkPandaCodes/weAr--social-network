@@ -20,7 +20,7 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "post_Id", referencedColumnName = "post_Id")
-//    @JsonBackReference
+    @JsonBackReference
     private Post post;
 
     @ManyToOne

@@ -1,5 +1,6 @@
 package com.community.weare.Controllers.REST;
 
+import com.community.weare.Models.Comment;
 import com.community.weare.Models.Mapper;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.dto.PostDTO;
@@ -26,6 +27,11 @@ public class RESTPostController {
     @GetMapping
     public List<Post> findAll(Sort sort) {
         return postService.findAll(sort);
+    }
+
+    @GetMapping("/showComments")
+    public List<Comment> showComments(int postId) {
+        return postService.showComments(postId);
     }
 
     @PostMapping("/create")

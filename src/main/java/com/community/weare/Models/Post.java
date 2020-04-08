@@ -6,7 +6,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "posts_table")
@@ -27,7 +29,7 @@ public class Post {
     private String picture;
 
     @ManyToOne
-    @JoinColumn(name = "user_Id",referencedColumnName = "user_Id")
+    @JoinColumn(name = "user_Id", referencedColumnName = "user_Id")
     @JsonBackReference
     private User user;
 
@@ -36,6 +38,9 @@ public class Post {
 
     @Column(name = "date_time")
     private String date;
+
+    @OneToMany(mappedBy="post")
+    List<Comment> comments = new ArrayList<>();
 
     public Post() {
         Date date = new Date();
@@ -98,5 +103,13 @@ public class Post {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

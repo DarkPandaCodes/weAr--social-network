@@ -35,7 +35,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> findAllCommentsOfPost(Post post, Sort sort) {
-
         return commentRepository.findByPostOrderByCommentId
                 (post, Sort.by(Sort.Direction.ASC, "commentId"));
     }
@@ -47,6 +46,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment save(Comment comment) {
+        Post post = comment.getPost();
+        post.getComments().add(comment);
+        postRepository.save(post);
         return commentRepository.save(comment);
     }
 

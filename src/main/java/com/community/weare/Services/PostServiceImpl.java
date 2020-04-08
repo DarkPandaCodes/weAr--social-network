@@ -1,5 +1,6 @@
 package com.community.weare.Services;
 
+import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dto.PostDTO;
@@ -69,6 +70,12 @@ public class PostServiceImpl implements PostService {
     public void deletePost(int postId) {
         Post postToDelete = getOne(postId);
         postRepository.delete(postToDelete);
+    }
+
+    @Override
+    public List<Comment> showComments(int postId) {
+        Post post = getOne(postId);
+        return post.getComments();
     }
 
 
