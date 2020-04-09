@@ -69,12 +69,13 @@ public class RESTUserController {
         try {
             Optional<User> user = userService.getUserById(id);
             PersonalProfile personalProfile = personalProfileFactory.covertDTOtoPersonalProfile(personalProfileDTO);
-            personalInfoService.upgradeProfile(user.orElseThrow(EntityNotFoundException::new), personalProfile);
-            return personalProfile;
+            return personalInfoService.upgradeProfile(user.orElseThrow(EntityNotFoundException::new), personalProfile);
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         } catch (ValidationEntityException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (NullPointerException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,("User not found"));
         }
 
     }

@@ -35,13 +35,13 @@ public class PersonalProfileFactory {
         //TODO check if exist if not create
         cityRepository.saveAndFlush(city);
         location.setCity(city);
-
         locationRepository.saveAndFlush(location);
         return location;
     }
 
     public PersonalProfile covertDTOtoPersonalProfile(PersonalProfileDTO personalProfileDTO){
         PersonalProfile personalProfile=modelMapper.map(personalProfileDTO,PersonalProfile.class);
+        personalProfile.setBirthYear(personalProfileDTO.getBirthday());
         Location location= createLocation(personalProfileDTO.getCity());
         Sex sex=Sex.valueOf(personalProfileDTO.getSex().toUpperCase());
         personalProfile.setSex(sex);
