@@ -65,7 +65,6 @@ public class RESTUserController {
     @PostMapping("/{id}/personal")
     public PersonalProfile upgradeUserPersonalProfile(@PathVariable(name = "id") int id,
                                                       @RequestBody @Valid PersonalProfileDTO personalProfileDTO) {
-
         try {
             Optional<User> user = userService.getUserById(id);
             PersonalProfile personalProfile = personalProfileFactory.covertDTOtoPersonalProfile(personalProfileDTO);
@@ -74,7 +73,7 @@ public class RESTUserController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         } catch (ValidationEntityException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        } catch (NullPointerException e){
+        } catch (EntityNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,("User not found"));
         }
 
