@@ -36,7 +36,7 @@ public class RESTPostController {
     }
 
     @GetMapping("/showComments")
-    public List<Comment> showComments(int postId) {
+    public List<Comment> showComments(@RequestParam int postId) {
         return postService.showComments(postId);
     }
 
@@ -76,14 +76,18 @@ public class RESTPostController {
     public void editPost(Principal principal, @RequestParam int postId, @RequestBody PostDTO postDTO) {
         try {
             postService.editPost(postId, postDTO, principal);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
     @DeleteMapping("/delete")
-    public void deletePost(int postId, Principal principal) {
-        postService.deletePost(postId, principal);
+    public void deletePost(Principal principal, @RequestParam int postId) {
+        try {
+            postService.deletePost(postId, principal);
+        } catch (IllegalArgumentException | EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
 }

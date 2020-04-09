@@ -46,6 +46,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public boolean existsById(int postId) {
+        return postRepository.existsById(postId);
+    }
+
+    @Override
     public Post save(Post post) {
         return postRepository.save(post);
     }
@@ -86,7 +91,6 @@ public class PostServiceImpl implements PostService {
         postRepository.save(postToUnlike);
     }
 
-    //TODO EDIT AND DELETE ONLY IF THERE ARE CREATED BY THE USER OR THE USER IS ADMIN
     @Override
     public void editPost(int postId, PostDTO postDTO, Principal principal) {
         throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
@@ -105,14 +109,15 @@ public class PostServiceImpl implements PostService {
         postRepository.save(postToEdit);
     }
 
-    //TODO EDIT AND DELETE ONLY IF THERE ARE CREATED BY THE USER OR THE USER IS ADMIN
     @Override
     public void deletePost(int postId, Principal principal) {
         throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
                 "Post with id %d does not exists");
         Post postToDelete = getOne(postId);
+        User userPrincipal = userRepository.findByUsername(principal.getName());
 
-        if (!postToDelete.getUser().getUsername().equals(principal.getName())) {
+        if (!((postToDelete.getUser().getUsername().equals(principal.getName()))
+                || userRepository.findByAuthorities("ROLE_ADMIN").contains(userPrincipal))) {
             throw new IllegalArgumentException("You can only delete your posts");
         }
 
