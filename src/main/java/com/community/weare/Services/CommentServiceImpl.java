@@ -83,6 +83,7 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.save(commentToUnlike);
     }
 
+    //TODO EDIT AND DELETE ONLY IF THERE ARE CREATED BY THE USER OR THE USER IS ADMIN
     @Override
     public void editComment(int commentId, CommentDTO commentDTO) {
         throwsNotFoundIfNeeded(commentId, commentRepository.existsById(commentId),
@@ -92,6 +93,7 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.save(commentToEdit);
     }
 
+    //TODO EDIT AND DELETE ONLY IF THERE ARE CREATED BY THE USER OR THE USER IS ADMIN
     @Override
     public void deleteComment(int commentId) {
         throwsNotFoundIfNeeded(commentId, commentRepository.existsById(commentId),

@@ -1,9 +1,6 @@
 package com.community.weare.Models;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "skills_table")
@@ -11,6 +8,7 @@ public class Skill {
 
     @Id
     @Column(name = "skill_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int skillId;
 
     @Column(name = "skill")

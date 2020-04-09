@@ -84,6 +84,7 @@ public class PostServiceImpl implements PostService {
         postRepository.save(postToUnlike);
     }
 
+    //TODO EDIT AND DELETE ONLY IF THERE ARE CREATED BY THE USER OR THE USER IS ADMIN
     @Override
     public void editPost(int postId, PostDTO postDTO) {
         throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
@@ -95,6 +96,7 @@ public class PostServiceImpl implements PostService {
         postRepository.save(postToEdit);
     }
 
+    //TODO EDIT AND DELETE ONLY IF THERE ARE CREATED BY THE USER OR THE USER IS ADMIN
     @Override
     public void deletePost(int postId) {
         throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
