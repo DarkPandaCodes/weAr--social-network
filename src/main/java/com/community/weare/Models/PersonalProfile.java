@@ -24,7 +24,7 @@ public class PersonalProfile {
     @JoinColumn(name = "location_id")
     private Location location;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate birthYear;
 
     private String personalReview;
