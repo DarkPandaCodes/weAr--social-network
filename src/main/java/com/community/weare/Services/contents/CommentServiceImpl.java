@@ -8,10 +8,12 @@ import com.community.weare.Models.User;
 import com.community.weare.Models.dto.CommentDTO;
 import com.community.weare.Repositories.CommentRepository;
 import com.community.weare.Repositories.PostRepository;
+import com.community.weare.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 
 @Service
@@ -19,11 +21,14 @@ public class CommentServiceImpl implements CommentService {
 
     private CommentRepository commentRepository;
     private PostRepository postRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository,
+                              UserRepository userRepository) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -42,6 +47,11 @@ public class CommentServiceImpl implements CommentService {
                 "Post with id %d does not exists");
         return commentRepository.findByPostOrderByCommentId
                 (post, Sort.by(Sort.Direction.ASC, "commentId"));
+    }
+
+    @Override
+    public boolean existsById(int commentId) {
+        return commentRepository.existsById(commentId);
     }
 
     @Override
@@ -85,21 +95,32 @@ public class CommentServiceImpl implements CommentService {
 
     //TODO EDIT AND DELETE ONLY IF THERE ARE CREATED BY THE USER OR THE USER IS ADMIN
     @Override
-    public void editComment(int commentId, CommentDTO commentDTO) {
-        throwsNotFoundIfNeeded(commentId, commentRepository.existsById(commentId),
-                "Comment with id %d does not exists");
-        Comment commentToEdit = getOne(commentId);
+    public void editComment(int commentId, CommentDTO commentDTO, Principal principal) {
+        validatesAuthority(commentId, principal);
+        Comment commentToEdit = commentRepository.getOne(commentId);
         commentToEdit.setContent(commentDTO.getContent());
         commentRepository.save(commentToEdit);
     }
 
+
     //TODO EDIT AND DELETE ONLY IF THERE ARE CREATED BY THE USER OR THE USER IS ADMIN
     @Override
-    public void deleteComment(int commentId) {
+    public void deleteComment(int commentId, Principal principal) {
+        validatesAuthority(commentId, principal);
+        Comment commentToDelete = commentRepository.getOne(commentId);
+        commentRepository.delete(commentToDelete);
+    }
+
+    private void validatesAuthority(int commentId, Principal principal) {
         throwsNotFoundIfNeeded(commentId, commentRepository.existsById(commentId),
                 "Comment with id %d does not exists");
-        Comment commentToDelete = getOne(commentId);
-        commentRepository.delete(commentToDelete);
+        Comment comment = getOne(commentId);
+        User userPrincipal = userRepository.findByUsername(principal.getName());
+
+        if (!((comment.getUser().getUsername().equals(principal.getName()))
+                || userRepository.findByAuthorities("ROLE_ADMIN").contains(userPrincipal))) {
+            throw new IllegalArgumentException("You can only edit/delete your comments");
+        }
     }
 
     private void throwsNotFoundIfNeeded(int id, boolean b, String s) {

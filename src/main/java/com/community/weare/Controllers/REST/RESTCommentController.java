@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -37,6 +38,9 @@ public class RESTCommentController {
 
     @GetMapping("/byPost")
     public List<Comment> findAllCommentsOfPost(@RequestParam int postId, Sort sort) {
+        if (!postService.existsById(postId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post does not exists");
+        }
         Post post = postService.getOne(postId);
         return commentService.findAllCommentsOfPost(post, sort);
     }
@@ -79,12 +83,20 @@ public class RESTCommentController {
     }
 
     @PutMapping("/edit")
-    public void editComment(int commentId, CommentDTO commentDTO) {
-        commentService.editComment(commentId, commentDTO);
+    public void editComment(Principal principal, @RequestParam int commentId, CommentDTO commentDTO) {
+        try {
+            commentService.editComment(commentId, commentDTO, principal);
+        } catch (IllegalArgumentException | EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @DeleteMapping("/delete")
-    public void deleteComment(int commentId) {
-        commentService.deleteComment(commentId);
+    public void deleteComment(Principal principal, @RequestParam int commentId) {
+        try {
+            commentService.deleteComment(commentId, principal);
+        } catch (IllegalArgumentException | EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 }

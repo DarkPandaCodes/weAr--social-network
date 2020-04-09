@@ -18,6 +18,8 @@ public interface PostService {
 
     Post getOne(int postId);
 
+    boolean existsById(int postId);
+
     Post save(Post post);
 
     User getUserById(int userId);
