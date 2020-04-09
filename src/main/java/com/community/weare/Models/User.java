@@ -1,12 +1,10 @@
 package com.community.weare.Models;
 
 import com.community.weare.Constrains.ValidPassword;
-import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.util.*;
 
@@ -37,11 +35,15 @@ public class User implements UserDetails {
             name = "authorities",
             joinColumns = @JoinColumn(name = "username", referencedColumnName = "username"),
             inverseJoinColumns = @JoinColumn(name = "authority", referencedColumnName = "authority"))
-    private Set<Role> authorities;
+    private Set<Role> authorities = new HashSet<>();
 
     @OneToOne
-    @JoinColumn(name = "profile_id", referencedColumnName = "id")
+    @JoinColumn(name = "personal_profile_id", referencedColumnName = "id")
     private PersonalProfile personalProfile;
+
+    @OneToOne
+    @JoinColumn(name = "expertise_profile_id", referencedColumnName = "id")
+    private ExpertiseProfile expertiseProfile;
 
     @Column(name = "enabled")
     private int enabled;
@@ -121,6 +123,13 @@ public class User implements UserDetails {
         this.personalProfile = personalProfile;
     }
 
+    public ExpertiseProfile getExpertiseProfile() {
+        return expertiseProfile;
+    }
+
+    public void setExpertiseProfile(ExpertiseProfile expertiseProfile) {
+        this.expertiseProfile = expertiseProfile;
+    }
 
     public void setEnabled(int enabled) {
         this.enabled = enabled;

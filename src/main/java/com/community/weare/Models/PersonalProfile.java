@@ -1,5 +1,7 @@
 package com.community.weare.Models;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 @Entity
@@ -8,18 +10,25 @@ public class PersonalProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Column
     private String firstName;
+
     @Column
     private String lastName;
+
+    @Column
+    private Sex sex;
 
     @ManyToOne
     @JoinColumn(name = "location_id")
     private Location location;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthYear;
 
     private String personalReview;
+
     private String picture;
 
     public PersonalProfile(Integer id, String firstName, String lastName, Location location, LocalDate birthYear, String personalReview){
@@ -88,5 +97,13 @@ public class PersonalProfile {
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    public Sex getSex() {
+        return sex;
+    }
+
+    public void setSex(Sex sex) {
+        this.sex = sex;
     }
 }

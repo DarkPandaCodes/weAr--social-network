@@ -7,6 +7,7 @@ import com.community.weare.Models.dto.PostDTO;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SkillService {
 
@@ -19,4 +20,5 @@ public interface SkillService {
     void editSkill(int skillId, String skill);
 
     void deleteSkill(int skillId);
+    Optional<Skill> getByByName(String name);
 }

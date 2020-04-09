@@ -3,7 +3,9 @@ package com.community.weare.Models;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -18,7 +20,8 @@ public class Role implements GrantedAuthority {
     @Column
     private String authority;
 
-
+    @ManyToMany(mappedBy = "authorities")
+    private List<User>users=new ArrayList<>();
 
     public Role() {
     }
@@ -36,6 +39,14 @@ public class Role implements GrantedAuthority {
 
     public void setAuthority(String authority) {
         this.authority = authority;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 
     @Override

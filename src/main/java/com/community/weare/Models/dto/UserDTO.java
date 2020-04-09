@@ -1,8 +1,10 @@
 package com.community.weare.Models.dto;
 
 import com.community.weare.Constrains.ValidPassword;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.validation.constraints.Size;
+import java.util.List;
 import java.util.Set;
 
 public class UserDTO {
@@ -10,15 +12,17 @@ public class UserDTO {
     @Size(min = 2, message = "The username must have at least 2 symbols!")
     private String username;
 
+
     @ValidPassword
     private String password;
 
     private String confirmPassword;
 
     private String email;
-    private Set<RolesDTO>authorities;
 
-    public UserDTO(String username, String password, Set<RolesDTO> authorities) {
+    private List<String> authorities;
+
+    public UserDTO(String username, String password, List<String> authorities) {
         this.username = username;
         this.password = password;
         this.authorities = authorities;
@@ -51,11 +55,11 @@ public class UserDTO {
         this.confirmPassword = confirmPassword;
     }
 
-    public Set<RolesDTO> getAuthorities() {
+    public List<String> getAuthorities() {
         return authorities;
     }
 
-    public void setAuthorities(Set<RolesDTO> authorities) {
+    public void setAuthorities(List<String> authorities) {
         this.authorities = authorities;
     }
 

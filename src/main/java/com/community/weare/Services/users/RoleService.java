@@ -1,4 +1,4 @@
-package com.community.weare.Services.models;
+package com.community.weare.Services.users;
 
 public interface RoleService {
 

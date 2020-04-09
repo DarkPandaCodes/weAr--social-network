@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SkillServiceImpl implements SkillService {
@@ -53,5 +54,10 @@ public class SkillServiceImpl implements SkillService {
         }
         Skill skillToDelete = skillRepository.getOne(skillId);
         skillRepository.delete(skillToDelete);
+    }
+
+    @Override
+    public Optional<Skill> getByByName(String name) {
+        return skillRepository.findSkillBySkill(name);
     }
 }

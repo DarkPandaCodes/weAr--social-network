@@ -1,0 +1,10 @@
+registerUser
+{
+  "authorities": [
+    "ROLE_USER"
+  ],
+  "confirmPassword": "123456",
+  "email": "mamba@abv.bg",
+  "password": "123456",
+  "username": "mamba"
+}
