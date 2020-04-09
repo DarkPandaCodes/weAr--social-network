@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -72,13 +73,17 @@ public class RESTPostController {
     }
 
     @PutMapping("/edit")
-    public void editPost(@RequestParam int postId, @RequestBody PostDTO postDTO) {
-        postService.editPost(postId, postDTO);
+    public void editPost(Principal principal, @RequestParam int postId, @RequestBody PostDTO postDTO) {
+        try {
+            postService.editPost(postId, postDTO, principal);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @DeleteMapping("/delete")
-    public void deletePost(int postId) {
-        postService.deletePost(postId);
+    public void deletePost(int postId, Principal principal) {
+        postService.deletePost(postId, principal);
     }
 
 }
