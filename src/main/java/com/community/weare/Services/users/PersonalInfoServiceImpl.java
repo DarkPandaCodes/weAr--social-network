@@ -21,11 +21,9 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
 
     @Override
     public PersonalProfile upgradeProfile(User user, PersonalProfile personalProfile) {
-
         PersonalProfile profileDB = personalInfoRepository.findById(user.getPersonalProfile().getId()).orElseThrow(EntityNotFoundException::new);
         personalProfile.setId(profileDB.getId());
-        personalInfoRepository.saveAndFlush(personalProfile);
-        return  personalInfoRepository.saveAndFlush(profileDB);
+      return personalInfoRepository.saveAndFlush(personalProfile);
     }
 
     @Override
