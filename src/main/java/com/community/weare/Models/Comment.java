@@ -3,6 +3,8 @@ package com.community.weare.Models;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "comments_table")
@@ -12,11 +14,6 @@ public class Comment {
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int commentId;
-
-    //    @ManyToOne
-    //    @JoinColumn(name = "user_Id",referencedColumnName = "user_Id")
-    //    @JsonBackReference
-    //    private User user;
 
     @ManyToOne
     @JoinColumn(name = "post_Id", referencedColumnName = "post_Id")
@@ -31,10 +28,12 @@ public class Comment {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "likes")
-    private int likes = 0;
-    //commentId	postId	userId	content	int likes??
-
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "comment_likes_table",
+            joinColumns = @JoinColumn(name = "comment_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> likes = new HashSet<>();
 
     public Comment() {
     }
@@ -71,11 +70,11 @@ public class Comment {
         this.content = content;
     }
 
-    public int getLikes() {
+    public Set<User> getLikes() {
         return likes;
     }
 
-    public void setLikes(int likes) {
+    public void setLikes(Set<User> likes) {
         this.likes = likes;
     }
 }

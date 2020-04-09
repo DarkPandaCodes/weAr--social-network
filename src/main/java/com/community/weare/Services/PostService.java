@@ -21,7 +21,11 @@ public interface PostService {
 
     User getUserById(int userId);
 
-    void likePost(int postId);
+    boolean ifUserExistsById(int userId);
+
+    void likePost(int postId, User user);
+
+    void unlikePost(int postId, User user);
 
     void editPost(int postId, PostDTO postDTO);
 

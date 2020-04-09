@@ -2,6 +2,7 @@ package com.community.weare.Services;
 
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
+import com.community.weare.Models.User;
 import com.community.weare.Models.dto.CommentDTO;
 import org.springframework.data.domain.Sort;
 
@@ -18,7 +19,9 @@ public interface CommentService {
 
     Comment save(Comment comment);
 
-    void likeComment(int commentId);
+    void likeComment(int commentId, User user);
+
+    void unlikeComment(int commentId, User user);
 
     void editComment(int commentId, CommentDTO commentDTO);
 

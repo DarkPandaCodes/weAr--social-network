@@ -1,14 +1,19 @@
 package com.community.weare.Controllers.REST;
 
+import com.community.weare.Exceptions.DuplicateEntityException;
+import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Mapper;
 import com.community.weare.Models.Post;
+import com.community.weare.Models.User;
 import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Services.PostService;
 import com.community.weare.Services.models.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -41,8 +46,29 @@ public class RESTPostController {
     }
 
     @PutMapping("/like")
-    public void likeAPost(int postId) {
-        postService.likePost(postId);
+    public void likeAPost(@RequestParam int postId, int userId) {
+        if (!postService.ifUserExistsById(userId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
+        }
+        User userLike = postService.getUserById(userId);
+        try {
+            postService.likePost(postId, userLike);
+        } catch (DuplicateEntityException | EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PutMapping("/unlike")
+    public void unlikeAPost(@RequestParam int postId, int userId) {
+        if (!postService.ifUserExistsById(userId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
+        }
+        User userUnlike = postService.getUserById(userId);
+        try {
+            postService.unlikePost(postId, userUnlike);
+        } catch (DuplicateEntityException | EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @PutMapping("/edit")

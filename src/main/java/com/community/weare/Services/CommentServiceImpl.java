@@ -1,7 +1,10 @@
 package com.community.weare.Services;
 
+import com.community.weare.Exceptions.DuplicateEntityException;
+import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
+import com.community.weare.Models.User;
 import com.community.weare.Models.dto.CommentDTO;
 import com.community.weare.Repositories.CommentRepository;
 import com.community.weare.Repositories.PostRepository;
@@ -35,12 +38,16 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> findAllCommentsOfPost(Post post, Sort sort) {
+        throwsNotFoundIfNeeded(post.getPostId(), postRepository.existsById(post.getPostId()),
+                "Post with id %d does not exists");
         return commentRepository.findByPostOrderByCommentId
                 (post, Sort.by(Sort.Direction.ASC, "commentId"));
     }
 
     @Override
     public Comment getOne(int commentId) {
+        throwsNotFoundIfNeeded(commentId, commentRepository.existsById(commentId),
+                "Comment with id %d does not exists");
         return commentRepository.getOne(commentId);
     }
 
@@ -53,15 +60,33 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void likeComment(int commentId) {
-        Comment comment = getOne(commentId);
-        int currentLikes = comment.getLikes();
-        comment.setLikes(currentLikes + 1);
-        commentRepository.save(comment);
+    public void likeComment(int commentId, User user) {
+        throwsNotFoundIfNeeded(commentId, commentRepository.existsById(commentId),
+                "Comment with id %d does not exists");
+        Comment commentToLike = commentRepository.getOne(commentId);
+        if (commentToLike.getLikes().contains(user)) {
+            throw new DuplicateEntityException("You already liked this");
+        }
+        commentToLike.getLikes().add(user);
+        commentRepository.save(commentToLike);
+    }
+
+    @Override
+    public void unlikeComment(int commentId, User user) {
+        throwsNotFoundIfNeeded(commentId, commentRepository.existsById(commentId),
+                "Comment with id %d does not exists");
+        Comment commentToUnlike = commentRepository.getOne(commentId);
+        if (!commentToUnlike.getLikes().contains(user)) {
+            throw new EntityNotFoundException("Before unlike you must like");
+        }
+        commentToUnlike.getLikes().remove(user);
+        commentRepository.save(commentToUnlike);
     }
 
     @Override
     public void editComment(int commentId, CommentDTO commentDTO) {
+        throwsNotFoundIfNeeded(commentId, commentRepository.existsById(commentId),
+                "Comment with id %d does not exists");
         Comment commentToEdit = getOne(commentId);
         commentToEdit.setContent(commentDTO.getContent());
         commentRepository.save(commentToEdit);
@@ -69,7 +94,16 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteComment(int commentId) {
+        throwsNotFoundIfNeeded(commentId, commentRepository.existsById(commentId),
+                "Comment with id %d does not exists");
         Comment commentToDelete = getOne(commentId);
         commentRepository.delete(commentToDelete);
+    }
+
+    private void throwsNotFoundIfNeeded(int id, boolean b, String s) {
+        if (!b) {
+            throw new EntityNotFoundException
+                    (String.format(s, id));
+        }
     }
 }

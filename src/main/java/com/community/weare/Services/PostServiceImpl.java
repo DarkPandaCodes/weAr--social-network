@@ -1,5 +1,7 @@
 package com.community.weare.Services;
 
+import com.community.weare.Exceptions.DuplicateEntityException;
+import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
@@ -36,6 +38,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post getOne(int postId) {
+        throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
+                "Post with id %d does not exists");
         return postRepository.getOne(postId);
     }
 
@@ -46,19 +50,44 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public User getUserById(int userId) {
+        throwsNotFoundIfNeeded(userId, userRepository.existsById(userId),
+                "User with id %d does not exists");
         return userRepository.getOne(userId);
     }
 
     @Override
-    public void likePost(int postId) {
+    public boolean ifUserExistsById(int userId) {
+        return userRepository.existsById(userId);
+    }
+
+    @Override
+    public void likePost(int postId, User user) {
+        throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
+                "Post with id %d does not exists");
         Post postToLike = postRepository.getOne(postId);
-        int currentLikes = postToLike.getLikes();
-        postToLike.setLikes(currentLikes + 1);
+        if (postToLike.getLikes().contains(user)) {
+            throw new DuplicateEntityException("You already liked this");
+        }
+        postToLike.getLikes().add(user);
         postRepository.save(postToLike);
     }
 
     @Override
+    public void unlikePost(int postId, User user) {
+        throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
+                "Post with id %d does not exists");
+        Post postToUnlike = postRepository.getOne(postId);
+        if (!postToUnlike.getLikes().contains(user)) {
+            throw new EntityNotFoundException("Before unlike you must like");
+        }
+        postToUnlike.getLikes().remove(user);
+        postRepository.save(postToUnlike);
+    }
+
+    @Override
     public void editPost(int postId, PostDTO postDTO) {
+        throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
+                "Post with id %d does not exists");
         Post postToEdit = getOne(postId);
         postToEdit.setPublic(postDTO.isPublic());
         postToEdit.setContent(postDTO.getContent());
@@ -68,15 +97,24 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deletePost(int postId) {
+        throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
+                "Post with id %d does not exists");
         Post postToDelete = getOne(postId);
         postRepository.delete(postToDelete);
     }
 
     @Override
     public List<Comment> showComments(int postId) {
+        throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
+                "Post with id %d does not exists");
         Post post = getOne(postId);
         return post.getComments();
     }
 
-
+    private void throwsNotFoundIfNeeded(int postId, boolean b, String s) {
+        if (!b) {
+            throw new EntityNotFoundException
+                    (String.format(s, postId));
+        }
+    }
 }
