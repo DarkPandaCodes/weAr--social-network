@@ -3,7 +3,7 @@ package com.community.weare.Models;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "skills_table")
+@Table(name = "skills")
 public class Skill {
 
     @Id
@@ -13,6 +13,10 @@ public class Skill {
 
     @Column(name = "skill")
     private String skill;
+
+    @ManyToOne
+    private SkillCategory category;
+
 
     public Skill() {
     }
@@ -31,5 +35,13 @@ public class Skill {
 
     public void setSkill(String skill) {
         this.skill = skill;
+    }
+
+    public SkillCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(SkillCategory category) {
+        this.category = category;
     }
 }

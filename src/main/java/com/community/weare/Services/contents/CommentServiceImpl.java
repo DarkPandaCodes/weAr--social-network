@@ -1,4 +1,4 @@
-package com.community.weare.Services;
+package com.community.weare.Services.contents;
 
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;

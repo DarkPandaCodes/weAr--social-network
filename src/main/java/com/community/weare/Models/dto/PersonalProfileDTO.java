@@ -1,6 +1,7 @@
 package com.community.weare.Models.dto;
 
 import com.community.weare.Models.Location;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
@@ -12,7 +13,9 @@ public class PersonalProfileDTO {
     private String firstName;
     private String lastName;
     private String city;
-    private int birthYear;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate birthday;
+    private String sex;
     private String personalReview;
     private String picture;
 
@@ -43,12 +46,12 @@ public class PersonalProfileDTO {
         this.city = city;
     }
 
-    public int getBirthYear() {
-        return birthYear;
+    public LocalDate getBirthday() {
+        return birthday;
     }
 
-    public void setBirthYear(int birthYear) {
-        this.birthYear = birthYear;
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
     }
 
     public String getPersonalReview() {
@@ -65,5 +68,13 @@ public class PersonalProfileDTO {
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
     }
 }

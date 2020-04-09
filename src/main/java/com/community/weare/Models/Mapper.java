@@ -2,10 +2,9 @@ package com.community.weare.Models;
 
 import com.community.weare.Models.dto.CommentDTO;
 import com.community.weare.Models.dto.PostDTO;
-import com.community.weare.Services.PostService;
+import com.community.weare.Services.contents.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Component
 public class Mapper {
