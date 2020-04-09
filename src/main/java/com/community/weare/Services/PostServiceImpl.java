@@ -4,6 +4,7 @@ import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
+import com.community.weare.Models.Role;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Repositories.PostRepository;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 
 @Service
@@ -86,9 +88,16 @@ public class PostServiceImpl implements PostService {
 
     //TODO EDIT AND DELETE ONLY IF THERE ARE CREATED BY THE USER OR THE USER IS ADMIN
     @Override
-    public void editPost(int postId, PostDTO postDTO) {
+    public void editPost(int postId, PostDTO postDTO, Principal principal) {
         throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
                 "Post with id %d does not exists");
+        User userPrincipal = userRepository.findByUsername(principal.getName());
+
+        if (!((getUserById(postDTO.getUserId()).getUsername().equals(principal.getName()))
+                || userRepository.findByAuthorities("ROLE_ADMIN").contains(userPrincipal))) {
+            throw new IllegalArgumentException("You can only edit your posts");
+        }
+
         Post postToEdit = getOne(postId);
         postToEdit.setPublic(postDTO.isPublic());
         postToEdit.setContent(postDTO.getContent());
@@ -98,10 +107,15 @@ public class PostServiceImpl implements PostService {
 
     //TODO EDIT AND DELETE ONLY IF THERE ARE CREATED BY THE USER OR THE USER IS ADMIN
     @Override
-    public void deletePost(int postId) {
+    public void deletePost(int postId, Principal principal) {
         throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
                 "Post with id %d does not exists");
         Post postToDelete = getOne(postId);
+
+        if (!postToDelete.getUser().getUsername().equals(principal.getName())) {
+            throw new IllegalArgumentException("You can only delete your posts");
+        }
+
         postRepository.delete(postToDelete);
     }
 

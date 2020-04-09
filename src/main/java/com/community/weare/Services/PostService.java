@@ -6,6 +6,7 @@ import com.community.weare.Models.User;
 import com.community.weare.Models.dto.PostDTO;
 import org.springframework.data.domain.Sort;
 
+import java.security.Principal;
 import java.util.List;
 
 
@@ -27,9 +28,9 @@ public interface PostService {
 
     void unlikePost(int postId, User user);
 
-    void editPost(int postId, PostDTO postDTO);
+    void editPost(int postId, PostDTO postDTO, Principal principal);
 
-    void deletePost(int postId);
+    void deletePost(int postId, Principal principal);
 
     List<Comment> showComments(int postId);
 }
