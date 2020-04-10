@@ -7,6 +7,7 @@ import java.util.List;
 public class ExpertiseProfileDTO {
 
     private List<String> skills;
+    private String expertise;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
@@ -27,6 +28,14 @@ public class ExpertiseProfileDTO {
 
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
+    }
+
+    public String getExpertise() {
+        return expertise;
+    }
+
+    public void setExpertise(String expertise) {
+        this.expertise = expertise;
     }
 
     public void setEndTime(LocalDateTime endTime) {

@@ -13,6 +13,7 @@ public class Resource {
     private Integer id;
 
     private LocalDateTime startTime;
+
     private LocalDateTime endTime;
 
     public Integer getId() {

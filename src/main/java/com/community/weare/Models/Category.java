@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "category_skills")
-public class SkillCategory {
+public class Category {
 
     @Id
     @Column(name = "skill_category_id")
@@ -18,7 +18,7 @@ public class SkillCategory {
     private String category;
 
 
-    public SkillCategory() {
+    public Category() {
     }
 
     public int getId() {

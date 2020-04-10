@@ -2,7 +2,6 @@ package com.community.weare.Controllers.REST;
 
 import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.Skill;
-import com.community.weare.Repositories.SkillRepository;
 import com.community.weare.Services.models.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;

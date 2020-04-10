@@ -1,10 +1,13 @@
 package com.community.weare.Services.users;
 
 import com.community.weare.Models.ExpertiseProfile;
+import com.community.weare.Models.PersonalProfile;
 import com.community.weare.Models.User;
 import com.community.weare.Repositories.ExpertiseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityNotFoundException;
 
 @Service
 public class ExpertiseProfileServiceImpl implements ExpertiseProfileService {
@@ -17,7 +20,10 @@ public class ExpertiseProfileServiceImpl implements ExpertiseProfileService {
 
     @Override
     public ExpertiseProfile upgradeProfile(User user, ExpertiseProfile expertiseProfile) {
-        return null;
+        ExpertiseProfile profileDB = expertiseRepository.
+                findById(user.getExpertiseProfile().getId()).orElseThrow(EntityNotFoundException::new);
+        expertiseProfile.setId(profileDB.getId());
+        return expertiseRepository.saveAndFlush(expertiseProfile);
     }
 
     @Override

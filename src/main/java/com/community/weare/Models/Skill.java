@@ -9,23 +9,20 @@ public class Skill {
     @Id
     @Column(name = "skill_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int skillId;
+    private Integer skillId;
 
     @Column(name = "skill")
     private String skill;
-
-    @ManyToOne
-    private SkillCategory category;
 
 
     public Skill() {
     }
 
-    public int getSkillId() {
+    public Integer getSkillId() {
         return skillId;
     }
 
-    public void setSkillId(int skillId) {
+    public void setSkillId(Integer skillId) {
         this.skillId = skillId;
     }
 
@@ -37,11 +34,4 @@ public class Skill {
         this.skill = skill;
     }
 
-    public SkillCategory getCategory() {
-        return category;
-    }
-
-    public void setCategory(SkillCategory category) {
-        this.category = category;
-    }
 }

@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `skills_table` (
 -- Dumping data for table db_weare.skills_table: 56 rows
 /*!40000 ALTER TABLE `skills_table` DISABLE KEYS */;
 INSERT INTO `skills_table` (`skill_id`, `skill`) VALUES
-(1, 'Car service'),
+(1, 'Car skill'),
 (2, 'Lawyer'),
 (3, 'Doctor'),
 (4, 'Veterinarian'),

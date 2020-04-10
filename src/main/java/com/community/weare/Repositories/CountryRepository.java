@@ -1,7 +1,6 @@
 package com.community.weare.Repositories;
 
 import com.community.weare.Models.Country;
-import com.community.weare.Models.SkillCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

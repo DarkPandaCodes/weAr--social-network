@@ -1,7 +1,9 @@
 package com.community.weare.Models;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,10 +15,17 @@ public class ExpertiseProfile {
     private Integer id;
 
     @OneToMany
-    private Set <Skill> skills=new HashSet<>();
+    private Set <Skill> skills =new HashSet<>();
 
-    @OneToOne
-    private Resource resource ;
+    @ManyToOne
+    private Category category;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime startTime;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime endTime;
+
 
     public ExpertiseProfile() {
     }
@@ -27,6 +36,22 @@ public class ExpertiseProfile {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     public Set<Skill> getSkills() {
@@ -40,11 +65,11 @@ public class ExpertiseProfile {
         this.skills.add(skills);
     }
 
-    public Resource getResource() {
-        return resource;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setResource(Resource resource) {
-        this.resource = resource;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }
