@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
-public class ExpertiseProfileFactory implements ExpertiseProfileService {
+public class ExpertiseProfileFactory  {
     private final SkillService skillService;
     private final SkillCategoryService skillCategoryService;
     private final ModelMapper modelMapper;
@@ -31,7 +31,6 @@ public class ExpertiseProfileFactory implements ExpertiseProfileService {
     }
 
 @Transactional
-@Override
    public ExpertiseProfile convertDTOtoExpertiseProfile(ExpertiseProfileDTO profileDTO){
     ExpertiseProfile expertiseProfile=modelMapper.map(profileDTO,ExpertiseProfile.class);
         List<Skill> skillList =new ArrayList<>();
