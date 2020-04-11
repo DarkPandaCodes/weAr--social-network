@@ -17,15 +17,15 @@ CREATE DATABASE IF NOT EXISTS `db_weare` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `db_weare`;
 
 -- Dumping structure for table db_weare.skills_table
-CREATE TABLE IF NOT EXISTS `skills_table` (
+CREATE TABLE IF NOT EXISTS `skills` (
                                               `skill_id` int(11) NOT NULL AUTO_INCREMENT,
                                               `skill` varchar(255) DEFAULT NULL,
                                               PRIMARY KEY (`skill_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=57 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table db_weare.skills_table: 56 rows
-/*!40000 ALTER TABLE `skills_table` DISABLE KEYS */;
-INSERT INTO `skills_table` (`skill_id`, `skill`) VALUES
+/*!40000 ALTER TABLE `skills` DISABLE KEYS */;
+INSERT INTO `skills` (`skill_id`, `skill`) VALUES
 (1, 'Car service'),
 (2, 'Lawyer'),
 (3, 'Doctor'),
@@ -82,7 +82,13 @@ INSERT INTO `skills_table` (`skill_id`, `skill`) VALUES
 (54, 'Travel agent'),
 (55, 'Waiter/Waitress'),
 (56, 'Window cleaner');
-/*!40000 ALTER TABLE `skills_table` ENABLE KEYS */;
+/*!40000 ALTER TABLE `skills` ENABLE KEYS */;
+
+/*!40000 ALTER TABLE `authority` DISABLE KEYS */;
+INSERT INTO `authority` (`id`, `authority`) VALUES
+(2, 'ROLE_ADMIN'),
+(1, 'ROLE_USER');
+/*!40000 ALTER TABLE `authority` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

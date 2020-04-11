@@ -31,6 +31,13 @@
     <input type="submit" value="Logout"/>
 </form>
 <!-- END-->
+<br/>
+<br/>
+<!-- showFeed -->
+<form th:action="@{/posts/feed}" method="get">
+    <input class="col-md-4" id="b3" type="submit" value="Show feed"/>
+</form>
+<!-- END-->
 
 <p sec:authorize="isAuthenticated()">
     User:<span sec:authentication="name"></span>
