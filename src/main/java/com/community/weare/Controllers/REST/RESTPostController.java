@@ -8,7 +8,6 @@ import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Services.contents.PostService;
-import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -22,12 +21,10 @@ import java.util.List;
 @RequestMapping("/api/post")
 public class RESTPostController {
     private PostService postService;
-    private UserService userService;
 
     @Autowired
-    public RESTPostController(PostService postService, UserService userService) {
+    public RESTPostController(PostService postService) {
         this.postService = postService;
-        this.userService = userService;
     }
 
     @GetMapping

@@ -9,7 +9,6 @@ import org.springframework.data.domain.Sort;
 import java.security.Principal;
 import java.util.List;
 
-
 public interface PostService {
 
     List<Post> findAll();

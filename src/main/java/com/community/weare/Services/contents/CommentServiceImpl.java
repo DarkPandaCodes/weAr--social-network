@@ -12,6 +12,7 @@ import com.community.weare.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.List;
@@ -62,6 +63,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public Comment save(Comment comment) {
         Post post = comment.getPost();
         post.getComments().add(comment);
@@ -70,6 +72,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public void likeComment(int commentId, User user) {
         throwsNotFoundIfNeeded(commentId, commentRepository.existsById(commentId),
                 "Comment with id %d does not exists");
@@ -77,11 +80,28 @@ public class CommentServiceImpl implements CommentService {
         if (commentToLike.getLikes().contains(user)) {
             throw new DuplicateEntityException("You already liked this");
         }
+        //*******************************
+        Comment comment1 = new Comment();
+        comment1.setUser(userRepository.getOne(1));
+        comment1.setPost(postRepository.getOne(1));
+        comment1.setContent("transaction checking 1");
+        save(comment1);
+
+        save(null);
+
+        Comment comment2 = new Comment();
+        comment2.setUser(userRepository.getOne(1));
+        comment2.setPost(postRepository.getOne(1));
+        comment2.setContent("transaction checking 2");
+        save(comment2);
+
+        //*******************************
         commentToLike.getLikes().add(user);
         commentRepository.save(commentToLike);
     }
 
     @Override
+    @Transactional
     public void unlikeComment(int commentId, User user) {
         throwsNotFoundIfNeeded(commentId, commentRepository.existsById(commentId),
                 "Comment with id %d does not exists");
@@ -93,7 +113,6 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.save(commentToUnlike);
     }
 
-    //TODO EDIT AND DELETE ONLY IF THERE ARE CREATED BY THE USER OR THE USER IS ADMIN
     @Override
     public void editComment(int commentId, CommentDTO commentDTO, Principal principal) {
         validatesAuthority(commentId, principal);
@@ -103,7 +122,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
 
-    //TODO EDIT AND DELETE ONLY IF THERE ARE CREATED BY THE USER OR THE USER IS ADMIN
     @Override
     public void deleteComment(int commentId, Principal principal) {
         validatesAuthority(commentId, principal);

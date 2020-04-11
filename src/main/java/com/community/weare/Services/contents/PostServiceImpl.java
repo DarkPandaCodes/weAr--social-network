@@ -4,7 +4,6 @@ import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
-import com.community.weare.Models.Role;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Repositories.PostRepository;
@@ -12,6 +11,7 @@ import com.community.weare.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.List;
@@ -68,6 +68,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void likePost(int postId, User user) {
         throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
                 "Post with id %d does not exists");
@@ -80,6 +81,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void unlikePost(int postId, User user) {
         throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
                 "Post with id %d does not exists");
@@ -92,6 +94,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void editPost(int postId, PostDTO postDTO, Principal principal) {
         throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
                 "Post with id %d does not exists");
