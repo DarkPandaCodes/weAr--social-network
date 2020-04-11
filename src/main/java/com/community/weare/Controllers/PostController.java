@@ -32,4 +32,6 @@ public class PostController {
         model.addAttribute("comments", post01.getComments());
         return "post";
     }
+
+
 }
