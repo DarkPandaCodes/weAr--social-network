@@ -16,7 +16,7 @@ public class Post {
     private int postId;
 
     @Column(name = "is_Public")
-    private boolean isPublic;
+    private boolean isPublic = true;
 
     @Column(name = "content")
     private String content;

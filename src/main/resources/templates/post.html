@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="plugins/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/posts.css}" href="../static/posts.css"/>
+
+    <title>Post</title>
+</head>
+<body>
+
+<!-- Home -->
+<br/>
+<form th:action="@{/}" method="get">
+    <input class="col-md-4" id="b1" type="submit" value="Home"/>
+</form>
+<br/>
+<!-- END-->
+
+<!-- Feed -->
+<br/>
+<form th:action="@{/posts/feed}" method="get">
+    <input class="col-md-4" id="b2" type="submit" value="Go to Feed"/>
+</form>
+<br/>
+<!-- END-->
+
+<p>
+    <i th:if="${error != null}" th:text="${error}" style="color: red"></i>
+</p>
+<br/>
+<div class="container">
+    <h2>Post</h2>
+    <table class="table">
+        <tr class="row">
+            <th style="background-color:#f4a460" class="cell" th:text="#{post.header.postId}">Id</th>
+            <th style="background-color:#f4a460" class="cell" th:text="#{post.header.isPublic}">Name</th>
+            <th style="background-color:#f4a460" class="cell" th:text="#{post.header.content}">Username</th>
+            <th style="background-color:#f4a460" class="cell" th:text="#{post.header.picture}">Email</th>
+            <th style="background-color:#f4a460" class="cell" th:text="#{post.header.user.username}">Email</th>
+            <th style="background-color:#f4a460" class="cell" th:text="#{post.header.date}">Email</th>
+            <th style="background-color:#f4a460" class="cell" th:text="#{post.header.likes}">Email</th>
+            <th style="background-color:#f4a460" class="cell" th:text="#{post.header.comments}">Email</th>
+        </tr>
+        <tr class="row" th:each="post : ${post}">
+            <td class="cell" th:text="${post.postId}">id_value</td>
+            <td class="cell" th:text="${post.public}">name_value</td>
+            <td class="cell" th:text="${post.content}">username_value</td>
+            <td class="cell" th:text="${post.picture}">email@abv.bg</td>
+            <td class="cell" th:text="${post.user.username}">email@abv.bg</td>
+            <td class="cell" th:text="${post.date}">email@abv.bg</td>
+            <td class="cell" th:text="${post.likes.size()}">email@abv.bg</td>
+            <td class="cell" th:text="${post.comments.size()}">email@abv.bg</td>
+        </tr>
+    </table>
+    <br/>
+    <br/>
+</div>
+
+<br/>
+<div class="container">
+    <h2>Comments</h2>
+    <table class="table">
+        <tr class="row">
+            <th style="background-color:#f4a460" class="cell" th:text="#{comment.header.commentId}">commentId</th>
+            <th style="background-color:#f4a460" class="cell" th:text="#{comment.header.content}">content</th>
+            <th style="background-color:#f4a460" class="cell" th:text="#{comment.header.post.getPostId}">getPostId</th>
+            <th style="background-color:#f4a460" class="cell" th:text="#{comment.header.user.username}">username</th>
+        </tr>
+        <tr class="row" th:each="comment : ${comments}">
+            <td class="cell" th:text="${comment.commentId}">commentId</td>
+            <td class="cell" th:text="${comment.content}">content</td>
+            <td class="cell" th:text="${comment.post.getPostId()}">getPostId</td>
+            <td class="cell" th:text="${comment.user.username}">username</td>
+        </tr>
+    </table>
+    <br/>
+    <br/>
+</div>
+
+</body>
+</html>
