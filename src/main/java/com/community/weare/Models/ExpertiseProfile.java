@@ -1,9 +1,11 @@
 package com.community.weare.Models;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "expertise_profile")
@@ -12,11 +14,18 @@ public class ExpertiseProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToMany
-    private Set <Skill> skills=new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private List <Skill> skills ;
 
-    @OneToOne
-    private Resource resource ;
+    @ManyToOne
+    private Category category;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime startTime;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime endTime;
+
 
     public ExpertiseProfile() {
     }
@@ -29,22 +38,39 @@ public class ExpertiseProfile {
         this.id = id;
     }
 
-    public Set<Skill> getSkills() {
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public List<Skill> getSkills() {
         return skills;
     }
 
-    public void setSkills(Set<Skill> skills) {
+    public void setSkills(List<Skill> skills) {
         this.skills = skills;
     }
-    public void setSkill(Skill skills) {
-        this.skills.add(skills);
+
+    public void setSkill(Skill skill) {
+        this.skills.add(skill);
     }
 
-    public Resource getResource() {
-        return resource;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setResource(Resource resource) {
-        this.resource = resource;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }

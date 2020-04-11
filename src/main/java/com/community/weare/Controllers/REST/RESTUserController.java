@@ -2,9 +2,11 @@ package com.community.weare.Controllers.REST;
 
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.ValidationEntityException;
+import com.community.weare.Models.ExpertiseProfile;
 import com.community.weare.Models.PersonalProfile;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dao.UserModel;
+import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Models.dto.PersonalProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
 import com.community.weare.Services.factories.ExpertiseProfileFactory;
@@ -30,17 +32,17 @@ public class RESTUserController {
     private static final String TYPE = "USER";
     private final UserService userService;
     private final PersonalInfoService personalInfoService;
-    private final ExpertiseProfileService expertiseProfile;
+    private final ExpertiseProfileService expertiseProfileService;
     private final ExpertiseProfileFactory expertiseProfileFactory;
     private final PersonalProfileFactory personalProfileFactory;
     private final UserFactory mapperHelper;
 
     @Autowired
-    public RESTUserController(UserService userService, PersonalInfoService personalInfoService, ExpertiseProfileService expertiseProfile,
+    public RESTUserController(UserService userService, PersonalInfoService personalInfoService, ExpertiseProfileService expertiseProfileService,
                               ExpertiseProfileFactory expertiseProfileFactory, PersonalProfileFactory personalProfileFactory, UserFactory mapperHelper) {
         this.userService = userService;
         this.personalInfoService = personalInfoService;
-        this.expertiseProfile = expertiseProfile;
+        this.expertiseProfileService = expertiseProfileService;
         this.expertiseProfileFactory = expertiseProfileFactory;
         this.personalProfileFactory = personalProfileFactory;
         this.mapperHelper = mapperHelper;
@@ -67,8 +69,27 @@ public class RESTUserController {
                                                       @RequestBody @Valid PersonalProfileDTO personalProfileDTO) {
         try {
             Optional<User> user = userService.getUserById(id);
+            user.orElseThrow(EntityNotFoundException::new);
             PersonalProfile personalProfile = personalProfileFactory.covertDTOtoPersonalProfile(personalProfileDTO);
             return personalInfoService.upgradeProfile(user.orElseThrow(EntityNotFoundException::new), personalProfile);
+        } catch (DuplicateEntityException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (ValidationEntityException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (EntityNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,("User not found"));
+        }
+
+    }
+    @PostMapping("/{id}/expertise")
+    public ExpertiseProfile upgradeUserExpertiseProfile(@PathVariable(name = "id") int id,
+                                                       @RequestBody @Valid ExpertiseProfileDTO expertiseProfileDTO) {
+        try {
+            Optional<User> user = userService.getUserById(id);
+            user.orElseThrow(EntityNotFoundException::new);
+            ExpertiseProfile expertiseProfileNEW= expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
+            ExpertiseProfile expertiseProfile= expertiseProfileFactory.mergeExpertProfile(expertiseProfileNEW,user.get().getExpertiseProfile());
+            return expertiseProfileService.upgradeProfile(user.orElseThrow(EntityNotFoundException::new),expertiseProfile);
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         } catch (ValidationEntityException e) {
