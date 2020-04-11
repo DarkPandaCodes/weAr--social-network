@@ -5,7 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "expertise_profile")
@@ -14,8 +14,8 @@ public class ExpertiseProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToMany
-    private Set <Skill> skills =new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private List <Skill> skills ;
 
     @ManyToOne
     private Category category;
@@ -54,15 +54,16 @@ public class ExpertiseProfile {
         this.endTime = endTime;
     }
 
-    public Set<Skill> getSkills() {
+    public List<Skill> getSkills() {
         return skills;
     }
 
-    public void setSkills(Set<Skill> skills) {
+    public void setSkills(List<Skill> skills) {
         this.skills = skills;
     }
-    public void setSkill(Skill skills) {
-        this.skills.add(skills);
+
+    public void setSkill(Skill skill) {
+        this.skills.add(skill);
     }
 
     public Category getCategory() {

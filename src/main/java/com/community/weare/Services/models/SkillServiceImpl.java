@@ -7,13 +7,15 @@ import com.community.weare.Repositories.SkillRepository;
 import com.community.weare.Services.SkillCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
-@org.springframework.stereotype.Service
+@Transactional
+@Service
 public class SkillServiceImpl implements SkillService {
     private SkillRepository skillRepository;
     private SkillCategoryService categorySkillService;
@@ -38,7 +40,7 @@ public class SkillServiceImpl implements SkillService {
         return skillRepository.getOne(skillId);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional
     @Override
     public Skill save(Skill skill) {
         return skillRepository.saveAndFlush(skill);

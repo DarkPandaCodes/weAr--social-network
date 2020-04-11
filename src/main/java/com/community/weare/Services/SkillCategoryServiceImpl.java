@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+
 public class SkillCategoryServiceImpl implements SkillCategoryService {
     private final SkillCategoryRepository categoryRepository;
 
@@ -44,7 +45,7 @@ public class SkillCategoryServiceImpl implements SkillCategoryService {
         return Optional.empty();
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+   @Transactional
     @Override
     public Category createIfNotExist(Category category1) {
         boolean exists = categoryRepository.findByCategory(category1.getCategory()).isPresent();

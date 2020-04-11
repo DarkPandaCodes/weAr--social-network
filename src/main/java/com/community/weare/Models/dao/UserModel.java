@@ -11,16 +11,30 @@ import java.util.List;
 
 public class UserModel {
 
-    private int id;
+
     @Size(min = 2, message = "The username must have at least 2 symbols!")
     private String username;
     private List<String> authorities;
+    private String firstName;
+    private String lastNAme;
 
-    public int getId() {
-        return id;
+
+
+    public String getFirstName() {
+        return firstName;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
+    public String getLastNAme() {
+        return lastNAme;
+    }
+
+    public void setLastNAme(String lastNAme) {
+        this.lastNAme = lastNAme;
+    }
 
     public String getUsername() {
         return username;

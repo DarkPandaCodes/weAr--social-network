@@ -69,6 +69,7 @@ public class RESTUserController {
                                                       @RequestBody @Valid PersonalProfileDTO personalProfileDTO) {
         try {
             Optional<User> user = userService.getUserById(id);
+            user.orElseThrow(EntityNotFoundException::new);
             PersonalProfile personalProfile = personalProfileFactory.covertDTOtoPersonalProfile(personalProfileDTO);
             return personalInfoService.upgradeProfile(user.orElseThrow(EntityNotFoundException::new), personalProfile);
         } catch (DuplicateEntityException e) {
@@ -86,8 +87,8 @@ public class RESTUserController {
         try {
             Optional<User> user = userService.getUserById(id);
             user.orElseThrow(EntityNotFoundException::new);
-            ExpertiseProfile expertiseProfile=expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
-
+            ExpertiseProfile expertiseProfileNEW= expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
+            ExpertiseProfile expertiseProfile= expertiseProfileFactory.mergeExpertProfile(expertiseProfileNEW,user.get().getExpertiseProfile());
             return expertiseProfileService.upgradeProfile(user.orElseThrow(EntityNotFoundException::new),expertiseProfile);
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
