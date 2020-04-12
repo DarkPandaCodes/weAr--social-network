@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="plugins/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/posts.css}" href="../static/posts.css"/>
+
+    <title>newPost</title>
+</head>
+<body>
+
+<p>
+    <i th:if="${error != null}" th:text="${error}" style="color: red"></i>
+</p>
+
+<!-- Home -->
+<br/>
+<form th:action="@{/}" method="get">
+    <input class="col-md-4" id="b1" type="submit" value="Home"/>
+</form>
+<br/>
+<!-- END-->
+
+<!-- Feed -->
+<br/>
+<form th:action="@{/posts/feed}" method="get">
+    <input class="col-md-4" id="b2" type="submit" value="Go to Feed"/>
+</form>
+<br/>
+<!-- END-->
+
+<form action="#" th:action="@{/posts/feed/newPost}" th:object="${post}" method="post" enctype="multipart/form-data">
+    <label th:text="#{post.header.isPublic}" style="color: papayawhip">Beer</label>
+    <br/>
+    <input type="text" th:field="*{public}"/>
+    <label class="error" th:errors="*{public}"></label>
+    <br/><br/>
+    <label th:text="#{post.header.content}" style="color: papayawhip">ABV</label>
+    <br/>
+    <input type="text" th:field="*{content}"/>
+    <label class="error" th:errors="*{content}"></label>
+    <br/><br/>
+    <label th:text="#{post.header.user.id}" style="color: papayawhip">ABV</label>
+    <br/>
+    <input type="text" th:field="*{userId}"/>
+    <label class="error" th:errors="*{userId}"></label>
+    <br/><br/>
+    <label class="control-label">Select File</label>
+    <input id="imagefile" name="imagefile" type="file" class="file">
+    <br/>
+    <input type="submit" value="Save"/>
+</form>
+<br/>
+
+
+</body>
+</html>

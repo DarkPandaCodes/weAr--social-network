@@ -2,7 +2,6 @@
 <html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-
     <link rel="stylesheet" href="plugins/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/posts.css}" href="../static/posts.css"/>
 
@@ -47,7 +46,10 @@
             <td class="cell" th:text="${post.postId}">id_value</td>
             <td class="cell" th:text="${post.public}">name_value</td>
             <td class="cell" th:text="${post.content}">username_value</td>
-            <td class="cell" th:text="${post.picture}">email@abv.bg</td>
+            <td class="cell"> <img class="center-cropped"
+                                  th:src="@{'/posts/post/' + ${post.postId} + '/postImage'}"
+                                  th:href="@{'/posts/post/' + ${post.postId} + '/postImage'}">
+
             <td class="cell" th:text="${post.user.username}">email@abv.bg</td>
             <td class="cell" th:text="${post.date}">email@abv.bg</td>
             <td class="cell" th:text="${post.likes.size()}">email@abv.bg</td>

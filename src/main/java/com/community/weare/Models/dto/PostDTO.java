@@ -21,6 +21,9 @@ public class PostDTO {
         this.userId = userId;
     }
 
+    public PostDTO() {
+    }
+
     public boolean isPublic() {
         return isPublic;
     }
