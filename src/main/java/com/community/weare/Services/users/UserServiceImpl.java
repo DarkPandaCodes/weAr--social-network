@@ -6,6 +6,7 @@ import com.community.weare.Models.ExpertiseProfile;
 import com.community.weare.Models.PersonalProfile;
 import com.community.weare.Models.Role;
 import com.community.weare.Models.User;
+import com.community.weare.Models.dao.UserModel;
 import com.community.weare.Models.dto.UserDTO;
 import com.community.weare.Repositories.PersonalInfoRepository;
 import com.community.weare.Repositories.RoleRepository;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ValidationException;
 import java.util.Collection;
@@ -112,5 +114,30 @@ public class UserServiceImpl implements UserService {
         } else {
             return true;
         }
+    }
+
+    @Transactional
+    @Override
+    public void updateUserModel(User userToCheck, UserModel userModel) {
+        UserModel model = mapperHelper.convertUSERtoModel(userToCheck);
+        model = mapperHelper.mergeUserModels(model, userModel);
+        User user = mapperHelper.convertModelToUser(userModel);
+        userRepository.saveAndFlush(user);
+    }
+
+    @Transactional
+    @Override
+    public void updateExpertise(User user,
+                                ExpertiseProfile expertiseProfileNew, ExpertiseProfile expertiseProfileOld) {
+    ExpertiseProfile expertiseProfileDB=expertiseProfileService.upgradeProfile(expertiseProfileNew,expertiseProfileOld);
+    user.setExpertiseProfile(expertiseProfileDB);
+    userRepository.saveAndFlush(user);
+    }
+
+    @Override
+    public UserModel getUserModelById(int id) {
+        User user=userRepository.getOne(id);
+        UserModel model=mapperHelper.convertUSERtoModel(user);
+        return model;
     }
 }
