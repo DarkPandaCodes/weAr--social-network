@@ -21,6 +21,7 @@ public class Post {
     @Column(name = "content")
     private String content;
 
+    @Lob
     @Column(name = "picture")
     private String picture;
 
