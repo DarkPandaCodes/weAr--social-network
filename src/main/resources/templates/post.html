@@ -48,7 +48,7 @@
             <td class="cell" th:text="${post.content}">username_value</td>
             <td class="cell"> <img class="center-cropped"
                                   th:src="@{'/posts/post/' + ${post.postId} + '/postImage'}"
-                                  th:href="@{'/showBeer/' + ${post.postId} + '/postImage'}">
+                                  th:href="@{'/posts/post/' + ${post.postId} + '/postImage'}">
 
             <td class="cell" th:text="${post.user.username}">email@abv.bg</td>
             <td class="cell" th:text="${post.date}">email@abv.bg</td>
