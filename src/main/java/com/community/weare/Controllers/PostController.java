@@ -5,6 +5,7 @@ import com.community.weare.Models.Mapper;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Services.contents.PostService;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +13,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Base64;
 
 @Controller
@@ -44,6 +48,18 @@ public class PostController {
         PostDTO post = new PostDTO();
         model.addAttribute("post", post);
         return "newPost";
+    }
+
+    @GetMapping("/post/{id}/postImage")
+    public void renderPostImageFormDB(@PathVariable int id, HttpServletResponse response) throws IOException {
+        Post post = postService.getOne(id);
+
+        if (post.getPicture() != null) {
+            response.setContentType("image/jpeg");
+            InputStream is = new ByteArrayInputStream(Base64.getDecoder().decode(post.getPicture()));
+            IOUtils.copy(is, response.getOutputStream());
+        }
+
     }
 
     @PostMapping("/feed/newPost")
