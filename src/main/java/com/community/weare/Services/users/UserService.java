@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public interface UserService extends UserDetailsService {
 
-    void registerUser(UserDTO userDTO);
+    int registerUser(UserDTO userDTO);
 
     PersonalProfile upgradeProfile(User user, PersonalProfile personalProfile);
 

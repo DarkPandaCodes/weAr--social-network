@@ -1,6 +1,7 @@
 package com.community.weare.Controllers;
 
 
+import com.community.weare.Models.User;
 import com.community.weare.Models.dto.UserDTO;
 import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class RegistrationController {
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
         model.addAttribute("user", new UserDTO());
-        return "register";
+        return "register-new";
     }
 
     @PostMapping("/register")
@@ -39,8 +40,8 @@ public class RegistrationController {
         if (bindingResult.hasErrors()) {
             return "register";
         }
-
-        userService.registerUser(user);
-        return "register-confirmation";
+        int id = userService.registerUser(user);
+        model.addAttribute("id",id);
+        return "confirmation-new";
     }
 }

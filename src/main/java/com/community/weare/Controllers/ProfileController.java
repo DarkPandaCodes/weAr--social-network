@@ -67,6 +67,7 @@ public class ProfileController {
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
+        //TODO validation fields in template
 
         return "user-profile-edit";
     }

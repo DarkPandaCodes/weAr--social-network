@@ -16,16 +16,16 @@ import java.util.List;
 
 public class UserModel {
     private int id;
-    @Size(min = 2, message = "The username must have at least 2 symbols!")
+//    @Size(min = 2, message = "The username must have at least 2 symbols!")
     private String username;
     private List<String> authorities;
     private String email;
-    @Size(min = 2, message = "The username must have at least 2 symbols!")
+//    @Size(min = 2, message = "The username must have at least 2 symbols!")
     private String firstName;
-    @Size(min = 2, message = "The username must have at least 2 symbols!")
+//    @Size(min = 2, message = "The username must have at least 2 symbols!")
     private String lastNAme;
     private Sex gender;
-    @Size(min = 2, message = "The username must have at least 2 symbols!")
+//    @Size(min = 2, message = "The username must have at least 2 symbols!")
     private String city;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate birthYear;

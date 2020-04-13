@@ -44,7 +44,7 @@ public class UserFactory {
     public User convertDTOtoUSER(UserDTO userDTO){
         User user=modelMapper.map(userDTO,User.class);
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        user.setAuthorities(new HashSet<>(roleRepository.findByAuthority(userDTO.getAuthorities().get(0))));
+        user.setAuthorities(new HashSet<>(roleRepository.findByAuthority("ROLE_USER")));
         user.setEnabled(1);
         return user;
     }
@@ -58,21 +58,26 @@ public class UserFactory {
     }
     public UserModel convertUSERtoModel(User user){
         UserModel userModel=modelMapper.map(user, UserModel.class);
+
         PersonalProfile personalProfile=user.getPersonalProfile();
         ExpertiseProfile expertiseProfile=user.getExpertiseProfile();
         userModel.setFirstName(personalProfile.getFirstName());
         userModel.setLastNAme(personalProfile.getLastName());
         userModel.setBirthYear(personalProfile.getBirthYear());
         userModel.setGender(personalProfile.getSex());
-        userModel.setCity(personalProfile.getLocation().getCity().getCity());
-        userModel.setExpertise(expertiseProfile.getCategory().getCategory());
-
-        for (Skill skill:expertiseProfile.getSkills()
-             ) {
-            userModel.setSkill(skillRepository.getOne(skill.getSkillId()).getSkill());
+        if (personalProfile.getLocation()!=null){
+        userModel.setCity(personalProfile.getLocation().getCity().getCity());}
+        if (expertiseProfile.getCategory()!=null) {
+            userModel.setExpertise(expertiseProfile.getCategory().getCategory());
+            for (Skill skill:expertiseProfile.getSkills()
+            ) {
+                userModel.setSkill(skillRepository.getOne(skill.getSkillId()).getSkill());
+            }
+            userModel.setStartTime(expertiseProfile.getStartTime());
+            userModel.setEndTime(expertiseProfile.getEndTime());
         }
-        userModel.setStartTime(expertiseProfile.getStartTime());
-        userModel.setEndTime(expertiseProfile.getEndTime());
+
+
         return userModel;
     }
     @Transactional
@@ -94,7 +99,8 @@ public class UserFactory {
             }
         }
         user.getExpertiseProfile().setSkills(skills);
-        user.getExpertiseProfile().setCategory(categoryRepository.findByCategory(userModel.getExpertise()).get());
+        if (userModel.getExpertise()!=null){
+        user.getExpertiseProfile().setCategory(categoryRepository.findByCategory(userModel.getExpertise()).get());}
 //        userModel.getSkills()
 //                .forEach(s-> {user.getExpertiseProfile().setSkill(skillRepository.findSkillBySkill(s).get());});
 //        user.getExpertiseProfile().setCategory(categoryRepository.findByCategory(userModel.getExpertise()).get());
@@ -115,6 +121,18 @@ public class UserFactory {
     }
 
     public <T> T getNotNull(T n, T l) {
+
+        if (n==null || n.hashCode()==0 ){
+            return l;
+        }
+        if (n!=null || n.hashCode()!=0 ){
+            return n;
+        }
+
+        return n != null && l != null && !n.equals(l) ? n : l;
+
+    }
+    public <T> T getifNull(T n, T l) {
 
         if (n==null || n.hashCode()==0 ){
             return l;

@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void registerUser(UserDTO userDTO) {
+    public int registerUser(UserDTO userDTO) {
         try {
             User user = mapperHelper.convertDTOtoUSER(userDTO);
             checkIfUserExist(user);
@@ -64,6 +64,7 @@ public class UserServiceImpl implements UserService {
             user.setExpertiseProfile(expertiseProfile);
             user.setPersonalProfile(personalProfile);
             userRepository.saveAndFlush(user);
+            return user.getUserId();
         } catch (ValidationException e) {
             throw new ValidationEntityException(e.getMessage());
         }
