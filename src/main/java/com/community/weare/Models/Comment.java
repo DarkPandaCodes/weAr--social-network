@@ -3,6 +3,8 @@ package com.community.weare.Models;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,7 +37,13 @@ public class Comment {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> likes = new HashSet<>();
 
+    @Column(name = "date_time")
+    private String date;
+
     public Comment() {
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        this.date = formatter.format(date);
     }
 
     public int getCommentId() {
@@ -76,5 +84,13 @@ public class Comment {
 
     public void setLikes(Set<User> likes) {
         this.likes = likes;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

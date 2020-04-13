@@ -91,19 +91,16 @@
                                                   th:src="@{'/posts/post/' + ${post.postId} + '/postImage'}"
                                                   th:href="@{'/posts/post/' + ${post.postId} + '/postImage'}"></div>
                             <div class="text pl-md-4">
-                                <span class="location mb-0">Rating: </span>
-                                <span class="location mb-0">x.x</span>
+                                <span class="location mb-0">Rating: x.x</span>
 								<h2><span th:text="${post.user.username}">username</span></h2>
-                                <span class="position">Public post: </span>
-                                <span class="position" th:text="${post.public}">public</span>
+                                <span class="position" th:text="'Public post: ' + ${post.public}">public</span>
                                 <p class="mb-2" th:text="${post.content}">content</p>
                                 <span class="seen"th:text="${post.date}"></span>
-                                <p><a th:href="@{'/posts/post/' + ${post.postId}}" class="btn btn-primary">Explore this post</a></p>
-                                <p><a href="#" class="btn btn-primary">See profile</a></p>
-                                <span class="position">Likes: </span>
-                                <span class="position" th:text="${post.likes.size()}"></span>
-                                <span class="position">Comments: </span>
-                                <span class="position" th:text="${post.comments.size()}">public</span>
+                                <p><a th:href="@{'/posts/post/' + ${post.postId}}" class="btn btn-primary">Explore this post</a>
+                                <a href="#" class="btn btn-primary">See profile</a></p>
+                                <span class="position" th:text="'Likes: ' + ${post.likes.size()}"></span>
+                                <span class="position" th:text="'Comments: ' + ${post.comments.size()}">public</span>
+                                <p><a href="#" class="reply">Like</a> <a href="#" class="ion-md-heart-dislike">Dislike</a> </p>
                             </div>
                         </div>
                     </div>

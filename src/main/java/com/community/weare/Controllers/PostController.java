@@ -66,7 +66,6 @@ public class PostController {
             InputStream is = new ByteArrayInputStream(Base64.getDecoder().decode(post.getPicture()));
             IOUtils.copy(is, response.getOutputStream());
         }
-
     }
 
     @PostMapping("/newPost")
