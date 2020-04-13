@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,7 +38,7 @@ public class SkillCategoryServiceImpl implements SkillCategoryService {
 
     @Override
     public List<Category> getAll() {
-        return null;
+        return categoryRepository.findAll();
     }
 
     @Override
@@ -59,4 +60,8 @@ public class SkillCategoryServiceImpl implements SkillCategoryService {
         return categoryDB;
     }
 
+    @Override
+    public Category getByName(String expertise) {
+        return categoryRepository.findByCategory(expertise).orElseThrow(EntityNotFoundException::new);
+    }
 }

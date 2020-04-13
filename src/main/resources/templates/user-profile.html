@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/style.css}" href="..static/style.css"/>
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/style.css}" href="/static/style.css"/>
+    <link rel="stylesheet"  th:href="@{/css/bootstrap.min.css}"
+          href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" id="bootstrap-css">
+
+    <script th:src="@{/js/bootstrap.min.js}" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 
 <!------ Include the above in your HEAD tag ---------->
 
 <div class="container emp-profile">
-    <form method="post" th:object="${user}" >
+    <form method="post" th:object="${user.get()}" >
         <div class="row">
             <div class="col-md-4">
                 <div class="profile-img">
@@ -25,7 +27,7 @@
             </div>
             <div class="col-md-6">
                 <div class="profile-head">
-                    <h5>
+                    <h5 th:text="*{personalProfile.getFirstName()}">
                         Kshiti Ghelani
                     </h5>
                     <h6>
@@ -43,7 +45,7 @@
                 </div>
             </div>
             <div class="col-md-2">
-                <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile"/>
+                <button role="button" class="btn btn-primary"><a th:href="@{'/auth/users/'+${user.get().userId}+'/profile/editor'}"><span >EDIT profile</span></a></button>
             </div>
         </div>
         <div class="row">
@@ -69,7 +71,7 @@
                                 <label>User Id</label>
                             </div>
                             <div class="col-md-6">
-                                <p>Kshiti123</p>
+                                <p th:text="*{username}">Kshiti123</p>
                             </div>
                         </div>
                         <div class="row">
@@ -77,7 +79,7 @@
                                 <label>Name</label>
                             </div>
                             <div class="col-md-6">
-                                <p th:text="*{username}">Kshiti Ghelani</p>
+                                <p th:text="*{personalProfile.getFirstName()}">Kshiti Ghelani</p>
                             </div>
                         </div>
                         <div class="row">

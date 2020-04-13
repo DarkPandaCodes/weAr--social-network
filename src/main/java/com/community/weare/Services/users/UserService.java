@@ -1,8 +1,10 @@
 package com.community.weare.Services.users;
 
+import com.community.weare.Models.ExpertiseProfile;
 import com.community.weare.Models.PersonalProfile;
 import com.community.weare.Models.Role;
 import com.community.weare.Models.User;
+import com.community.weare.Models.dao.UserModel;
 import com.community.weare.Models.dto.UserDTO;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -13,7 +15,7 @@ import java.util.Optional;
 
 public interface UserService extends UserDetailsService {
 
-    void registerUser(UserDTO userDTO);
+    int registerUser(UserDTO userDTO);
 
     PersonalProfile upgradeProfile(User user, PersonalProfile personalProfile);
 
@@ -31,4 +33,9 @@ public interface UserService extends UserDetailsService {
 
     boolean checkIfUserExist(User user);
 
+    void updateUserModel(User userToCheck,UserModel user);
+
+    UserModel getUserModelById(int id);
+
+    void updateExpertise(User user,ExpertiseProfile expertiseProfileNew, ExpertiseProfile expertiseProfileOld);
 }

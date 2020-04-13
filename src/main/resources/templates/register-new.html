@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" id="bootstrap-css">
+    <script  src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <!-- Website CSS style -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Website Font style -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+    <link rel="stylesheet" th:href="@{/style.css}" href="style.css">
+    <!-- Google Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Passion+One' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
+</head>
+<body>
+<div class="row main ">
+    <div class="main-login main-center">
+        <h5>Sign up Join Our Growing Free of money Community.</h5>
+        <i th:if="${error != null}" th:text="${error}" style="color: red"></i>
+        <form action="#" th:action="@{/register}" th:object="${user}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name" class="cols-sm-2 control-label">Username</label>
+                <div class="cols-sm-10">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+                        <input type="text"  th:field="*{username}" class="form-control" name="name" id="name"  placeholder="Enter your Name"/>
+                        <label class="error" th:errors="*{username}"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="cols-sm-2 control-label">Your Email</label>
+                <div class="cols-sm-10">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
+                        <input type="text" th:field="*{email}" class="form-control" name="email" id="email"  placeholder="Enter your Email"/>
+                        <label class="error" th:errors="*{email}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password" class="cols-sm-2 control-label">Password</label>
+                <div class="cols-sm-10">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+                        <input type="password"  th:field="*{password}" class="form-control" name="password" id="password"  placeholder="Enter your Password"/>
+                       <label class="error" th:errors="*{username}"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm" class="cols-sm-2 control-label">Confirm Password</label>
+                <div class="cols-sm-10">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+                        <input type="password" th:field="*{confirmPassword}" class="form-control" name="confirm" id="confirm"  placeholder="Confirm your Password"/>
+                        <label class="error" th:errors="*{confirmPassword}"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group ">
+                <input type="submit" class="btn btn-primary btn-lg btn-block login-button" value="Register"/>
+            </div>
+
+        </form>
+    </div>
+</div>
+</div>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script th:src="@{/js/bootstrap.js}" src="js/bootstrap.min.js"></script>
+</body>
+</html>

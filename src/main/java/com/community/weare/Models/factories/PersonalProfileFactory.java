@@ -1,4 +1,4 @@
-package com.community.weare.Services.factories;
+package com.community.weare.Models.factories;
 
 import com.community.weare.Models.*;
 import com.community.weare.Models.dto.PersonalProfileDTO;

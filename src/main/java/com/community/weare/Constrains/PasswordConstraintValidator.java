@@ -2,12 +2,13 @@ package com.community.weare.Constrains;
 
 import com.google.common.base.Joiner;
 import org.passay.*;
+import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.Arrays;
 import java.util.List;
-
+@Component
 public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword,String> {
 
 

@@ -5,5 +5,6 @@ import com.community.weare.Models.User;
 
 public interface ExpertiseProfileService {
     ExpertiseProfile upgradeProfile(User user, ExpertiseProfile expertiseProfile);
+    ExpertiseProfile upgradeProfile( ExpertiseProfile newProfile, ExpertiseProfile oldProfile);
     ExpertiseProfile createProfile(ExpertiseProfile expertiseProfile);
 }

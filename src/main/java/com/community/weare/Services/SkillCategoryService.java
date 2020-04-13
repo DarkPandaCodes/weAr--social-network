@@ -12,4 +12,5 @@ public interface SkillCategoryService {
     List<Category> getAll();
     Optional <Category> getByById(int id);
     Category createIfNotExist(Category category1);
+    Category getByName(String expertise);
 }

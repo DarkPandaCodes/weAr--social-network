@@ -5,101 +5,106 @@
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet"  th:href="@{/css/bootstrap.min.css}"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" id="bootstrap-css">
+    <script th:src="@{/js/bootstrap.js}" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 
 
 <!------ Include the above in your HEAD tag ---------->
-
+<body>
 <div class="container">
     <div class="row">
         <div class="col-md-3 ">
-            <div class="list-group ">
-                <a href="#" class="list-group-item list-group-item-action active">Dashboard</a>
-                <a href="#" class="list-group-item list-group-item-action">User Management</a>
-                <a href="#" class="list-group-item list-group-item-action">Used</a>
-                <a href="#" class="list-group-item list-group-item-action">Enquiry</a>
-                <a href="#" class="list-group-item list-group-item-action">Dealer</a>
-                <a href="#" class="list-group-item list-group-item-action">Media</a>
-                <a href="#" class="list-group-item list-group-item-action">Post</a>
-                <a href="#" class="list-group-item list-group-item-action">Category</a>
-                <a href="#" class="list-group-item list-group-item-action">New</a>
-                <a href="#" class="list-group-item list-group-item-action">Comments</a>
-                <a href="#" class="list-group-item list-group-item-action">Appearance</a>
-                <a href="#" class="list-group-item list-group-item-action">Reports</a>
-                <a href="#" class="list-group-item list-group-item-action">Settings</a>
-
-
+                <div class="list-group" id="list-tab" role="tablist">
+                    <a class="list-group-item list-group-item-action active" id="list-home-list" data-toggle="list" href="#profile-personal" role="tab" aria-controls="home">Home</a>
+                    <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="#profile-expertise" role="tab" aria-controls="profile">Profile</a>
+                    <a class="list-group-item list-group-item-action" id="list-messages-list" data-toggle="list" href="#list-messages" role="tab" aria-controls="messages">Messages</a>
+                    <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="#list-settings" role="tab" aria-controls="settings">Settings</a>
             </div>
         </div>
-        <div class="col-md-9">
-            <div class="card">
+        <div class="tab-content">
+        <div class="tab-pane active col-md-9" role="tabpanel" id="profile-personal" >
+            <div class="card" >
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <h4>Your Profile</h4>
+                            <h4>Personal Profile</h4>
                             <hr>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <form form action="#" th:action="@{/auth/beers/add}" th:object="${beer}" method="post" class="contact" role="form">
+                            <form form action="#" th:action="@{'/auth/users/'+${userToEdit.id}+'/profile/change'}"  th:object="${userToEdit}" method="post" class="contact" role="form">
                                 <div class="form-group row">
-                                    <label for="username" class="col-4 col-form-label">User Name*</label>
+                                    <label class="col-4 col-form-label">User Name</label>
                                     <div class="col-8">
-                                        <input id="username" name="username" placeholder="Username" class="form-control here" required="required" type="text">
+                                        <p th:text="*{username}"></p>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="name" class="col-4 col-form-label">First Name</label>
                                     <div class="col-8">
-                                        <input id="name" name="name" placeholder="First Name" class="form-control here" type="text">
+
+                                        <input id="nameE" name="name" th:field="*{firstName}" placeholder="First Name" class="form-control here" type="text">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="lastname" class="col-4 col-form-label">Last Name</label>
+                                    <label for="lastnameE" class="col-4 col-form-label">Last Name</label>
                                     <div class="col-8">
-                                        <input id="lastname" name="lastname" placeholder="Last Name" class="form-control here" type="text">
+                                        <input id="lastnameE" name="lastname" th:field="*{lastNAme}" placeholder="Last Name" class="form-control here" type="text">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="text" class="col-4 col-form-label">Nick Name*</label>
+                                    <label for="birthDayE" class="col-4 col-form-label">birth day</label>
                                     <div class="col-8">
-                                        <input id="text" name="text" placeholder="Nick Name" class="form-control here" required="required" type="text">
+                                        <input id="birthDayE" th:type="datetime-local" th:field="*{birthYear}" placeholder="birthday" class="form-control here" required="required" >
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="select" class="col-4 col-form-label">Display Name public as</label>
+                                    <label for="selectE" class="col-4 col-form-label">Gender</label>
                                     <div class="col-8">
-                                        <select id="select" name="select" class="custom-select">
-                                            <option value="admin">Admin</option>
+                                        <select id="selectE" name="select" th:field="*{gender}" class="custom-select">
+                                            <option option th:each="sex: ${genders}"
+                                                    th:value="${sex}"
+                                                    th:text="${sex.toString()}"
+                                            >Choose...
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="email" class="col-4 col-form-label">Email*</label>
+                                    <label for="emailE" class="col-4 col-form-label">Email*</label>
                                     <div class="col-8">
-                                        <input id="email" name="email" placeholder="Email" class="form-control here" required="required" type="text">
+                                        <input id="emailE" name="email" th:field="*{email}" placeholder="Email" class="form-control here" required="required" type="text">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="website" class="col-4 col-form-label">Website</label>
+                                    <label for="websiteE" class="col-4 col-form-label">Website</label>
                                     <div class="col-8">
-                                        <input id="website" name="website" placeholder="website" class="form-control here" type="text">
+                                        <input id="websiteE" name="website" placeholder="website" class="form-control here" type="text">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="publicinfo" class="col-4 col-form-label">Public Info</label>
+                                    <label for="publicinfoE" class="col-4 col-form-label">Public Info</label>
                                     <div class="col-8">
-                                        <textarea id="publicinfo" name="publicinfo" cols="40" rows="4" class="form-control"></textarea>
+                                        <textarea id="publicinfoE" th:field="*{personalReview}" name="publicinfo" cols="40" rows="4" class="form-control"></textarea>
                                     </div>
                                 </div>
+                                <!--                                <div class="form-group row">-->
+                                <!--                                    <label for="newpass" class="col-4 col-form-label">New Password</label>-->
+                                <!--                                    <div class="col-8">-->
+                                <!--                                        <input id="newpass" name="newpass" placeholder="New Password" class="form-control here" type="text">-->
+                                <!--                                    </div>-->
+                                <!--                                </div>-->
                                 <div class="form-group row">
-                                    <label for="newpass" class="col-4 col-form-label">New Password</label>
+                                    <label  class="col-4 col-form-label">Location</label>
                                     <div class="col-8">
-                                        <input id="newpass" name="newpass" placeholder="New Password" class="form-control here" type="text">
+                                        <input id="location.cityE" name="city" th:field="*{city}" placeholder="choose your City" class="form-control here" type="text">
+                                    </div>
+                                    <div class="col-8">
+                                        <p id="location.countryE" name="country"   type="text">Bulgaria</p>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -114,5 +119,174 @@
                 </div>
             </div>
         </div>
+<!--        <div class="tab-pane col-md-9"  role="tabpanel" id="profile-expertise1" >-->
+<!--            <div class="card">-->
+<!--                <div class="card-body">-->
+<!--                    <div class="row">-->
+<!--                        <div class="col-md-12">-->
+<!--                            <h4>Expertise Profile</h4>-->
+<!--                            <hr>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="row">-->
+<!--                        <div class="col-md-12">-->
+<!--                            <form form action="#" th:action="@{'/auth/users/'+${id}}"  th:object="${userToEdit}" method="post" class="contact" role="form">-->
+<!--                                <div class="form-group row">-->
+<!--                                    <label class="col-4 col-form-label">Which industry does the workplace/business belong to?</label>-->
+<!--                                    <div class="col-8">-->
+<!--                                        <input  name="name" th:field="*{expertise}" placeholder="ex.Marketing" class="form-control here" type="text">-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="form-group row">-->
+<!--                                    <label for="name" class="col-4 col-form-label">First Name</label>-->
+<!--                                    <div class="col-8">-->
+<!--                                        <input id="name1" name="name" th:field="*{firstName}" placeholder="First Name" class="form-control here" type="text">-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="form-group row">-->
+<!--                                    <label for="lastname1" class="col-4 col-form-label">Last Name</label>-->
+<!--                                    <div class="col-8">-->
+<!--                                        <input id="lastname1" name="lastname" th:field="*{lastNAme}" placeholder="Last Name" class="form-control here" type="text">-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="form-group row">-->
+<!--                                    <label for="birthDay1" class="col-4 col-form-label">Nick Name*</label>-->
+<!--                                    <div class="col-8">-->
+<!--                                        <input id="birthDay1" th:type="datetime-local" th:field="*{birthYear}" placeholder="birthday" class="form-control here" required="required" >-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="form-group row">-->
+<!--                                    <label for="select1" class="col-4 col-form-label">Gender</label>-->
+<!--                                    <div class="col-8">-->
+<!--                                        <select id="select1" name="select" th:field="*{gender}" class="custom-select">-->
+<!--                                            <option option th:each="sex: ${genders}"-->
+<!--                                                    th:value="${sex}"-->
+<!--                                                    th:text="${sex.toString()}"-->
+<!--                                            >Choose...-->
+<!--                                            </option>-->
+<!--                                        </select>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="form-group row">-->
+<!--                                    <label for="email1" class="col-4 col-form-label">Email*</label>-->
+<!--                                    <div class="col-8">-->
+<!--                                        <input id="email1" name="email" th:field="*{email}" placeholder="Email" class="form-control here" required="required" type="text">-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="form-group row">-->
+<!--                                    <label for="website1" class="col-4 col-form-label">Website</label>-->
+<!--                                    <div class="col-8">-->
+<!--                                        <input id="website1" name="website" placeholder="website" class="form-control here" type="text">-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="form-group row">-->
+<!--                                    <label for="publicinfo1" class="col-4 col-form-label">Public Info</label>-->
+<!--                                    <div class="col-8">-->
+<!--                                        <textarea id="publicinfo1" th:field="*{personalReview}" name="publicinfo" cols="40" rows="4" class="form-control"></textarea>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--&lt;!&ndash;                                <div class="form-group row">&ndash;&gt;-->
+<!--&lt;!&ndash;                                    <label for="newpass" class="col-4 col-form-label">New Password</label>&ndash;&gt;-->
+<!--&lt;!&ndash;                                    <div class="col-8">&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <input id="newpass" name="newpass" placeholder="New Password" class="form-control here" type="text">&ndash;&gt;-->
+<!--&lt;!&ndash;                                    </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                                </div>&ndash;&gt;-->
+<!--                                <div class="form-group row">-->
+<!--                                    <label  class="col-4 col-form-label">Location</label>-->
+<!--                                    <div class="col-8">-->
+<!--                                        <input id="location.city1" name="city" th:field="*{city}" placeholder="New Password" class="form-control here" type="text">-->
+<!--                                    </div>-->
+<!--                                    <div class="col-8">-->
+<!--                                        <p id="location.country1" name="country"   type="text">Bulgaria</p>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="form-group row">-->
+<!--                                    <div class="offset-4 col-8">-->
+<!--                                        <button name="submit" type="submit" class="btn btn-primary">Update My Profile</button>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </form>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
     </div>
+        <div class="tab-pane col-md-9"  role="tabpanel" id="profile-expertise" >
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Expertise Profile</h4>
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form form action="#"  th:action="@{'/auth/users/'+${userToEdit.id}+'/profile/expertise'}"  th:object="${expertise}" method="post" class="contact" role="form">
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Which industry does the workplace/business belong to?</label>
+                                    <div class="col-8">
+                                        <div class="col-8">
+                                            <select  name="select" th:field="*{category}" class="custom-select">
+                                                <option option th:each="category: ${categories}"
+                                                        th:value="${category.id}"
+                                                        th:text="${category.category}"
+                                                >Choose...
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="offset-4 col-8">
+                                            <button name="submit" type="submit" class="btn btn-primary">Update</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="startTime" class="col-4 col-form-label">Available from</label>
+                                    <div class="col-8">
+                                        <input id="startTime" th:type="datetime-local" th:field="*{startTime}" placeholder="start time" class="form-control here" required="required" >
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="endTime" class="col-4 col-form-label">Available to</label>
+                                    <div class="col-8">
+                                        <input id="endTime" th:type="datetime-local" th:field="*{endTime}" placeholder="end time" class="form-control here" required="required" >
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="offset-4 col-8">
+                                        <button name="submit" type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <form form action="#" th:href="@{'/auth/users/'+${userToEdit.id}+'/profile/change'}" th:object="${userToEdit}" method="post" class="contact" role="form">
+                                <div class="form-group row">
+                                    <label for="name" class="col-4 col-form-label">Profesional services</label>
+                                    <div class="col-8" th:each="skill:*{skills} ">
+                                        <input  name="name" th:text="${skill}"  class="form-control here" type="text">
+                                        <input id="name" name="name" placeholder="edit skill" class="form-control here" type="text">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="offset-4 col-8">
+                                        <button name="submit" type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
+</body>
+</html>
