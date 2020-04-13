@@ -1,4 +1,4 @@
-package com.community.weare.Services.factories;
+package com.community.weare.Models.factories;
 
 import com.community.weare.Models.*;
 import com.community.weare.Models.dto.ExpertiseProfileDTO;
@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.*;
+
+import static com.community.weare.Models.factories.FactoryUtils.getNotNull;
 
 @Service
 public class ExpertiseProfileFactory  {
@@ -55,25 +57,14 @@ public class ExpertiseProfileFactory  {
     }
 
    public ExpertiseProfile mergeExpertProfile(ExpertiseProfile newProfile,ExpertiseProfile oldProfile){
-    oldProfile.setSkills(getNotNullBeer(newProfile.getSkills(),oldProfile.getSkills()));
-    oldProfile.setCategory(getNotNullBeer(newProfile.getCategory(),oldProfile.getCategory()));
-    oldProfile.setStartTime(getNotNullBeer(newProfile.getStartTime(),oldProfile.getStartTime()));
-    oldProfile.setEndTime(getNotNullBeer(newProfile.getEndTime(),oldProfile.getEndTime()));
+    oldProfile.setSkills(getNotNull(newProfile.getSkills(),oldProfile.getSkills()));
+    oldProfile.setCategory(getNotNull(newProfile.getCategory(),oldProfile.getCategory()));
+    oldProfile.setStartTime(getNotNull(newProfile.getStartTime(),oldProfile.getStartTime()));
+    oldProfile.setEndTime(getNotNull(newProfile.getEndTime(),oldProfile.getEndTime()));
     return oldProfile;
     }
 
-    public <T> T getNotNullBeer(T n, T l) {
 
-        if (n==null || n.hashCode()==0 ){
-            return l;
-        }
-        if (n!=null || n.hashCode()!=0 ){
-            return n;
-        }
-
-        return n != null && l != null && !n.equals(l) ? n : l;
-
-    }
 }
 
 

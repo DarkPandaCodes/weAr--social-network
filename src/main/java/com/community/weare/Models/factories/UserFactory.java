@@ -1,4 +1,4 @@
-package com.community.weare.Services.factories;
+package com.community.weare.Models.factories;
 
 import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
@@ -7,16 +7,14 @@ import com.community.weare.Repositories.RoleRepository;
 import com.community.weare.Repositories.SkillCategoryRepository;
 import com.community.weare.Repositories.SkillRepository;
 import com.community.weare.Repositories.UserRepository;
-import com.community.weare.Services.SkillCategoryService;
-import com.community.weare.Services.models.SkillService;
-import com.community.weare.Services.users.UserService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
+import static com.community.weare.Models.factories.FactoryUtils.getNotNull;
 
 @Component
 public class UserFactory {
@@ -120,28 +118,4 @@ public class UserFactory {
 
     }
 
-    public <T> T getNotNull(T n, T l) {
-
-        if (n==null || n.hashCode()==0 ){
-            return l;
-        }
-        if (n!=null || n.hashCode()!=0 ){
-            return n;
-        }
-
-        return n != null && l != null && !n.equals(l) ? n : l;
-
-    }
-    public <T> T getifNull(T n, T l) {
-
-        if (n==null || n.hashCode()==0 ){
-            return l;
-        }
-        if (n!=null || n.hashCode()!=0 ){
-            return n;
-        }
-
-        return n != null && l != null && !n.equals(l) ? n : l;
-
-    }
 }

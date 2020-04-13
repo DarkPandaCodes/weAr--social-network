@@ -5,24 +5,16 @@ import com.community.weare.Models.ExpertiseProfile;
 import com.community.weare.Models.Sex;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dao.UserModel;
-import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Services.SkillCategoryService;
-import com.community.weare.Services.factories.ExpertiseProfileFactory;
-import com.community.weare.Services.factories.PersonalProfileFactory;
-import com.community.weare.Services.factories.UserFactory;
-import com.community.weare.Services.users.ExpertiseProfileService;
-import com.community.weare.Services.users.PersonalInfoService;
 import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityNotFoundException;
-import javax.validation.Valid;
 import java.util.*;
 
 @Controller

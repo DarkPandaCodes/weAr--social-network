@@ -11,7 +11,7 @@ import com.community.weare.Models.dto.UserDTO;
 import com.community.weare.Repositories.PersonalInfoRepository;
 import com.community.weare.Repositories.RoleRepository;
 import com.community.weare.Repositories.UserRepository;
-import com.community.weare.Services.factories.UserFactory;
+import com.community.weare.Models.factories.UserFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
