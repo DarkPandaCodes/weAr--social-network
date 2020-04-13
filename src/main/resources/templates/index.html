@@ -16,7 +16,7 @@
 <!-- END-->
 
 <br/>
-<br/>
+
 
 <!-- register page form -->
 <form th:action="@{/register}" method="get">
@@ -24,18 +24,18 @@
 </form>
 <!-- END-->
 <br/>
-<br/>
+
 
 <!-- logout page form -->
 <form th:action="@{/logout}" method="post">
     <input type="submit" value="Logout"/>
 </form>
 <!-- END-->
+
 <br/>
-<br/>
-<!-- showFeed -->
-<form th:action="@{/posts/feed}" method="get">
-    <input class="col-md-4" id="b3" type="submit" value="Show feed"/>
+<!-- NEWfeed -->
+<form th:action="@{/posts/}" method="get">
+    <input class="col-md-4" id="b4" type="submit" value="Show new feed"/>
 </form>
 <!-- END-->
 
