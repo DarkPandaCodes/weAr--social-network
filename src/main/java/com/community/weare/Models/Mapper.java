@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class Mapper {
     private static PostService postService;
 
-
+    //TODO refactoring - make a factory
     @Autowired
     public Mapper(PostService postService) {
         Mapper.postService = postService;

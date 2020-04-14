@@ -29,10 +29,17 @@ public class PostController {
         this.postService = postService;
     }
 
-    @GetMapping("/feed")
-    public String showFeed(Model model) {
+    //OLD
+//    @GetMapping("/feed")
+//    public String showFeed(Model model) {
+//        model.addAttribute("posts", postService.findAll());
+//        return "posts";
+//    }
+
+    @GetMapping("")
+    public String showNewFeed(Model model) {
         model.addAttribute("posts", postService.findAll());
-        return "posts";
+        return "allPosts";
     }
 
     @GetMapping("/post/{id}")
@@ -40,10 +47,10 @@ public class PostController {
         Post post01 = postService.getOne(postId);
         model.addAttribute("post", post01);
         model.addAttribute("comments", post01.getComments());
-        return "post";
+        return "post-single";
     }
 
-    @GetMapping("/feed/newPost")
+    @GetMapping("/newPost")
     public String newPostData(Model model) {
         PostDTO post = new PostDTO();
         model.addAttribute("post", post);
@@ -59,10 +66,9 @@ public class PostController {
             InputStream is = new ByteArrayInputStream(Base64.getDecoder().decode(post.getPicture()));
             IOUtils.copy(is, response.getOutputStream());
         }
-
     }
 
-    @PostMapping("/feed/newPost")
+    @PostMapping("/newPost")
     public String newPost(Model model, @ModelAttribute("post") PostDTO post, BindingResult errors,
                           @RequestParam("imagefile") MultipartFile file) throws IOException {
 
