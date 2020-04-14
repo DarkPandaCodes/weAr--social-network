@@ -36,7 +36,7 @@ public class ExpertiseProfileFactory  {
     ExpertiseProfile expertiseProfile=modelMapper.map(profileDTO,ExpertiseProfile.class);
         List<Skill> skillList =new ArrayList<>();
         Category category= new Category();
-        category.setCategory(profileDTO.getExpertise());
+        category.setName(profileDTO.getExpertise());
         Category skillCategory= skillCategoryService.createIfNotExist(category);
         expertiseProfile.setCategory(skillCategory);
 

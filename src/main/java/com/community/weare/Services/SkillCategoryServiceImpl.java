@@ -4,7 +4,6 @@ import com.community.weare.Models.Category;
 import com.community.weare.Repositories.SkillCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
@@ -49,11 +48,11 @@ public class SkillCategoryServiceImpl implements SkillCategoryService {
    @Transactional
     @Override
     public Category createIfNotExist(Category category1) {
-        boolean exists = categoryRepository.findByCategory(category1.getCategory()).isPresent();
+        boolean exists = categoryRepository.findByName(category1.getName()).isPresent();
         Category categoryDB = new Category();
 
         if (exists == true) {
-           categoryDB = categoryRepository.findByCategory(category1.getCategory()).get();
+           categoryDB = categoryRepository.findByName(category1.getName()).get();
         } else {
             categoryDB = categoryRepository.saveAndFlush(category1);
         }
@@ -62,6 +61,6 @@ public class SkillCategoryServiceImpl implements SkillCategoryService {
 
     @Override
     public Category getByName(String expertise) {
-        return categoryRepository.findByCategory(expertise).orElseThrow(EntityNotFoundException::new);
+        return categoryRepository.findByName(expertise).orElseThrow(EntityNotFoundException::new);
     }
 }

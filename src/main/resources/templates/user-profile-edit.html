@@ -36,7 +36,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <form form action="#" th:action="@{'/auth/users/'+${userToEdit.id}+'/profile/change'}"  th:object="${userToEdit}" method="post" class="contact" role="form">
+                            <form form action="#" th:action="@{'/auth/users/'+${userToEdit.getId()}+'/profile/personal'}"  th:object="${userToEdit}" method="post" class="contact" role="form">
                                 <div class="form-group row">
                                     <label class="col-4 col-form-label">User Name</label>
                                     <div class="col-8">
@@ -44,7 +44,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="name" class="col-4 col-form-label">First Name</label>
+                                    <label for="nameE" class="col-4 col-form-label">First Name</label>
                                     <div class="col-8">
 
                                         <input id="nameE" name="name" th:field="*{firstName}" placeholder="First Name" class="form-control here" type="text">
@@ -224,15 +224,15 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <form form action="#"  th:action="@{'/auth/users/'+${userToEdit.id}+'/profile/expertise'}"  th:object="${expertise}" method="post" class="contact" role="form">
+                            <form form action="#"  th:action="@{'/auth/users/'+${userToEdit.id}+'/profile/expertise'}"  th:object="${profile}" method="post" class="contact" role="form">
                                 <div class="form-group row">
                                     <label class="col-4 col-form-label">Which industry does the workplace/business belong to?</label>
                                     <div class="col-8">
                                         <div class="col-8">
-                                            <select  name="select" th:field="*{category}" class="custom-select">
+                                            <select  name="select" th:field="*{category.id}" class="custom-select">
                                                 <option option th:each="category: ${categories}"
                                                         th:value="${category.id}"
-                                                        th:text="${category.category}"
+                                                        th:text="${category.name}"
                                                 >Choose...
                                                 </option>
                                             </select>
@@ -245,19 +245,59 @@
                                     </div>
                                 </div>
                             </form>
-                            <div th:if="${userToEdit.getExpertise()!=null}">
-                            <form id="profile-resource" form action="#" th:href="@{'/auth/users/'+${userToEdit.id}+'/profile/resorce'}" th:object="${expertise}" method="post" class="contact" role="form">
+                            <div th:if="${profile.getCategory()!=null}">
+                            <form id="profile-resource" form action="#" th:action="@{'/auth/users/'+${userToEdit.id}+'/profile/expertise'}" th:object="${profile}" method="post" class="contact" role="form">
                                 <div class="form-group row">
                                     <label class="col-4 col-form-label">Profesional services</label>
+                                    <div th:if="*{skills.size()!=0}">
                                     <div class="col-8" th:each="skill:*{skills} ">
-                                    <select  name="select" th:field="*{skill}" class="custom-select">
-                                        <option option th:each="category: ${categories}"
-                                                th:value="${category.id}"
-                                                th:text="${category.category}"
+                                    <select  name="select" th:field="*{id}" class="custom-select">
+                                        <option option th:each="skill: ${services}"
+                                                th:value="${skill.skillId}"
+                                                th:text="${skill.skill}"
                                         >Choose...
                                         </option>
                                     </select>
+                                    </div>
                                 </div>
+                                    <div th:if="*{skills.size()==0}">
+<!--                                        //the form doesnt't get the value-->
+                                         <select  name="select" th:field="${id}" class="custom-select">
+                                                <option option th:each="skill: ${services}"
+                                                        th:value="${skill.skillId}"
+                                                        th:text="${skill.skill}"
+                                                >Choose...
+                                                </option>
+                                            </select>
+                                        <select  name="select" th:field="${id}" class="custom-select">
+                                            <option option th:each="skill: ${services}"
+                                                    th:value="${skill.skillId}"
+                                                    th:text="${skill.skill}"
+                                            >Choose...
+                                            </option>
+                                        </select>
+                                        <select  name="select" th:field="${id}" class="custom-select">
+                                            <option option th:each="skill: ${services}"
+                                                    th:value="${skill.skillId}"
+                                                    th:text="${skill.skill}"
+                                            >Choose...
+                                            </option>
+                                        </select>
+                                        <select  name="select" th:field="${id}" class="custom-select">
+                                            <option option th:each="skill: ${services}"
+                                                    th:value="${skill.skillId}"
+                                                    th:text="${skill.skill}"
+                                            >Choose...
+                                            </option>
+                                        </select>
+                                        <select  name="select" th:field="${id}" class="custom-select">
+                                            <option option th:each="skill: ${services}"
+                                                    th:value="${skill.skillId}"
+                                                    th:text="${skill.skill}"
+                                            >Choose...
+                                            </option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="startTime" class="col-4 col-form-label">Available from</label>

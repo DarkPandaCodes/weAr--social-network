@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityNotFoundException;
+import java.security.Principal;
 import java.util.*;
 
 @Controller
@@ -33,15 +34,20 @@ public class ProfileController {
     }
 
     @GetMapping("/{id}/profile")
-    public String showProfilePage(@PathVariable(name = "id") int id, Model model) {
+    public String showProfilePage(@PathVariable(name = "id") int id, Model model, Principal principal) {
+
         try {
             Optional<User> user = userService.getUserById(id);
             user.orElseThrow(EntityNotFoundException::new);
-            model.addAttribute("user", user);
+            if (principal.getName().equals(user.get().getUsername())){
+                model.addAttribute("user", user);
+            }else {
+                //TODO refactor error
+                throw new EntityNotFoundException();
+            }
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-
         return "user-profile";
     }
 
@@ -54,9 +60,11 @@ public class ProfileController {
         try {
             Optional<User> user = userService.getUserById(id);
             user.orElseThrow(EntityNotFoundException::new);
+            ExpertiseProfile expertiseProfile=user.get().getExpertiseProfile();
             model.addAttribute("userToEdit",userService.getUserModelById(id) );
-            model.addAttribute("expertise",user.get().getExpertiseProfile());
-            model.addAttribute("expertise",user.get().getExpertiseProfile());
+            model.addAttribute("profile",expertiseProfile);
+            Category category=expertiseProfile.getCategory();
+            model.addAttribute("services",skillService.getAllByCategory(category));
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -65,19 +73,20 @@ public class ProfileController {
         return "user-profile-edit";
     }
 
-    @RequestMapping("/{id}/profile/change")
+    @PostMapping("/{id}/profile/personal")
     public String editUserProfile(@PathVariable(name = "id") int id,
-                                  @ModelAttribute UserModel userModel) {
+                                  @ModelAttribute UserModel userModel,Model model) {
 
         try {
             Optional<User> userToCheck = userService.getUserById(id);
             userToCheck.orElseThrow(EntityNotFoundException::new);
+            model.addAttribute("userToEdit",userModel);
             userService.updateUserModel(userToCheck.get(),userModel);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        return "redirect:/auth/users/" + id + "/profile";
+        return "redirect:/auth/users/" + id + "/profile/editor";
     }
 
 
@@ -93,15 +102,16 @@ public class ProfileController {
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return "redirect:/auth/users/" + id + "/profile";
+        return "redirect:/auth/users/" + id + "/profile/editor";
     }
+
 
     @ModelAttribute(name = "genders")
     public void addGenderList(Model model) {
         List<Sex> genders = Arrays.asList(Sex.values());
         model.addAttribute("genders", genders);
     }
-    @ModelAttribute(name = "expertise")
+    @ModelAttribute(name = "categories")
     public void addExpertiseList(Model model) {
         List<Category> expertise = skillCategoryService.getAll();
         model.addAttribute("categories", expertise);
