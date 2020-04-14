@@ -11,9 +11,14 @@ public class Skill {
     @Column(name = "skill_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer skillId;
+
     @Size(min = 2)
     @Column(name = "skill")
     private String skill;
+
+    @ManyToOne
+    private Category category;
+
 
 
     public Skill(String skill) {
@@ -21,6 +26,14 @@ public class Skill {
     }
 
     public Skill() {
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public Integer getSkillId() {

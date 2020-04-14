@@ -21,4 +21,6 @@ public interface SkillService {
 
     Optional<Skill> getByByName(String name);
 
+    List<Skill>getAllByCategory(String category);
+
 }

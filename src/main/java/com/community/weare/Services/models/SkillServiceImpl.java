@@ -70,8 +70,10 @@ public class SkillServiceImpl implements SkillService {
         return skillRepository.findSkillBySkill(name);
     }
 
-
-
-
+    @Override
+    public List<Skill> getAllByCategory(String category) {
+        Category category1=categorySkillService.getByName(category);
+        return skillRepository.findByCategory(category1);
+    }
 }
 

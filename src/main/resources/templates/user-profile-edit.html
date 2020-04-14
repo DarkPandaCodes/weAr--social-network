@@ -244,6 +244,21 @@
                                         </div>
                                     </div>
                                 </div>
+                            </form>
+                            <div th:if="${userToEdit.getExpertise()!=null}">
+                            <form id="profile-resource" form action="#" th:href="@{'/auth/users/'+${userToEdit.id}+'/profile/resorce'}" th:object="${expertise}" method="post" class="contact" role="form">
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Profesional services</label>
+                                    <div class="col-8" th:each="skill:*{skills} ">
+                                    <select  name="select" th:field="*{skill}" class="custom-select">
+                                        <option option th:each="category: ${categories}"
+                                                th:value="${category.id}"
+                                                th:text="${category.category}"
+                                        >Choose...
+                                        </option>
+                                    </select>
+                                </div>
+                                </div>
                                 <div class="form-group row">
                                     <label for="startTime" class="col-4 col-form-label">Available from</label>
                                     <div class="col-8">
@@ -262,21 +277,7 @@
                                     </div>
                                 </div>
                             </form>
-                            <form form action="#" th:href="@{'/auth/users/'+${userToEdit.id}+'/profile/change'}" th:object="${userToEdit}" method="post" class="contact" role="form">
-                                <div class="form-group row">
-                                    <label for="name" class="col-4 col-form-label">Profesional services</label>
-                                    <div class="col-8" th:each="skill:*{skills} ">
-                                        <input  name="name" th:text="${skill}"  class="form-control here" type="text">
-                                        <input id="name" name="name" placeholder="edit skill" class="form-control here" type="text">
-                                    </div>
-                                </div>
-
-                                <div class="form-group row">
-                                    <div class="offset-4 col-8">
-                                        <button name="submit" type="submit" class="btn btn-primary">Update</button>
-                                    </div>
-                                </div>
-                            </form>
+                            </div>
                         </div>
                         </div>
                         </div>
