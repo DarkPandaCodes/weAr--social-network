@@ -1,10 +1,15 @@
 package com.community.weare.Controllers;
 
 import com.community.weare.Exceptions.DuplicateEntityException;
+import com.community.weare.Models.Comment;
 import com.community.weare.Models.Mapper;
 import com.community.weare.Models.Post;
+import com.community.weare.Models.User;
+import com.community.weare.Models.dto.CommentDTO;
 import com.community.weare.Models.dto.PostDTO;
+import com.community.weare.Services.contents.CommentService;
 import com.community.weare.Services.contents.PostService;
+import com.community.weare.Services.users.UserService;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,16 +22,21 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Principal;
 import java.util.Base64;
 
 @Controller
 @RequestMapping("/posts")
 public class PostController {
     private PostService postService;
+    private UserService userService;
+    private CommentService commentService;
 
     @Autowired
-    public PostController(PostService postService) {
+    public PostController(PostService postService, UserService userService, CommentService commentService) {
         this.postService = postService;
+        this.userService = userService;
+        this.commentService = commentService;
     }
 
     //OLD
@@ -47,7 +57,19 @@ public class PostController {
         Post post01 = postService.getOne(postId);
         model.addAttribute("post", post01);
         model.addAttribute("comments", post01.getComments());
+        model.addAttribute("comment", new CommentDTO());
         return "post-single";
+    }
+
+    @PostMapping("/post/{id}")
+    public String leaveComment(@ModelAttribute("comment") CommentDTO commentDTO,
+                               @PathVariable(name = "id") int postId, Principal principal) {
+        Comment newComment = new Comment();
+        newComment.setContent(commentDTO.getContent());
+        newComment.setPost(postService.getOne(postId));
+        newComment.setUser(userService.getUserByUserName(principal.getName()));
+        commentService.save(newComment);
+        return "redirect:/posts/";
     }
 
     @GetMapping("/newPost")
@@ -70,13 +92,14 @@ public class PostController {
 
     @PostMapping("/newPost")
     public String newPost(Model model, @ModelAttribute("post") PostDTO post, BindingResult errors,
-                          @RequestParam("imagefile") MultipartFile file) throws IOException {
+                          @RequestParam("imagefile") MultipartFile file, Principal principal) throws IOException {
 
         if (errors.hasErrors()) {
             return "newPost";
         }
 
         Post newPost = Mapper.createPostFromDTO(post);
+        newPost.setUser(userService.getUserByUserName(principal.getName()));
         newPost.setPicture(Base64.getEncoder().encodeToString(file.getBytes()));
 
         try {

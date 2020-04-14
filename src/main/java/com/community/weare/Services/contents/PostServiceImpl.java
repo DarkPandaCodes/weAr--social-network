@@ -100,7 +100,7 @@ public class PostServiceImpl implements PostService {
                 "Post with id %d does not exists");
         User userPrincipal = userRepository.findByUsername(principal.getName());
 
-        if (!((getUserById(postDTO.getUserId()).getUsername().equals(principal.getName()))
+        if (!((getOne(postId).getUser().getUsername().equals(principal.getName()))
                 || userRepository.findByAuthorities("ROLE_ADMIN").contains(userPrincipal))) {
             throw new IllegalArgumentException("You can only edit your posts");
         }

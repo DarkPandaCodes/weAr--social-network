@@ -12,6 +12,9 @@ public class CommentDTO {
         this.content = content;
     }
 
+    public CommentDTO() {
+    }
+
     public int getPostId() {
         return postId;
     }

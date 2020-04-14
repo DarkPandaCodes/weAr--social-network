@@ -21,7 +21,6 @@ public class Mapper {
         newPost.setPublic(postDTO.isPublic());
         newPost.setContent(postDTO.getContent());
         newPost.setPicture(postDTO.getPicture());
-        newPost.setUser(postService.getUserById(postDTO.getUserId()));
         return newPost;
     }
 

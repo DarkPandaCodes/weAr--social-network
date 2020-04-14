@@ -3,6 +3,7 @@ package com.community.weare.Models;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -27,6 +28,7 @@ public class Comment {
     @JsonBackReference
     private User user;
 
+    @Size(max = 1000, message = "Content size must be up to 1000 symbols")
     @Column(name = "content")
     private String content;
 

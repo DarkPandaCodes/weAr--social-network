@@ -100,11 +100,6 @@
     <input type="text" class="mb-2" th:field="*{content}"/>
     <label class="error" th:errors="*{content}"></label>
     <br/><br/>
-    <label th:text="#{post.header.user.id}" style="color: papayawhip">user.id</label>
-    <br/>
-    <input type="text" class="mb-2" th:field="*{userId}"/>
-    <label class="error"  th:errors="*{userId}"></label>
-    <br/><br/>
     <label class="control-label">Select File</label>
     <input id="imagefile" name="imagefile" type="file" class="file">
     <br/>
