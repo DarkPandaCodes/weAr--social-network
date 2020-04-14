@@ -1,11 +1,9 @@
 package com.community.weare.Controllers;
 
-import com.community.weare.Models.Category;
-import com.community.weare.Models.ExpertiseProfile;
-import com.community.weare.Models.Sex;
-import com.community.weare.Models.User;
+import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
 import com.community.weare.Services.SkillCategoryService;
+import com.community.weare.Services.models.SkillService;
 import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,12 +22,14 @@ public class ProfileController {
     private final UserService userService;
 
     private final SkillCategoryService skillCategoryService;
+    private SkillService skillService;
 
     @Autowired
     public ProfileController(UserService userService,
-                             SkillCategoryService skillCategoryService) {
+                             SkillCategoryService skillCategoryService,SkillService skillService) {
         this.userService = userService;
         this.skillCategoryService = skillCategoryService;
+        this.skillService=skillService;
     }
 
     @GetMapping("/{id}/profile")
@@ -56,6 +56,7 @@ public class ProfileController {
             user.orElseThrow(EntityNotFoundException::new);
             model.addAttribute("userToEdit",userService.getUserModelById(id) );
             model.addAttribute("expertise",user.get().getExpertiseProfile());
+            model.addAttribute("expertise",user.get().getExpertiseProfile());
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -78,6 +79,8 @@ public class ProfileController {
 
         return "redirect:/auth/users/" + id + "/profile";
     }
+
+
     @RequestMapping("/{id}/profile/expertise")
     public String editUserExpertiseProfile(@PathVariable(name = "id") int id,
                                   @ModelAttribute ExpertiseProfile expertiseProfile) {
@@ -103,6 +106,11 @@ public class ProfileController {
         List<Category> expertise = skillCategoryService.getAll();
         model.addAttribute("categories", expertise);
     }
+//    @ModelAttribute(name = "skills")
+//    public void addSkillsList(String category,Model model) {
+//        List<Skill> skills = skillService.getAllByCategory(category);
+//        model.addAttribute("skills", skills);
+//    }
 
 
 }
