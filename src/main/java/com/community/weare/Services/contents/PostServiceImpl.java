@@ -8,6 +8,7 @@ import com.community.weare.Models.User;
 import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Repositories.PostRepository;
 import com.community.weare.Repositories.UserRepository;
+import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -21,11 +22,14 @@ public class PostServiceImpl implements PostService {
 
     private PostRepository postRepository;
     private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository) {
+    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository,
+                           UserService userService) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -82,7 +86,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void unlikePost(int postId, User user) {
+    public void dislikePost(int postId, User user) {
         throwsNotFoundIfNeeded(postId, postRepository.existsById(postId),
                 "Post with id %d does not exists");
         Post postToUnlike = postRepository.getOne(postId);
@@ -91,6 +95,12 @@ public class PostServiceImpl implements PostService {
         }
         postToUnlike.getLikes().remove(user);
         postRepository.save(postToUnlike);
+    }
+
+    @Override
+    public boolean isLiked(int postId, Principal principal) {
+        User loggedUser = userService.getUserByUserName(principal.getName());
+        return postRepository.isLiked(postId, loggedUser.getUserId()) != null;
     }
 
     @Override

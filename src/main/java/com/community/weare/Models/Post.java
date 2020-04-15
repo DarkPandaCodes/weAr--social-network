@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -42,9 +43,11 @@ public class Post {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> likes = new HashSet<>();
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
     private List<Comment> comments = new ArrayList<>();
 
+    @Transient
+    private boolean isLiked = false;
 
     public Post() {
         Date date = new Date();
@@ -115,5 +118,14 @@ public class Post {
 
     public void setLikes(Set<User> likes) {
         this.likes = likes;
+    }
+
+    @Transient
+    public boolean isLiked(Principal principal) {
+        return Mapper.isLiked(getPostId(), principal);
+    }
+
+    public void setLiked(boolean liked) {
+        isLiked = liked;
     }
 }

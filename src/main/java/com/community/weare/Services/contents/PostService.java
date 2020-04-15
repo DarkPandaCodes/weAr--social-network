@@ -27,7 +27,9 @@ public interface PostService {
 
     void likePost(int postId, User user);
 
-    void unlikePost(int postId, User user);
+    void dislikePost(int postId, User user);
+
+    boolean isLiked(int postId, Principal principal);
 
     void editPost(int postId, PostDTO postDTO, Principal principal);
 

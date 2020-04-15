@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <title>Skillhunt - Free Bootstrap 4 Template by Colorlib</title>
     <meta charset="utf-8">
@@ -27,8 +27,23 @@
     <link rel="stylesheet" th:href="@{/css/flaticon.css}" href="../static/css/flaticon.css">
     <link rel="stylesheet" th:href="@{/css/icomoon.css}" href="../static/css/icomoon.css">
     <link rel="stylesheet" th:href="@{/css/style.css}" href="../static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+        .fa {
+            font-size: 50px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .fa:hover {
+            color: darkblue;
+        }
+    </style>
 </head>
 <body>
+
+
 
 <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
     <div class="container-fluid px-md-4	">
@@ -42,10 +57,11 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
                 <li class="nav-item"><a href="browsejobs.html" class="nav-link">Browse Jobs</a></li>
-                <li class="nav-item active"><a th:href="@{/posts}" class="nav-link">Posts</a></li>
+                <li class="nav-item active"><a th:href="@{/posts}" class="nav-link" >Posts</a></li>
                 <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
                 <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-                <li class="nav-item cta mr-md-1"><a th:href="@{/posts/newPost}" class="nav-link">New post</a></li>
+                <li class="nav-item cta mr-md-1"><a th:href="@{/posts/newPost}" class="nav-link"
+                                                    sec:authorize="isAuthenticated()" >New post</a></li>
                 <li class="nav-item cta cta-colored"><a href="job-post.html" class="nav-link">Want a Job</a></li>
 
             </ul>
@@ -80,11 +96,16 @@
 <!--	<td class="cell" th:text="${post.likes.size()}">email@abv.bg</td>-->
 <!--	<td class="cell" th:text="${post.comments.size()}">email@abv.bg</td>-->
 <!--</tr>-->
-<section class="ftco-section ftco-candidates ftco-candidates-2 bg-light">
+
+<section class="ftco-section ftco-candidates ftco-candidates-2 bg-light pt-5 mt-5 ">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 pr-lg-4">
                 <div class="row">
+                    <p>
+                        <i th:if="${error != null}" th:text="${error}" style="color: red"></i>
+                    </p>
+
                     <div class="col-md-12" th:each="post : ${posts}">
                         <div class="team d-md-flex p-4 bg-white">
                             <div class="img"><img
@@ -100,7 +121,33 @@
                                 <a href="#" class="btn btn-primary">See profile</a></p>
                                 <span class="position" th:text="'Likes: ' + ${post.likes.size()}"></span>
                                 <span class="position" th:text="'Comments: ' + ${post.comments.size()}">public</span>
-                                <p><a href="#" class="reply">Like</a> <a href="#" class="ion-md-heart-dislike">Dislike</a> </p>
+
+                                <form th:object="${postDTO2}" method="post" sec:authorize="isAuthenticated()" enctype="multipart/form-data">
+                                    <label>
+                                        <input type="hidden" data-th-value ="${post.getPostId()}"
+                                               th:value="${post.getPostId()}" class="mb-2" th:field="*{postId}" />
+                                    </label>
+                                    <input class="fa-heart" type="submit" value="Like" />
+                                </form>
+
+<!--                                <input class="fa fa-thumbs-up" type="submit" onclick="myFunction(this) " th:object="${postDTO2}">-->
+<!--                                    <i  method="post" sec:authorize="isAuthenticated()" onclick="myFunction(this)" class="fa fa-thumbs-up"></i>-->
+<!--                                    <input type="hidden" data-th-value ="${post.getPostId()}"-->
+<!--                                           th:value="${post.getPostId()}" class="mb-2" th:field="*{postDTO2.postId}" />-->
+<!--                                    <script>-->
+<!--                                        function myFunction(x) {-->
+<!--                                            x.classList.toggle("fa-thumbs-down");-->
+<!--                                        }-->
+<!--                                    </script>-->
+
+
+
+<!--                                <form th:object="${postDTO3}" method="post"  enctype="multipart/form-data">-->
+<!--                                    <label>-->
+<!--                                        <input type="hidden" data-th-value="${post.getPostId()}"-->
+<!--                                               th:value="${post.getPostId()}" class="mb-2" th:field="*{postId}" />-->
+<!--                                    </label>-->
+<!--                                    <input class="reply" type="submit" value="Dislike"/> </form>-->
                             </div>
                         </div>
                     </div>

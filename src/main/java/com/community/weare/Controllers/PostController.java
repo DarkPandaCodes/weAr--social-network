@@ -1,16 +1,20 @@
 package com.community.weare.Controllers;
 
 import com.community.weare.Exceptions.DuplicateEntityException;
+import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Mapper;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dto.CommentDTO;
 import com.community.weare.Models.dto.PostDTO;
+import com.community.weare.Models.dto.PostDTO2;
 import com.community.weare.Services.contents.CommentService;
 import com.community.weare.Services.contents.PostService;
 import com.community.weare.Services.users.UserService;
+import io.swagger.annotations.ResponseHeader;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.bouncycastle.crypto.agreement.jpake.JPAKERound1Payload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
 import java.util.Base64;
+import java.util.List;
 
 @Controller
 @RequestMapping("/posts")
@@ -49,6 +54,32 @@ public class PostController {
     @GetMapping("")
     public String showNewFeed(Model model) {
         model.addAttribute("posts", postService.findAll());
+        model.addAttribute("postDTO2", new PostDTO2());
+        model.addAttribute("postDTO3", new PostDTO2());
+        return "allPosts";
+    }
+
+    @PostMapping("")
+    public String likeDislikePost(@ModelAttribute("postDTO2") PostDTO2 postDTO2,
+                           Model model, Principal principal) {
+        model.addAttribute("posts", postService.findAll());
+        boolean isPostLiked = postService.isLiked(postDTO2.getPostId(), principal);
+
+        if (isPostLiked) {
+            try {
+                postService.dislikePost(postDTO2.getPostId(), userService.getUserByUserName(principal.getName()));
+            } catch (EntityNotFoundException e) {
+                model.addAttribute("error", e.getMessage());
+                return "allPosts";
+            }
+        } else {
+            try {
+                postService.likePost(postDTO2.getPostId(), userService.getUserByUserName(principal.getName()));
+            } catch (DuplicateEntityException e) {
+                model.addAttribute("error", e.getMessage());
+                return "allPosts";
+            }
+        }
         return "allPosts";
     }
 
@@ -69,7 +100,7 @@ public class PostController {
         newComment.setPost(postService.getOne(postId));
         newComment.setUser(userService.getUserByUserName(principal.getName()));
         commentService.save(newComment);
-        return "redirect:/posts/";
+        return "redirect:/posts/post/" + postId + "#leaveComment";
     }
 
     @GetMapping("/newPost")

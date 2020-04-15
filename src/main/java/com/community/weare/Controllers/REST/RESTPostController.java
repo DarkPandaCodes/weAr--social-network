@@ -67,7 +67,7 @@ public class RESTPostController {
         }
         User userUnlike = postService.getUserById(userId);
         try {
-            postService.unlikePost(postId, userUnlike);
+            postService.dislikePost(postId, userUnlike);
         } catch (DuplicateEntityException | EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
