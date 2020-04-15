@@ -66,7 +66,7 @@ public class UserFactory {
         if (personalProfile.getLocation()!=null){
         userModel.setCity(personalProfile.getLocation().getCity().getCity());}
         if (expertiseProfile.getCategory()!=null) {
-            userModel.setExpertise(expertiseProfile.getCategory().getCategory());
+            userModel.setExpertise(expertiseProfile.getCategory().getName());
             for (Skill skill:expertiseProfile.getSkills()
             ) {
                 userModel.setSkill(skillRepository.getOne(skill.getSkillId()).getSkill());
@@ -98,7 +98,7 @@ public class UserFactory {
         }
         user.getExpertiseProfile().setSkills(skills);
         if (userModel.getExpertise()!=null){
-        user.getExpertiseProfile().setCategory(categoryRepository.findByCategory(userModel.getExpertise()).get());}
+        user.getExpertiseProfile().setCategory(categoryRepository.findByName(userModel.getExpertise()).get());}
 //        userModel.getSkills()
 //                .forEach(s-> {user.getExpertiseProfile().setSkill(skillRepository.findSkillBySkill(s).get());});
 //        user.getExpertiseProfile().setCategory(categoryRepository.findByCategory(userModel.getExpertise()).get());

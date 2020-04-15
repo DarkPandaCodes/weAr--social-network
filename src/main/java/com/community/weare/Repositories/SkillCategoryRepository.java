@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 @Transactional
 public interface SkillCategoryRepository extends JpaRepository<Category,Integer> {
-    Optional<Category>findByCategory(String category);
+    Optional<Category>findByName(String category);
 
 
 //    boolean exists(SkillCategory category);

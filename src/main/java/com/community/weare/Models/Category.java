@@ -3,8 +3,6 @@ package com.community.weare.Models;
 
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "category_skills")
@@ -16,7 +14,7 @@ public class Category {
     private Integer id;
 
     @Column
-    private String category;
+    private String name;
 
 
     public Category() {
@@ -34,12 +32,12 @@ public class Category {
         this.id = id;
     }
 
-    public String getCategory() {
-        return category;
+    public String getName() {
+        return name;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setName(String category) {
+        this.name = category;
     }
 
 }

@@ -71,9 +71,8 @@ public class SkillServiceImpl implements SkillService {
     }
 
     @Override
-    public List<Skill> getAllByCategory(String category) {
-        Category category1=categorySkillService.getByName(category);
-        return skillRepository.findByCategory(category1);
+    public List<Skill> getAllByCategory(Category category) {
+        return skillRepository.findByCategory(category);
     }
 }
 

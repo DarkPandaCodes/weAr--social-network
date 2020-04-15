@@ -130,7 +130,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateExpertise(User user,
                                 ExpertiseProfile expertiseProfileNew, ExpertiseProfile expertiseProfileOld) {
-    ExpertiseProfile expertiseProfileDB=expertiseProfileService.upgradeProfile(expertiseProfileNew,expertiseProfileOld);
+    ExpertiseProfile expertiseProfileDB=
+            expertiseProfileService.upgradeProfile(expertiseProfileNew,expertiseProfileOld);
     user.setExpertiseProfile(expertiseProfileDB);
     userRepository.saveAndFlush(user);
     }
