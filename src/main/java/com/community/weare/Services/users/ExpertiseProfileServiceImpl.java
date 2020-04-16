@@ -27,6 +27,7 @@ public class ExpertiseProfileServiceImpl implements ExpertiseProfileService {
         return expertiseRepository.saveAndFlush(expertiseProfile);
     }
 
+    @Transactional
     @Override
     public ExpertiseProfile createProfile(ExpertiseProfile expertiseProfile) {
         return expertiseRepository.saveAndFlush(expertiseProfile);
@@ -34,27 +35,12 @@ public class ExpertiseProfileServiceImpl implements ExpertiseProfileService {
 
     @Transactional
     @Override
-    public ExpertiseProfile upgradeProfile(ExpertiseProfile newProfile, ExpertiseProfile oldProfile) {
-        oldProfile.setSkills(getNotNull(newProfile.getSkills(),oldProfile.getSkills()));
-        oldProfile.setCategory(getNotNull(newProfile.getCategory(),oldProfile.getCategory()));
-        oldProfile.setStartTime(getNotNull(newProfile.getStartTime(),oldProfile.getStartTime()));
-        oldProfile.setEndTime(getNotNull(newProfile.getEndTime(),oldProfile.getEndTime()));
+    public ExpertiseProfile upgradeProfile( ExpertiseProfile oldProfile) {
         expertiseRepository.saveAndFlush(oldProfile);
         return oldProfile;
     }
 
 
 
-    public <T> T getNotNull(T n, T l) {
 
-        if (n==null || n.hashCode()==0 ){
-            return l;
-        }
-        if (n!=null || n.hashCode()!=0 ){
-            return n;
-        }
-
-        return n != null && l != null && !n.equals(l) ? n : l;
-
-    }
 }

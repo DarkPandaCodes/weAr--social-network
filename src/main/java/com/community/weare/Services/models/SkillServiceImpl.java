@@ -66,7 +66,7 @@ public class SkillServiceImpl implements SkillService {
     }
 
     @Override
-    public Optional<Skill> getByByName(String name) {
+    public Optional<Skill> getByName(String name) {
         return skillRepository.findSkillBySkill(name);
     }
 

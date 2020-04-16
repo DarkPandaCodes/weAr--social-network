@@ -7,7 +7,9 @@ import com.community.weare.Models.PersonalProfile;
 import com.community.weare.Models.Role;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dao.UserModel;
+import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
+import com.community.weare.Models.factories.ExpertiseProfileFactory;
 import com.community.weare.Repositories.PersonalInfoRepository;
 import com.community.weare.Repositories.RoleRepository;
 import com.community.weare.Repositories.UserRepository;
@@ -29,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private static final String TYPE = "USER";
     private final UserRepository userRepository;
     private final PersonalInfoRepository personalInfoRepository;
+    private final ExpertiseProfileFactory expertiseProfileFactory;
     private final UserFactory mapperHelper;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -37,7 +40,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, PersonalInfoRepository personalInfoRepository, UserFactory mapperHelper, RoleRepository roleRepository, PasswordEncoder passwordEncoder,
-                           PersonalInfoService personalInfoService, ExpertiseProfileService expertiseProfileService) {
+                           PersonalInfoService personalInfoService, ExpertiseProfileService expertiseProfileService, ExpertiseProfileFactory expertiseProfileFactory) {
         this.userRepository = userRepository;
         this.personalInfoRepository = personalInfoRepository;
         this.mapperHelper = mapperHelper;
@@ -45,6 +48,7 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
         this.personalInfoService = personalInfoService;
         this.expertiseProfileService = expertiseProfileService;
+        this.expertiseProfileFactory = expertiseProfileFactory;
     }
 
     @Override
@@ -130,16 +134,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateExpertise(User user,
                                 ExpertiseProfile expertiseProfileNew, ExpertiseProfile expertiseProfileOld) {
-    ExpertiseProfile expertiseProfileDB=
-            expertiseProfileService.upgradeProfile(expertiseProfileNew,expertiseProfileOld);
-    user.setExpertiseProfile(expertiseProfileDB);
-    userRepository.saveAndFlush(user);
+
+
+        ExpertiseProfile expertiseProfileMerged = expertiseProfileFactory.mergeExpertProfile(expertiseProfileNew, expertiseProfileOld);
+
+        expertiseProfileService.upgradeProfile(user, expertiseProfileMerged);
+
+        userRepository.saveAndFlush(user);
     }
 
     @Override
     public UserModel getUserModelById(int id) {
-        User user=userRepository.getOne(id);
-        UserModel model=mapperHelper.convertUSERtoModel(user);
+        User user = userRepository.getOne(id);
+        UserModel model = mapperHelper.convertUSERtoModel(user);
         return model;
     }
 }

@@ -1,20 +1,73 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" th:href="@{/style.css}" href="/static/style.css"/>
     <link rel="stylesheet"  th:href="@{/css/bootstrap.min.css}"
           href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" id="bootstrap-css">
 
     <script th:src="@{/js/bootstrap.min.js}" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/open-iconic-bootstrap.min.css}"
+          href="../static/css/open-iconic-bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/animate.css}" href="../static/css/animate.css">
+
+    <link rel="stylesheet" th:href="@{/css/owl.carousel.min.css}" href="../static/css/owl.carousel.min.css">
+    <link rel="stylesheet" th:href="@{/css/owl.theme.default.min.css}" href="../static/css/owl.theme.default.min.css">
+    <link rel="stylesheet" th:href="@{/css/magnific-popup.css}" href="../static/css/magnific-popup.css">
+
+    <link rel="stylesheet" th:href="@{/css/aos.css}" href="../static/css/aos.css">
+
+    <link rel="stylesheet" th:href="@{/css/ionicons.min.css}" href="../static/css/ionicons.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap-datepicker.css}" href="../static/css/bootstrap-datepicker.css">
+    <link rel="stylesheet" th:href="@{/css/jquery.timepicker.css}" href="../static/css/jquery.timepicker.css">
+
+
+    <link rel="stylesheet" th:href="@{/css/flaticon.css}" href="../static/css/flaticon.css">
+    <link rel="stylesheet" th:href="@{/css/icomoon.css}" href="../static/css/icomoon.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../static/css/style.css">
 </head>
+<body >
 
-<!------ Include the above in your HEAD tag ---------->
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+    <div class="container-fluid px-md-4	">
+        <a class="navbar-brand" th:href="@{/}" >WEare</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
+                aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="oi oi-menu"></span> Menu
+        </button>
 
-<div class="container emp-profile">
-    <form method="post" th:object="${user.get()}" >
+        <div class="collapse navbar-collapse" id="ftco-nav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
+
+                <li class="nav-item"><a th:href="@{/register}" class="nav-link">Register</a></li>
+
+                <li class="nav-item active"><a th:href="@{/posts}" class="nav-link">Posts</a></li>
+                <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
+                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+                <li class="nav-item cta mr-md-1"><a th:href="@{/posts/newPost}" class="nav-link">New post</a></li>
+
+                <!--				<li sec:authorize="isAuthenticated()" class="nav-item cta mr-md-1"><a th:href="@{'/auth/users/'+${user.userId}+'/profile'}" class="nav-link">Your Profile</a></li>-->
+
+                <li class="nav-item cta cta-colored"><a href="job-post.html" class="nav-link">Want a Job</a></li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="hero-wrap hero-wrap-2">
+<div class="container ">
+<div class="emp-profile">
+    <form method="post" th:object="${user}" >
         <div class="row">
             <div class="col-md-4">
                 <div class="profile-img">
@@ -27,13 +80,15 @@
             </div>
             <div class="col-md-6">
                 <div class="profile-head">
-                    <h5 th:text="*{personalProfile.getFirstName()}">
+                    <h5 th:text="*{personalProfile.getFirstName()+' '+personalProfile.getLastName()}">
                         Kshiti Ghelani
                     </h5>
-                    <h6>
+                    <h6 th:text="*{expertiseProfile.category.name}">
                         Web Developer and Designer
                     </h6>
                     <p class="proile-rating">RANKINGS : <span>8/10</span></p>
+                    <input  th:action="@{/auth/users/request}" type="submit" method="post" value="Send Request">
+                    <input  th:action="@{'/auth/users/'+${user.getUserId()}+'/request'}" type="submit" method="get" value="View my Requests">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">About</a>
@@ -45,22 +100,31 @@
                 </div>
             </div>
             <div class="col-md-2">
-                <button role="button" class="btn btn-primary"><a th:href="@{'/auth/users/'+${user.get().userId}+'/profile/editor'}"><span >EDIT profile</span></a></button>
+                <a th:href="@{'/auth/users/'+${user.userId}+'/profile/editor'}" class="nav-link">edit Your Profile</a>
             </div>
+<!--            <div class="col-md-2">-->
+<!--                <a th:href="@{'/auth/users/'+${user.userId}+'/profile/editor'}" class="nav-link">connect me </a>-->
+<!--            </div>-->
         </div>
         <div class="row">
             <div class="col-md-4">
-                <div class="profile-work">
-                    <p>WORK LINK</p>
-                    <a href="">Website Link</a><br/>
-                    <a href="">Bootsnipp Profile</a><br/>
-                    <a href="">Bootply Profile</a>
-                    <p>SKILLS</p>
-                    <a href="">Web Designer</a><br/>
-                    <a href="">Web Developer</a><br/>
-                    <a href="">WordPress</a><br/>
-                    <a href="">WooCommerce</a><br/>
-                    <a href="">PHP, .Net</a><br/>
+                <div th:if="*{expertiseProfile.skills.size()!=0}" class="profile-work">
+                    <h5>The Services that i can offer</h5>
+                    <div class="col-8" th:each="skill:*{expertiseProfile.skills} ">
+                        <h5 th:text="${skill.skill}" type="text"></h5>
+                    </div>
+<!--                    <a href="">Website Link</a><br/>-->
+<!--                    <a href="">Bootsnipp Profile</a><br/>-->
+<!--                    <a href="">Bootply Profile</a>-->
+                    <h6> Available </h6>
+                    <h5 th:text="*{expertiseProfile.calculateAvailability()}" > 1 h </h5>
+                    <div class="col-8">
+                        <h6  th:type="datetime-local" th:text="*{expertiseProfile.startTime}"></h6>
+                    </div>
+                    <div class="col-8">
+                        <h6  th:type="datetime-local" th:text="*{expertiseProfile.endTime}"></h6>
+                    </div>
+
                 </div>
             </div>
             <div class="col-md-8">
@@ -103,7 +167,7 @@
                                 <label>Profession</label>
                             </div>
                             <div class="col-md-6">
-                                <p>Web Developer and Designer</p>
+                                <p th:text="*{expertiseProfile.category.name}">Web Developer and Designer</p>
                             </div>
                         </div>
                     </div>
@@ -158,5 +222,10 @@
                 </div>
             </div>
         </div>
+
     </form>
 </div>
+</div>
+</div>
+</body>
+</html>
