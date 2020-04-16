@@ -16,6 +16,7 @@ import io.swagger.annotations.ResponseHeader;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.bouncycastle.crypto.agreement.jpake.JPAKERound1Payload;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -51,9 +52,9 @@ public class PostController {
 //        return "posts";
 //    }
 
-    @GetMapping("")
-    public String showNewFeed(Model model) {
-        model.addAttribute("posts", postService.findAll());
+    @GetMapping("/page/{page}")
+    public String showNewFeed(Model model, Sort sort, @PathVariable(name = "page") int page) {
+        model.addAttribute("posts", postService.findAll(sort, page));
         model.addAttribute("postDTO2", new PostDTO2());
         model.addAttribute("postDTO3", new PostDTO2());
         return "allPosts";
@@ -61,7 +62,7 @@ public class PostController {
 
     @PostMapping("")
     public String likeDislikePost(@ModelAttribute("postDTO2") PostDTO2 postDTO2,
-                           Model model, Principal principal) {
+                                  Model model, Principal principal) {
         model.addAttribute("posts", postService.findAll());
         boolean isPostLiked = postService.isLiked(postDTO2.getPostId(), principal);
 
