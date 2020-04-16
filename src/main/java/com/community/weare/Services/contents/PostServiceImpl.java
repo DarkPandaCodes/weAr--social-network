@@ -15,10 +15,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class PostServiceImpl implements PostService {
+
+    public static final int POSTS_PER_PAGE = 5;
 
     private PostRepository postRepository;
     private UserRepository userRepository;
@@ -38,8 +41,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> findAll(Sort sort) {
-        return postRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
+    public List<Post> findAll(Sort sort, int page) {
+        List<Post> allPost = postRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
+        List<Post> listSinglePage = new ArrayList<>();
+
+        if (allPost.size() > (page - 1) * POSTS_PER_PAGE) {
+            for (int i = 0; i < POSTS_PER_PAGE; i++) {
+                if ((page - 1) * POSTS_PER_PAGE + i == allPost.size()) {
+                    break;
+                }
+                listSinglePage.add(allPost.get((page - 1) * POSTS_PER_PAGE + i));
+            }
+        }
+        return listSinglePage;
     }
 
     @Override

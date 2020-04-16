@@ -13,7 +13,7 @@ public interface PostService {
 
     List<Post> findAll();
 
-    List<Post> findAll(Sort sort);
+    List<Post> findAll(Sort sort, int page);
 
     Post getOne(int postId);
 
