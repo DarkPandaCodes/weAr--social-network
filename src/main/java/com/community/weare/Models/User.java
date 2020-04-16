@@ -48,6 +48,13 @@ public class User implements UserDetails {
     @Column(name = "enabled")
     private int enabled;
 
+    @ManyToMany
+    @JoinTable( name = "connection_users",
+            joinColumns = @JoinColumn(name = "owner_user"),
+            inverseJoinColumns = @JoinColumn(name = "connected_user"))
+
+    private Set<User> friendList=new HashSet<>();
+
     public User() {
     }
 
@@ -133,5 +140,13 @@ public class User implements UserDetails {
 
     public void setEnabled(int enabled) {
         this.enabled = enabled;
+    }
+
+    public Set<User> getFriendList() {
+        return friendList;
+    }
+
+    public void addToFriendList(User friend) {
+        friendList.add(friend);
     }
 }

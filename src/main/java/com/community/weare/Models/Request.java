@@ -1,5 +1,6 @@
 package com.community.weare.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -15,10 +16,12 @@ public class Request {
 
     @ManyToOne
     @JoinColumn
+    @JsonBackReference
     private User sender;
 
     @ManyToOne
     @JoinColumn
+    @JsonBackReference
     private User receiver;
 
     private boolean approved;

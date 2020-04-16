@@ -34,11 +34,11 @@ public class RegistrationController {
 
         if (!user.getPassword().equals(user.getConfirmPassword())) {
             model.addAttribute("error", "Your password is not confirmed");
-            return "register";
+            return "register-new";
         }
 
         if (bindingResult.hasErrors()) {
-            return "register";
+            return "register-new";
         }
         int id = userService.registerUser(user);
         model.addAttribute("id",id);

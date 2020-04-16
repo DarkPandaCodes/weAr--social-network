@@ -5,8 +5,11 @@ import com.community.weare.Models.User;
 import com.community.weare.Repositories.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.ws.Action;
+
+import javax.persistence.EntityNotFoundException;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -18,22 +21,37 @@ public class RequestServiceImpl implements RequestService{
         this.requestRepository = requestRepository;
     }
 
+    @Transactional
     @Override
     public Request createRequest(User sender, User receiver) {
         Request request=new Request();
         request.setSender(sender);
         request.setReceiver(receiver);
-
         return requestRepository.saveAndFlush(request);
     }
 
+    @Transactional
     @Override
-    public Request updateRequest(User receiver) {
-        return null;
+    public Request approveRequest(int id) {
+       Request requestApproved=requestRepository.getOne(id);
+       requestApproved.setApproved(true);
+        return requestApproved;
+    }
+
+
+
+    @Override
+    public Collection<Request> getAllRequestsForUserUnSeen(User receiver) {
+       Collection<Request> requests=requestRepository.findRequestsByReceiverIsAndSeenFalse(receiver);
+       if (requests.isEmpty()){
+           requests.forEach(r->r.setSeen(true) );
+           requests.forEach(r->requestRepository.saveAndFlush(r));
+       }
+        return requests;
     }
 
     @Override
-    public List<Request> getAllRequestsForUser(User receiver) {
-        return null;
+    public Collection<Request> getAllRequestsForUserSeen(User receiver) {
+        return requestRepository.findRequestsByReceiverIsAndSeenTrue(receiver);
     }
 }

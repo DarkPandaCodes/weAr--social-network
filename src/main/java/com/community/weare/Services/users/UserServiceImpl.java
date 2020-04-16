@@ -2,10 +2,7 @@ package com.community.weare.Services.users;
 
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.ValidationEntityException;
-import com.community.weare.Models.ExpertiseProfile;
-import com.community.weare.Models.PersonalProfile;
-import com.community.weare.Models.Role;
-import com.community.weare.Models.User;
+import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
 import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
@@ -14,6 +11,7 @@ import com.community.weare.Repositories.PersonalInfoRepository;
 import com.community.weare.Repositories.RoleRepository;
 import com.community.weare.Repositories.UserRepository;
 import com.community.weare.Models.factories.UserFactory;
+import com.community.weare.Services.connections.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
 import java.util.Collection;
 import java.util.List;
@@ -30,25 +29,21 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private static final String TYPE = "USER";
     private final UserRepository userRepository;
-    private final PersonalInfoRepository personalInfoRepository;
+    private final RequestService requestService;
     private final ExpertiseProfileFactory expertiseProfileFactory;
     private final UserFactory mapperHelper;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
     private final PersonalInfoService personalInfoService;
     private final ExpertiseProfileService expertiseProfileService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PersonalInfoRepository personalInfoRepository, UserFactory mapperHelper, RoleRepository roleRepository, PasswordEncoder passwordEncoder,
-                           PersonalInfoService personalInfoService, ExpertiseProfileService expertiseProfileService, ExpertiseProfileFactory expertiseProfileFactory) {
+    public UserServiceImpl(UserRepository userRepository, RequestService requestService, ExpertiseProfileFactory expertiseProfileFactory, UserFactory mapperHelper,
+                           PersonalInfoService personalInfoService, ExpertiseProfileService expertiseProfileService) {
         this.userRepository = userRepository;
-        this.personalInfoRepository = personalInfoRepository;
+        this.requestService = requestService;
+        this.expertiseProfileFactory = expertiseProfileFactory;
         this.mapperHelper = mapperHelper;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
         this.personalInfoService = personalInfoService;
         this.expertiseProfileService = expertiseProfileService;
-        this.expertiseProfileFactory = expertiseProfileFactory;
     }
 
     @Override
@@ -81,8 +76,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getUserById(int id) {
-        return userRepository.findById(id);
+    public User getUserById(int id) {
+        return userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     @Override
@@ -148,5 +143,17 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.getOne(id);
         UserModel model = mapperHelper.convertUSERtoModel(user);
         return model;
+    }
+
+    @Transactional
+    @Override
+    public void addToFriendList(Request request) {
+     Request approvedRequest = requestService.approveRequest(request.getId());
+     User owner=userRepository.getOne(approvedRequest.getReceiver().getUserId());
+     owner.addToFriendList(approvedRequest.getSender());
+     userRepository.saveAndFlush(owner);
+     User sender=userRepository.getOne(approvedRequest.getSender().getUserId());
+     sender.addToFriendList(approvedRequest.getReceiver());
+     userRepository.saveAndFlush(sender);
     }
 }
