@@ -13,7 +13,7 @@ public class Skill {
     private Integer skillId;
 
     @Size(min = 2)
-    @Column(name = "skill")
+    @Column(name = "skill",nullable = false,unique = true)
     private String skill;
 
     @ManyToOne

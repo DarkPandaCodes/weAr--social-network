@@ -33,25 +33,29 @@ public class ExpertiseProfileFactory  {
 
 @Transactional
    public ExpertiseProfile convertDTOtoExpertiseProfile(ExpertiseProfileDTO profileDTO){
-    ExpertiseProfile expertiseProfile=modelMapper.map(profileDTO,ExpertiseProfile.class);
-        List<Skill> skillList =new ArrayList<>();
-        Category category= new Category();
-        category.setName(profileDTO.getExpertise());
-        Category skillCategory= skillCategoryService.createIfNotExist(category);
-        expertiseProfile.setCategory(skillCategory);
 
-        for (String skillValue:profileDTO.getSkills()
-             ) {
-            Skill skill =new Skill();
-            skill.setSkill(skillValue);
-            skillList.add(skill);
-        }
+        ExpertiseProfile expertiseProfile=new ExpertiseProfile();
+
+        List<Skill> skillList =new ArrayList<>();
+
+        Category skillCategory= skillCategoryService.createIfNotExist(profileDTO.getCategory());
+
+        profileDTO.setSkills();
+
+    for (String skillValue:profileDTO.getSkills()) {
+        if (!skillValue.isEmpty()){
+        Skill skill =new Skill();
+        skill.setSkill(skillValue);
+        skillList.add(skill); }
+    }
         for (Skill skill : skillList
              ) {
-            if (!skillService.getByByName(skill.getSkill()).isPresent()){
+            if (!skillService.getByName(skill.getSkill().toLowerCase()).isPresent()){
+                skill.setCategory(skillCategory);
                 skillService.save(skill);
-            }
-        }
+            } }
+        expertiseProfile.setStartTime(profileDTO.getStartTime());
+        expertiseProfile.setEndTime(profileDTO.getEndTime());
         expertiseProfile.setSkills(skillList);
         return expertiseProfile;
     }

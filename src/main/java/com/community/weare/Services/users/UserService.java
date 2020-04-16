@@ -5,6 +5,7 @@ import com.community.weare.Models.PersonalProfile;
 import com.community.weare.Models.Role;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dao.UserModel;
+import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -37,5 +38,5 @@ public interface UserService extends UserDetailsService {
 
     UserModel getUserModelById(int id);
 
-    void updateExpertise(User user,ExpertiseProfile expertiseProfileNew, ExpertiseProfile expertiseProfileOld);
+    void updateExpertise(User user, ExpertiseProfile expertiseProfileNew, ExpertiseProfile expertiseProfileOld);
 }

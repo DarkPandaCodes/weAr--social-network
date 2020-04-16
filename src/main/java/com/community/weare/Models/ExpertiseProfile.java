@@ -3,9 +3,12 @@ package com.community.weare.Models;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.HashSet;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Entity
 @Table(name = "expertise_profile")
@@ -20,10 +23,10 @@ public class ExpertiseProfile {
     @ManyToOne
     private Category category;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.NONE,pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime startTime;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.NONE,pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime endTime;
 
 
@@ -72,5 +75,11 @@ public class ExpertiseProfile {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public String calculateAvailability(){
+        Duration duration=Duration.between(startTime, endTime);
+        long hours=Math.abs(duration.toHours());
+        return String.format("%d hours",hours);
     }
 }

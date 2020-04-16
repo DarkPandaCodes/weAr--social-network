@@ -2,6 +2,9 @@ package com.community.weare.Controllers;
 
 import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
+import com.community.weare.Models.dto.ExpertiseProfileDTO;
+import com.community.weare.Models.dto.UserDTO;
+import com.community.weare.Models.factories.ExpertiseProfileFactory;
 import com.community.weare.Services.SkillCategoryService;
 import com.community.weare.Services.models.SkillService;
 import com.community.weare.Services.users.UserService;
@@ -9,10 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.*;
 
@@ -21,30 +26,25 @@ import java.util.*;
 public class ProfileController {
     private static final String TYPE = "USER";
     private final UserService userService;
-
+    private final ExpertiseProfileFactory expertiseProfileFactory;
     private final SkillCategoryService skillCategoryService;
     private SkillService skillService;
 
     @Autowired
-    public ProfileController(UserService userService,
-                             SkillCategoryService skillCategoryService,SkillService skillService) {
+    public ProfileController(UserService userService, ExpertiseProfileFactory expertiseProfileFactory,
+                             SkillCategoryService skillCategoryService, SkillService skillService) {
         this.userService = userService;
+        this.expertiseProfileFactory = expertiseProfileFactory;
         this.skillCategoryService = skillCategoryService;
-        this.skillService=skillService;
+        this.skillService = skillService;
     }
 
     @GetMapping("/{id}/profile")
     public String showProfilePage(@PathVariable(name = "id") int id, Model model, Principal principal) {
 
         try {
-            Optional<User> user = userService.getUserById(id);
-            user.orElseThrow(EntityNotFoundException::new);
-            if (principal.getName().equals(user.get().getUsername())){
-                model.addAttribute("user", user);
-            }else {
-                //TODO refactor error
-                throw new EntityNotFoundException();
-            }
+            User user = userService.getUserById(id).orElseThrow(EntityNotFoundException::new);
+            model.addAttribute("user", user);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -52,19 +52,31 @@ public class ProfileController {
     }
 
     @GetMapping("/{id}/profile/editor")
-    public String editFormUserProfile(@PathVariable(name = "id") int id, Model model) {
+    public String editFormUserProfile(@PathVariable(name = "id") int id, Model model, Principal principal,
+                                      @ModelAttribute @Valid UserDTO user1,
+                                      BindingResult bindingResult) {
 
-//        if (bindingResult.hasErrors()) {
-//            return "user-profile-edit";
-//        }
+        if (bindingResult.hasErrors()) {
+            return "user-profile-edit";
+        }
         try {
             Optional<User> user = userService.getUserById(id);
             user.orElseThrow(EntityNotFoundException::new);
-            ExpertiseProfile expertiseProfile=user.get().getExpertiseProfile();
+            ExpertiseProfileDTO expertiseProfileDTO=new ExpertiseProfileDTO();
+            expertiseProfileDTO.setId(user.get().getExpertiseProfile().getId());
             model.addAttribute("userToEdit",userService.getUserModelById(id) );
-            model.addAttribute("profile",expertiseProfile);
-            Category category=expertiseProfile.getCategory();
+            model.addAttribute("profile",user.get().getExpertiseProfile());
+            model.addAttribute("profileDTO",expertiseProfileDTO);
+            Category category=user.get().getExpertiseProfile().getCategory();
             model.addAttribute("services",skillService.getAllByCategory(category));
+
+            if (principal.getName().equals(user.get().getUsername())){
+                model.addAttribute("user", user);
+            }else {
+                //TODO refactor error
+                throw new EntityNotFoundException();
+            }
+
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -92,17 +104,27 @@ public class ProfileController {
 
     @RequestMapping("/{id}/profile/expertise")
     public String editUserExpertiseProfile(@PathVariable(name = "id") int id,
-                                  @ModelAttribute ExpertiseProfile expertiseProfile) {
+                                  @ModelAttribute ExpertiseProfileDTO expertiseProfileDTO,@ModelAttribute ExpertiseProfile expertiseProfile) {
 
         try {
             Optional<User> userToCheck = userService.getUserById(id);
             userToCheck.orElseThrow(EntityNotFoundException::new);
-            userService.updateExpertise
-                    (userToCheck.get(),expertiseProfile,userToCheck.get().getExpertiseProfile());
+
+            if (expertiseProfileDTO.getSkill1()!=null){
+                expertiseProfileDTO.setCategory(userToCheck.get().getExpertiseProfile().getCategory());
+                ExpertiseProfile expertiseProfileNew =
+                        expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
+                userService.updateExpertise
+                        (userToCheck.get(),expertiseProfileNew,userToCheck.get().getExpertiseProfile());
+            }else {
+                userService.updateExpertise
+                        (userToCheck.get(),expertiseProfile,userToCheck.get().getExpertiseProfile());
+            }
+
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return "redirect:/auth/users/" + id + "/profile/editor";
+        return "redirect:/auth/users/" + id + "/profile";
     }
 
 

@@ -19,7 +19,7 @@ public interface SkillService {
 
     void deleteSkill(int skillId);
 
-    Optional<Skill> getByByName(String name);
+    Optional<Skill> getByName(String name);
 
     List<Skill>getAllByCategory(Category category);
 

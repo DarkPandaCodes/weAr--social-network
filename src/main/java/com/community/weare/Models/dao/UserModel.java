@@ -33,9 +33,9 @@ public class UserModel {
     private String picture;
     private String expertise;
     private List<String>skills = new ArrayList<>();
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.NONE,pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime startTime;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.NONE,pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime endTime;
 
     public UserModel() {
@@ -145,6 +145,7 @@ public class UserModel {
         this.skills = skills;
     }
     public void setSkill(String skill) {
+
         this.skills.add(skill);
     }
 
