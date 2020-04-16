@@ -41,19 +41,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> findAll(Sort sort, int page) {
+    public List<Post> findAll(Sort sort) {
         List<Post> allPost = postRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
-        List<Post> listSinglePage = new ArrayList<>();
-
-        if (allPost.size() > (page - 1) * POSTS_PER_PAGE) {
-            for (int i = 0; i < POSTS_PER_PAGE; i++) {
-                if ((page - 1) * POSTS_PER_PAGE + i == allPost.size()) {
-                    break;
-                }
-                listSinglePage.add(allPost.get((page - 1) * POSTS_PER_PAGE + i));
-            }
-        }
-        return listSinglePage;
+//        List<Post> listSinglePage = new ArrayList<>();
+//
+//        if (allPost.size() > (page - 1) * POSTS_PER_PAGE) {
+//            for (int i = 0; i < POSTS_PER_PAGE; i++) {
+//                if ((page - 1) * POSTS_PER_PAGE + i == allPost.size()) {
+//                    break;
+//                }
+//                listSinglePage.add(allPost.get((page - 1) * POSTS_PER_PAGE + i));
+//            }
+//        }
+        return allPost;
     }
 
     @Override

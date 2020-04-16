@@ -52,9 +52,9 @@ public class PostController {
 //        return "posts";
 //    }
 
-    @GetMapping("/page/{page}")
-    public String showNewFeed(Model model, Sort sort, @PathVariable(name = "page") int page) {
-        model.addAttribute("posts", postService.findAll(sort, page));
+    @GetMapping("")
+    public String showNewFeed(Model model, Sort sort) {
+        model.addAttribute("posts", postService.findAll(sort));
         model.addAttribute("postDTO2", new PostDTO2());
         model.addAttribute("postDTO3", new PostDTO2());
         return "allPosts";
@@ -62,8 +62,8 @@ public class PostController {
 
     @PostMapping("")
     public String likeDislikePost(@ModelAttribute("postDTO2") PostDTO2 postDTO2,
-                                  Model model, Principal principal) {
-        model.addAttribute("posts", postService.findAll());
+                                  Model model, Principal principal, Sort sort) {
+        model.addAttribute("posts", postService.findAll(sort));
         boolean isPostLiked = postService.isLiked(postDTO2.getPostId(), principal);
 
         if (isPostLiked) {

@@ -31,8 +31,8 @@ public class RESTPostController {
     }
 
     @GetMapping("/{page}")
-    public List<Post> findAll(Sort sort, @PathVariable(name = "page") int page) {
-        return postService.findAll(sort, page);
+    public List<Post> findAll(Sort sort) {
+        return postService.findAll(sort);
     }
 
     @GetMapping("/showComments")

@@ -128,7 +128,7 @@
                                         <input type="hidden" data-th-value ="${post.getPostId()}"
                                                th:value="${post.getPostId()}" class="mb-2" th:field="*{postId}" />
                                     </label>
-                                    <input class="fa-heart" type="submit" value="Like" />
+                                    <input class="fa-heart" type="submit" value="Like/Dislike" />
                                 </form>
 
 <!--                                <input class="fa fa-thumbs-up" type="submit" onclick="myFunction(this) " th:object="${postDTO2}">-->
@@ -145,96 +145,96 @@
                         </div>
                     </div>
 
-                    <script type="text/javascript">
-                        var list = new Array();
-                        var pageList = new Array();
-                        var currentPage = 1;
-                        var numberPerPage = 1;
-                        var numberOfPages = 1;
+<!--                    <script type="text/javascript">-->
+<!--                        var list = new Array();-->
+<!--                        var pageList = new Array();-->
+<!--                        var currentPage = 1;-->
+<!--                        var numberPerPage = 1;-->
+<!--                        var numberOfPages = 1;-->
 
-                        function makeList() {
-                            for (x = 1; x < 200; x++)
-                                list.push(x);
+<!--                        function makeList() {-->
+<!--                            for (x = 1; x < 200; x++)-->
+<!--                                list.push(x);-->
 
-                            numberOfPages = getNumberOfPages();
-                        }
+<!--                            numberOfPages = getNumberOfPages();-->
+<!--                        }-->
 
-                        function getNumberOfPages() {
-                            return Math.ceil(list.length / numberPerPage);
-                        }
+<!--                        function getNumberOfPages() {-->
+<!--                            return Math.ceil(list.length / numberPerPage);-->
+<!--                        }-->
 
-                        function nextPage() {
-                            currentPage += 1;
-                            loadList();
-                        }
+<!--                        function nextPage() {-->
+<!--                            currentPage += 1;-->
+<!--                            loadList();-->
+<!--                        }-->
 
-                        function previousPage() {
-                            currentPage -= 1;
-                            loadList();
-                        }
+<!--                        function previousPage() {-->
+<!--                            currentPage -= 1;-->
+<!--                            loadList();-->
+<!--                        }-->
 
-                        function firstPage() {
-                            currentPage = 1;
-                            loadList();
-                        }
+<!--                        function firstPage() {-->
+<!--                            currentPage = 1;-->
+<!--                            loadList();-->
+<!--                        }-->
 
-                        function lastPage() {
-                            currentPage = numberOfPages;
-                            loadList();
-                        }
+<!--                        function lastPage() {-->
+<!--                            currentPage = numberOfPages;-->
+<!--                            loadList();-->
+<!--                        }-->
 
-                        function loadList() {
-                            var begin = ((currentPage - 1) * numberPerPage);
-                            var end = begin + numberPerPage;
+<!--                        function loadList() {-->
+<!--                            var begin = ((currentPage - 1) * numberPerPage);-->
+<!--                            var end = begin + numberPerPage;-->
 
-                            pageList = list.slice(begin, end);
-                            drawList();
-                            check();
-                        }
+<!--                            pageList = list.slice(begin, end);-->
+<!--                            drawList();-->
+<!--                            check();-->
+<!--                        }-->
 
-                        function drawList() {
-                            document.getElementById("list").innerHTML = "";
-                            for (r = 0; r < pageList.length; r++) {
-                                document.getElementById("list").innerHTML += pageList[r] + "<br/>";
-                            }
-                        }
+<!--                        function drawList() {-->
+<!--                            document.getElementById("list").innerHTML = "";-->
+<!--                            for (r = 0; r < pageList.length; r++) {-->
+<!--                                document.getElementById("list").innerHTML += pageList[r] + "<br/>";-->
+<!--                            }-->
+<!--                        }-->
 
-                        function check() {
-                            document.getElementById("next").disabled = currentPage == numberOfPages ? true : false;
-                            document.getElementById("previous").disabled = currentPage == 1 ? true : false;
-                            document.getElementById("first").disabled = currentPage == 1 ? true : false;
-                            document.getElementById("last").disabled = currentPage == numberOfPages ? true : false;
-                        }
+<!--                        function check() {-->
+<!--                            document.getElementById("next").disabled = currentPage == numberOfPages ? true : false;-->
+<!--                            document.getElementById("previous").disabled = currentPage == 1 ? true : false;-->
+<!--                            document.getElementById("first").disabled = currentPage == 1 ? true : false;-->
+<!--                            document.getElementById("last").disabled = currentPage == numberOfPages ? true : false;-->
+<!--                        }-->
 
-                        function load() {
-                            makeList();
-                            loadList();
-                        }
+<!--                        function load() {-->
+<!--                            makeList();-->
+<!--                            loadList();-->
+<!--                        }-->
 
-                        window.onload = load;
-                    </script>
+<!--                        window.onload = load;-->
+<!--                    </script>-->
 
-<!--&lt;!&ndash;                                th:href="@{'/posts/post/' + ${post.postId} + '/postImage'}"-->
+<!--&lt;!&ndash;&lt;!&ndash;                                th:href="@{'/posts/post/' + ${post.postId} + '/postImage'}"&ndash;&gt;-->
 
-                    <div style="text-align:center;">
-                        <input type="button" id="first" onclick="firstPage()"  value="first" />
-                        <input type="button" id="next" onclick="nextPage()" value="next" />
-                        <input type="button" id="previous" onclick="previousPage()" value="previous" />
-                        <input type="button" id="last" onclick="lastPage()" value="last" />
+<!--                    <div style="text-align:center;">-->
+<!--                        <input type="button" id="first" onclick="firstPage()"  value="first" />-->
+<!--                        <input type="button" id="next" onclick="nextPage()" value="next" />-->
+<!--                        <input type="button" id="previous" onclick="previousPage()" value="previous" />-->
+<!--                        <input type="button" id="last" onclick="lastPage()" value="last" />-->
 
-                        <div id="list"></div>
-                    </div>
+<!--                        <div id="list"></div>-->
+<!--                    </div>-->
 
                     <div class="row mt-5">
                         <div class="pagination">
                             <div class="block-27">
                                 <ul>
                                     <li><a href="#">&lt;</a></li>
-                                    <li class="active" th:href="@{/posts/page/1}" ><span>1</span></li>
-                                    <li><a th:href="@{/posts/page/2}">2</a></li>
-                                    <li><a th:href="@{/posts/page/3}">3</a></li>
-                                    <li><a th:href="@{/posts/page/4}">4</a></li>
-                                    <li><a th:href="@{/posts/page/5}">5</a></li>
+                                    <li class="active" th:href="@{/posts}" ><span>1</span></li>
+                                    <li><a th:href="@{/posts}">2</a></li>
+                                    <li><a th:href="@{/posts}">3</a></li>
+                                    <li><a th:href="@{/posts}">4</a></li>
+                                    <li><a th:href="@{/posts}">5</a></li>
                                     <li><a href="#">&gt;</a></li>
                                 </ul>
                             </div>
