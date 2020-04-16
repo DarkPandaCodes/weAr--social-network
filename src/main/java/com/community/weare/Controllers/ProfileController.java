@@ -43,7 +43,7 @@ public class ProfileController {
     public String showProfilePage(@PathVariable(name = "id") int id, Model model, Principal principal) {
 
         try {
-            User user = userService.getUserById(id).orElseThrow(EntityNotFoundException::new);
+            User user = userService.getUserById(id);
             model.addAttribute("user", user);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -60,17 +60,16 @@ public class ProfileController {
             return "user-profile-edit";
         }
         try {
-            Optional<User> user = userService.getUserById(id);
-            user.orElseThrow(EntityNotFoundException::new);
+            User user = userService.getUserById(id);
             ExpertiseProfileDTO expertiseProfileDTO=new ExpertiseProfileDTO();
-            expertiseProfileDTO.setId(user.get().getExpertiseProfile().getId());
+            expertiseProfileDTO.setId(user.getExpertiseProfile().getId());
             model.addAttribute("userToEdit",userService.getUserModelById(id) );
-            model.addAttribute("profile",user.get().getExpertiseProfile());
+            model.addAttribute("profile",user.getExpertiseProfile());
             model.addAttribute("profileDTO",expertiseProfileDTO);
-            Category category=user.get().getExpertiseProfile().getCategory();
-            model.addAttribute("services",skillService.getAllByCategory(category));
+//            Category category=user.getExpertiseProfile().getCategory();
+//            model.addAttribute("services",skillService.getAllByCategory(category));
 
-            if (principal.getName().equals(user.get().getUsername())){
+            if (principal.getName().equals(user.getUsername())){
                 model.addAttribute("user", user);
             }else {
                 //TODO refactor error
@@ -90,10 +89,10 @@ public class ProfileController {
                                   @ModelAttribute UserModel userModel,Model model) {
 
         try {
-            Optional<User> userToCheck = userService.getUserById(id);
-            userToCheck.orElseThrow(EntityNotFoundException::new);
+            User userToCheck = userService.getUserById(id);
+
             model.addAttribute("userToEdit",userModel);
-            userService.updateUserModel(userToCheck.get(),userModel);
+            userService.updateUserModel(userToCheck,userModel);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -107,18 +106,18 @@ public class ProfileController {
                                   @ModelAttribute ExpertiseProfileDTO expertiseProfileDTO,@ModelAttribute ExpertiseProfile expertiseProfile) {
 
         try {
-            Optional<User> userToCheck = userService.getUserById(id);
-            userToCheck.orElseThrow(EntityNotFoundException::new);
+            User userToCheck = userService.getUserById(id);
+
 
             if (expertiseProfileDTO.getSkill1()!=null){
-                expertiseProfileDTO.setCategory(userToCheck.get().getExpertiseProfile().getCategory());
+                expertiseProfileDTO.setCategory(userToCheck.getExpertiseProfile().getCategory());
                 ExpertiseProfile expertiseProfileNew =
                         expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
                 userService.updateExpertise
-                        (userToCheck.get(),expertiseProfileNew,userToCheck.get().getExpertiseProfile());
+                        (userToCheck,expertiseProfileNew,userToCheck.getExpertiseProfile());
             }else {
                 userService.updateExpertise
-                        (userToCheck.get(),expertiseProfile,userToCheck.get().getExpertiseProfile());
+                        (userToCheck,expertiseProfile,userToCheck.getExpertiseProfile());
             }
 
         } catch (EntityNotFoundException e) {

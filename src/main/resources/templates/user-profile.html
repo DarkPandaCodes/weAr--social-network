@@ -87,7 +87,10 @@
                         Web Developer and Designer
                     </h6>
                     <p class="proile-rating">RANKINGS : <span>8/10</span></p>
-                    <input  th:action="@{/auth/users/request}" type="submit" method="post" value="Send Request">
+                    <form th:action="@{'/auth/users/request'}"  th:object="${user}" method="post">
+                        <input class="icon-stack-overflow" type="submit" value="connect" />
+                    </form>
+
                     <input  th:action="@{'/auth/users/'+${user.getUserId()}+'/request'}" type="submit" method="get" value="View my Requests">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item">

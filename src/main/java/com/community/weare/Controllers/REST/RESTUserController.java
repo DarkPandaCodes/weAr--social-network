@@ -68,10 +68,10 @@ public class RESTUserController {
     public PersonalProfile upgradeUserPersonalProfile(@PathVariable(name = "id") int id,
                                                       @RequestBody @Valid PersonalProfileDTO personalProfileDTO) {
         try {
-            Optional<User> user = userService.getUserById(id);
-            user.orElseThrow(EntityNotFoundException::new);
+            User user = userService.getUserById(id);
+
             PersonalProfile personalProfile = personalProfileFactory.covertDTOtoPersonalProfile(personalProfileDTO);
-            return personalInfoService.upgradeProfile(user.orElseThrow(EntityNotFoundException::new), personalProfile);
+            return personalInfoService.upgradeProfile(user, personalProfile);
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         } catch (ValidationEntityException e) {
@@ -85,11 +85,11 @@ public class RESTUserController {
     public ExpertiseProfile upgradeUserExpertiseProfile(@PathVariable(name = "id") int id,
                                                        @RequestBody @Valid ExpertiseProfileDTO expertiseProfileDTO) {
         try {
-            Optional<User> user = userService.getUserById(id);
-            user.orElseThrow(EntityNotFoundException::new);
+            User user = userService.getUserById(id);
+
             ExpertiseProfile expertiseProfileNEW= expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
-            ExpertiseProfile expertiseProfile= expertiseProfileFactory.mergeExpertProfile(expertiseProfileNEW,user.get().getExpertiseProfile());
-            return expertiseProfileService.upgradeProfile(user.orElseThrow(EntityNotFoundException::new),expertiseProfile);
+            ExpertiseProfile expertiseProfile= expertiseProfileFactory.mergeExpertProfile(expertiseProfileNEW,user.getExpertiseProfile());
+            return expertiseProfileService.upgradeProfile(user,expertiseProfile);
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         } catch (ValidationEntityException e) {
@@ -102,12 +102,11 @@ public class RESTUserController {
 
     @GetMapping("/")
     public UserModel getUserById(@RequestHeader(name = "id") int id) {
-
-        Optional<User> user = userService.getUserById(id);
-        if (user.isPresent()) {
-            return mapperHelper.convertUSERtoModel(user.get());
-        }
+       try {
+           User user = userService.getUserById(id);
+           return mapperHelper.convertUSERtoModel(user);
+        }catch (EntityNotFoundException e){
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
-    }
+    }}
 
 }

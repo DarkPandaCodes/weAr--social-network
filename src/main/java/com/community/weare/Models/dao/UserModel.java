@@ -27,8 +27,10 @@ public class UserModel {
     private Sex gender;
 //    @Size(min = 2, message = "The username must have at least 2 symbols!")
     private String city;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate birthYear;
+
     private String personalReview;
     private String picture;
     private String expertise;
