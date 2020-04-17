@@ -3,10 +3,10 @@ package com.community.weare.Controllers.REST;
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.Comment;
-import com.community.weare.Models.Mapper;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dto.PostDTO;
+import com.community.weare.Models.factories.PostFactory;
 import com.community.weare.Services.contents.PostService;
 import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +23,16 @@ import java.util.List;
 public class RESTPostController {
     private PostService postService;
     private UserService userService;
+    private PostFactory postFactory;
 
     @Autowired
-    public RESTPostController(PostService postService, UserService userService) {
+    public RESTPostController(PostService postService, UserService userService, PostFactory postFactory) {
         this.postService = postService;
         this.userService = userService;
+        this.postFactory = postFactory;
     }
 
-    @GetMapping("/{page}")
+    @GetMapping("/")
     public List<Post> findAll(Sort sort) {
         return postService.findAll(sort);
     }
@@ -42,7 +44,7 @@ public class RESTPostController {
 
     @PostMapping("/create")
     public Post save(@RequestBody PostDTO postDTO, Principal principal) {
-        Post newPost = Mapper.createPostFromDTO(postDTO);
+        Post newPost = postFactory.createPostFromDTO(postDTO);
         newPost.setUser(userService.getUserByUserName(principal.getName()));
         return postService.save(newPost);
     }

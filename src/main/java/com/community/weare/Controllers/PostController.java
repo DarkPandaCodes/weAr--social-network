@@ -3,12 +3,12 @@ package com.community.weare.Controllers;
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.Comment;
-import com.community.weare.Models.Mapper;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dto.CommentDTO;
 import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Models.dto.PostDTO2;
+import com.community.weare.Models.factories.PostFactory;
 import com.community.weare.Services.contents.CommentService;
 import com.community.weare.Services.contents.PostService;
 import com.community.weare.Services.users.UserService;
@@ -34,26 +34,21 @@ public class PostController {
     private PostService postService;
     private UserService userService;
     private CommentService commentService;
+    private PostFactory postFactory;
 
     @Autowired
-    public PostController(PostService postService, UserService userService, CommentService commentService) {
+    public PostController(PostService postService, UserService userService, CommentService commentService,
+                          PostFactory postFactory) {
         this.postService = postService;
         this.userService = userService;
         this.commentService = commentService;
+        this.postFactory = postFactory;
     }
 
-    //OLD
-//    @GetMapping("/feed")
-//    public String showFeed(Model model) {
-//        model.addAttribute("posts", postService.findAll());
-//        return "posts";
-//    }
-
     @GetMapping("")
-    public String showNewFeed(Model model, Sort sort) {
+    public String showFeed(Model model, Sort sort) {
         model.addAttribute("posts", postService.findAll(sort));
         model.addAttribute("postDTO2", new PostDTO2());
-        model.addAttribute("postDTO3", new PostDTO2());
         return "allPosts";
     }
 
@@ -74,7 +69,7 @@ public class PostController {
         } else {
             try {
                 postService.likePost(postDTO2.getPostId(), user);
-            } catch (DuplicateEntityException e) {
+            } catch (DuplicateEntityException | EntityNotFoundException e) {
                 model.addAttribute("error", e.getMessage());
                 return "allPosts";
             }
@@ -112,7 +107,6 @@ public class PostController {
     @GetMapping("/{id}/postImage")
     public void renderPostImageFormDB(@PathVariable int id, HttpServletResponse response) throws IOException {
         Post post = postService.getOne(id);
-
         if (post.getPicture() != null) {
             response.setContentType("image/jpeg");
             InputStream is = new ByteArrayInputStream(Base64.getDecoder().decode(post.getPicture()));
@@ -123,12 +117,10 @@ public class PostController {
     @PostMapping("/newPost")
     public String newPost(Model model, @ModelAttribute("post") PostDTO post, BindingResult errors,
                           @RequestParam("imagefile") MultipartFile file, Principal principal) throws IOException {
-
         if (errors.hasErrors()) {
             return "newPost";
         }
-
-        Post newPost = Mapper.createPostFromDTO(post);
+        Post newPost = postFactory.createPostFromDTO(post);
         newPost.setUser(userService.getUserByUserName(principal.getName()));
         newPost.setPicture(Base64.getEncoder().encodeToString(file.getBytes()));
 
@@ -140,6 +132,5 @@ public class PostController {
         }
         return "newPost";
     }
-
 }
 

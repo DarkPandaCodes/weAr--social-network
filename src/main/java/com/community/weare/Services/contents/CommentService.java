@@ -24,9 +24,11 @@ public interface CommentService {
 
     void likeComment(int commentId, User user);
 
-    void unlikeComment(int commentId, User user);
+    void dislikeComment(int commentId, User user);
 
-    void editComment(int commentId, CommentDTO commentDTO, Principal principal);
+    void editComment(int commentId, String content, Principal principal);
 
     void deleteComment(int commentId, Principal principal);
+
+    int deleteCommentByPostPostId(int postId);
 }

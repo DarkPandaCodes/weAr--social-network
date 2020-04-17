@@ -8,7 +8,7 @@ import com.community.weare.Models.User;
 import com.community.weare.Models.dto.CommentDTO;
 import com.community.weare.Repositories.CommentRepository;
 import com.community.weare.Repositories.PostRepository;
-import com.community.weare.Repositories.UserRepository;
+import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -22,14 +22,14 @@ public class CommentServiceImpl implements CommentService {
 
     private CommentRepository commentRepository;
     private PostRepository postRepository;
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository,
-                              UserRepository userRepository) {
+                              UserService userService) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -44,8 +44,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> findAllCommentsOfPost(Post post, Sort sort) {
-        throwsNotFoundIfNeeded(post.getPostId(), postRepository.existsById(post.getPostId()),
-                "Post with id %d does not exists");
+        if (!postRepository.existsById(post.getPostId())) {
+            throw new EntityNotFoundException(String.format
+                    ("Post with id %d does not exists", post.getPostId()));
+        }
         return commentRepository.findByPostOrderByCommentId
                 (post, Sort.by(Sort.Direction.ASC, "commentId"));
     }
@@ -57,8 +59,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment getOne(int commentId) {
-        throwsNotFoundIfNeeded(commentId, commentRepository.existsById(commentId),
-                "Comment with id %d does not exists");
+        if (!commentRepository.existsById(commentId)) {
+            throw new EntityNotFoundException(String.format
+                    ("Comment with id %d does not exists", commentId));
+        }
         return commentRepository.getOne(commentId);
     }
 
@@ -74,8 +78,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void likeComment(int commentId, User user) {
-        throwsNotFoundIfNeeded(commentId, commentRepository.existsById(commentId),
-                "Comment with id %d does not exists");
+        if (!commentRepository.existsById(commentId)) {
+            throw new EntityNotFoundException(String.format
+                    ("Comment with id %d does not exists", commentId));
+        }
         Comment commentToLike = commentRepository.getOne(commentId);
         if (commentToLike.getLikes().contains(user)) {
             throw new DuplicateEntityException("You already liked this");
@@ -86,25 +92,26 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void unlikeComment(int commentId, User user) {
-        throwsNotFoundIfNeeded(commentId, commentRepository.existsById(commentId),
-                "Comment with id %d does not exists");
-        Comment commentToUnlike = commentRepository.getOne(commentId);
-        if (!commentToUnlike.getLikes().contains(user)) {
-            throw new EntityNotFoundException("Before unlike you must like");
+    public void dislikeComment(int commentId, User user) {
+        if (!commentRepository.existsById(commentId)) {
+            throw new EntityNotFoundException(String.format
+                    ("Comment with id %d does not exists", commentId));
         }
-        commentToUnlike.getLikes().remove(user);
-        commentRepository.save(commentToUnlike);
+        Comment commentToDislike = commentRepository.getOne(commentId);
+        if (!commentToDislike.getLikes().contains(user)) {
+            throw new EntityNotFoundException("Before dislike you must like");
+        }
+        commentToDislike.getLikes().remove(user);
+        commentRepository.save(commentToDislike);
     }
 
     @Override
-    public void editComment(int commentId, CommentDTO commentDTO, Principal principal) {
+    public void editComment(int commentId, String content, Principal principal) {
         validatesAuthority(commentId, principal);
         Comment commentToEdit = commentRepository.getOne(commentId);
-        commentToEdit.setContent(commentDTO.getContent());
+        commentToEdit.setContent(content);
         commentRepository.save(commentToEdit);
     }
-
 
     @Override
     public void deleteComment(int commentId, Principal principal) {
@@ -113,22 +120,22 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.delete(commentToDelete);
     }
 
-    private void validatesAuthority(int commentId, Principal principal) {
-        throwsNotFoundIfNeeded(commentId, commentRepository.existsById(commentId),
-                "Comment with id %d does not exists");
-        Comment comment = getOne(commentId);
-        User userPrincipal = userRepository.findByUsername(principal.getName());
-
-        if (!((comment.getUser().getUsername().equals(principal.getName()))
-                || userRepository.findByAuthorities("ROLE_ADMIN").contains(userPrincipal))) {
-            throw new IllegalArgumentException("You can only edit/delete your comments");
-        }
+    @Override
+    public int deleteCommentByPostPostId(int postId) {
+        return commentRepository.deleteCommentByPostPostId(postId);
     }
 
-    private void throwsNotFoundIfNeeded(int id, boolean b, String s) {
-        if (!b) {
-            throw new EntityNotFoundException
-                    (String.format(s, id));
+    private void validatesAuthority(int commentId, Principal principal) {
+        if (!commentRepository.existsById(commentId)) {
+            throw new EntityNotFoundException(String.format
+                    ("Comment with id %d does not exists", commentId));
+        }
+        Comment comment = getOne(commentId);
+        User userPrincipal = userService.getUserByUserName(principal.getName());
+
+        if (!((comment.getUser().getUsername().equals(principal.getName()))
+                || userService.findByAuthorities("ROLE_ADMIN").contains(userPrincipal))) {
+            throw new IllegalArgumentException("You can only edit/delete your comments");
         }
     }
 }

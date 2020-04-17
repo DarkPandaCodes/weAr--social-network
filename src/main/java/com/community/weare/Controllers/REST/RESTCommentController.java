@@ -3,10 +3,10 @@ package com.community.weare.Controllers.REST;
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.Comment;
-import com.community.weare.Models.Mapper;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dto.CommentDTO;
+import com.community.weare.Models.factories.CommentFactory;
 import com.community.weare.Services.contents.CommentService;
 import com.community.weare.Services.contents.PostService;
 import com.community.weare.Services.users.UserService;
@@ -26,12 +26,15 @@ public class RESTCommentController {
     private CommentService commentService;
     private PostService postService;
     private UserService userService;
+    private CommentFactory commentFactory;
 
     @Autowired
-    public RESTCommentController(CommentService commentService, PostService postService, UserService userService) {
+    public RESTCommentController(CommentService commentService, PostService postService, UserService userService,
+                                 CommentFactory commentFactory) {
         this.commentService = commentService;
         this.postService = postService;
         this.userService = userService;
+        this.commentFactory = commentFactory;
     }
 
     @GetMapping
@@ -50,21 +53,25 @@ public class RESTCommentController {
 
     @GetMapping("/getOne")
     public Comment getOne(@RequestParam int commentId) {
+        if (commentService.getOne(commentId) == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format
+                    ("Comment with id %d does not exists", commentId));
+        }
         return commentService.getOne(commentId);
     }
 
     @PostMapping("/create")
     public Comment save(@RequestBody CommentDTO commentDTO) {
-        Comment newComment = Mapper.createCommentFromDTO(commentDTO);
+        Comment newComment = commentFactory.createCommentFromDTO(commentDTO);
         return commentService.save(newComment);
     }
 
     @PutMapping("/like")
     public void likeComment(@RequestParam int commentId, int userId) {
         User user = userService.getUserById(userId);
-        if (!userService.checkIfUserExist(user)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
-        }
+//        if (!userService.checkIfUserExist(user)) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
+//        }
 
         try {
             commentService.likeComment(commentId, user);
@@ -73,24 +80,24 @@ public class RESTCommentController {
         }
     }
 
-    @PutMapping("/unlike")
-    public void unlikeComment(@RequestParam int commentId, int userId) {
+    @PutMapping("/dislike")
+    public void dislikeComment(@RequestParam int commentId, int userId) {
         User user = userService.getUserById(userId);
-        if (!userService.checkIfUserExist(user)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
-        }
+//        if (!userService.checkIfUserExist(user)) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
+//        }
 
         try {
-            commentService.unlikeComment(commentId, user);
+            commentService.dislikeComment(commentId, user);
         } catch (DuplicateEntityException | EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
     @PutMapping("/edit")
-    public void editComment(Principal principal, @RequestParam int commentId, CommentDTO commentDTO) {
+    public void editComment(Principal principal, @RequestParam int commentId, String content) {
         try {
-            commentService.editComment(commentId, commentDTO, principal);
+            commentService.editComment(commentId, content, principal);
         } catch (IllegalArgumentException | EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

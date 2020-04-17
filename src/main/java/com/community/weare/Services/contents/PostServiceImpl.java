@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -23,12 +24,14 @@ public class PostServiceImpl implements PostService {
 
     private PostRepository postRepository;
     private UserService userService;
+    private CommentService commentService;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository,
-                           UserService userService) {
+    public PostServiceImpl(PostRepository postRepository, UserService userService,
+                           CommentService commentService) {
         this.postRepository = postRepository;
         this.userService = userService;
+        this.commentService = commentService;
     }
 
     @Override
@@ -92,7 +95,7 @@ public class PostServiceImpl implements PostService {
         }
         Post postToDislike = postRepository.getOne(postId);
         if (!postToDislike.getLikes().contains(user)) {
-            throw new EntityNotFoundException("Before unlike you must like");
+            throw new EntityNotFoundException("Before dislike you must like");
         }
         postToDislike.getLikes().remove(user);
         postRepository.save(postToDislike);
@@ -112,32 +115,36 @@ public class PostServiceImpl implements PostService {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
         }
         User userPrincipal = userService.getUserByUserName(principal.getName());
-
-//        if (!((getOne(postId).getUser().getUsername().equals(principal.getName()))
-//                || userRepository.findByAuthorities("ROLE_ADMIN").contains(userPrincipal))) {
-//            throw new IllegalArgumentException("You can only edit your posts");
-//        }
-
         Post postToEdit = getOne(postId);
+
+        if (!((postToEdit.getUser().getUsername().equals(principal.getName()))
+                || userService.findByAuthorities("ROLE_ADMIN").contains(userPrincipal))) {
+            throw new IllegalArgumentException("You can only edit your posts");
+        }
         postToEdit.setPublic(postDTO.isPublic());
         postToEdit.setContent(postDTO.getContent());
-        postToEdit.setPicture(postDTO.getPicture());
         postRepository.save(postToEdit);
     }
 
+
     @Override
+    @Transactional
     public void deletePost(int postId, Principal principal) {
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
         }
         Post postToDelete = getOne(postId);
-//        User userPrincipal = userRepository.findByUsername(principal.getName());
-//
-//        if (!((postToDelete.getUser().getUsername().equals(principal.getName()))
-//                || userRepository.findByAuthorities("ROLE_ADMIN").contains(userPrincipal))) {
-//            throw new IllegalArgumentException("You can only delete your posts");
-//        }
+        User userPrincipal = userService.getUserByUserName(principal.getName());
 
+        if (!((postToDelete.getUser().getUsername().equals(principal.getName()))
+                || userService.findByAuthorities("ROLE_ADMIN").contains(userPrincipal))) {
+            throw new IllegalArgumentException("You can only delete your posts");
+        }
+
+        postToDelete.getLikes().clear();
+        postToDelete.getComments().clear();
+        postRepository.save(postToDelete);
+        commentService.deleteCommentByPostPostId(postId);
         postRepository.delete(postToDelete);
     }
 

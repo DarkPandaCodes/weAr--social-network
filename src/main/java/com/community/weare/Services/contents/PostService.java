@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Set;
 
 public interface PostService {
 
