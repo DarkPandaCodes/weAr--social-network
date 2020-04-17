@@ -21,10 +21,6 @@ public interface PostService {
 
     Post save(Post post);
 
-    User getUserById(int userId);
-
-    boolean ifUserExistsById(int userId);
-
     void likePost(int postId, User user);
 
     void dislikePost(int postId, User user);

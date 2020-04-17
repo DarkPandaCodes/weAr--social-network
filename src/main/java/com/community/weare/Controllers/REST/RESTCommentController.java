@@ -9,6 +9,7 @@ import com.community.weare.Models.User;
 import com.community.weare.Models.dto.CommentDTO;
 import com.community.weare.Services.contents.CommentService;
 import com.community.weare.Services.contents.PostService;
+import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -24,11 +25,13 @@ public class RESTCommentController {
 
     private CommentService commentService;
     private PostService postService;
+    private UserService userService;
 
     @Autowired
-    public RESTCommentController(CommentService commentService, PostService postService) {
+    public RESTCommentController(CommentService commentService, PostService postService, UserService userService) {
         this.commentService = commentService;
         this.postService = postService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -58,12 +61,13 @@ public class RESTCommentController {
 
     @PutMapping("/like")
     public void likeComment(@RequestParam int commentId, int userId) {
-        if (!postService.ifUserExistsById(userId)) {
+        User user = userService.getUserById(userId);
+        if (!userService.checkIfUserExist(user)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
         }
-        User userLiking = postService.getUserById(userId);
+
         try {
-            commentService.likeComment(commentId, userLiking);
+            commentService.likeComment(commentId, user);
         } catch (DuplicateEntityException | EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -71,12 +75,13 @@ public class RESTCommentController {
 
     @PutMapping("/unlike")
     public void unlikeComment(@RequestParam int commentId, int userId) {
-        if (!postService.ifUserExistsById(userId)) {
+        User user = userService.getUserById(userId);
+        if (!userService.checkIfUserExist(user)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
         }
-        User userUnlike = postService.getUserById(userId);
+
         try {
-            commentService.unlikeComment(commentId, userUnlike);
+            commentService.unlikeComment(commentId, user);
         } catch (DuplicateEntityException | EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

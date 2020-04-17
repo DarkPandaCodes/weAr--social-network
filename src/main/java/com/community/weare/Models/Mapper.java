@@ -33,12 +33,7 @@ public class Mapper {
         Comment newComment = new Comment();
         newComment.setContent(commentDTO.getContent());
         newComment.setPost(postService.getOne(commentDTO.getPostId()));
-        newComment.setUser(postService.getUserById(commentDTO.getUserId()));
+        newComment.setUser(userService.getUserById(commentDTO.getUserId()));
         return newComment;
     }
-
-    public static boolean isLiked(int postId, Principal principal) {
-        return postService.isLiked(postId, principal);
-    }
-
 }

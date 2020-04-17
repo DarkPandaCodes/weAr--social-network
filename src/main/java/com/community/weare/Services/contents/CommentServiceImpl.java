@@ -80,22 +80,6 @@ public class CommentServiceImpl implements CommentService {
         if (commentToLike.getLikes().contains(user)) {
             throw new DuplicateEntityException("You already liked this");
         }
-        //*******************************
-        Comment comment1 = new Comment();
-        comment1.setUser(userRepository.getOne(1));
-        comment1.setPost(postRepository.getOne(1));
-        comment1.setContent("transaction checking 1");
-        save(comment1);
-
-        save(null);
-
-        Comment comment2 = new Comment();
-        comment2.setUser(userRepository.getOne(1));
-        comment2.setPost(postRepository.getOne(1));
-        comment2.setContent("transaction checking 2");
-        save(comment2);
-
-        //*******************************
         commentToLike.getLikes().add(user);
         commentRepository.save(commentToLike);
     }

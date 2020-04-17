@@ -50,7 +50,9 @@ public class RESTPostController {
     @PutMapping("/like")
     public void likeAPost(@RequestParam int postId, Principal principal) {
         User user = userService.getUserByUserName(principal.getName());
-        //if user = null throw
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
         boolean isPostLiked = postService.getOne(postId).isLiked(user.getUsername());
 
         if (isPostLiked) {
@@ -68,18 +70,18 @@ public class RESTPostController {
         }
     }
 
-    @PutMapping("/unlike")
-    public void dislikeAPost(@RequestParam int postId, int userId) {
-        if (!postService.ifUserExistsById(userId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
-        }
-        User userUnlike = userService.getUserById(userId);
-        try {
-            postService.dislikePost(postId, userUnlike);
-        } catch (DuplicateEntityException | EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
+//    @PutMapping("/unlike")
+//    public void dislikeAPost(@RequestParam int postId, int userId) {
+//        User user = userService.getUserById(userId);
+//        if (!userService.checkIfUserExist(user)) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
+//        }
+//        try {
+//            postService.dislikePost(postId, user);
+//        } catch (DuplicateEntityException | EntityNotFoundException e) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+//        }
+//    }
 
     @PutMapping("/edit")
     public void editPost(Principal principal, @RequestParam int postId, @RequestBody PostDTO postDTO) {
