@@ -7,6 +7,7 @@ import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
 import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
+import com.community.weare.Models.dto.UserDtoRequest;
 import com.community.weare.Models.factories.ExpertiseProfileFactory;
 import com.community.weare.Repositories.PersonalInfoRepository;
 import com.community.weare.Repositories.RoleRepository;
@@ -150,13 +151,15 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void addToFriendList(Request request) {
-        Request approvedRequest = requestService.approveRequest(request.getId());
-        User owner = userRepository.getOne(approvedRequest.getReceiver().getUserId());
-        owner.addToFriendList(approvedRequest.getSender());
-        userRepository.saveAndFlush(owner);
-        User sender = userRepository.getOne(approvedRequest.getSender().getUserId());
-        sender.addToFriendList(approvedRequest.getReceiver());
-        userRepository.saveAndFlush(sender);
+        if (request.isApproved()) {
+            Request approvedRequest = requestService.getById(request.getId());
+            User receiver = userRepository.getOne(approvedRequest.getReceiver().getUserId());
+            receiver.addToFriendList(approvedRequest.getSender());
+            userRepository.saveAndFlush(receiver);
+            User sender = userRepository.getOne(approvedRequest.getSender().getUserId());
+            sender.addToFriendList(approvedRequest.getReceiver());
+            userRepository.saveAndFlush(sender);
+        }
     }
 
     @Override
@@ -165,5 +168,16 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new InvalidOperationException("User isn't authorised");
         }
+    }
+
+    @Override
+    public UserDtoRequest getUserRequestFromUser(User user) {
+        UserDtoRequest userDtoRequest = mapperHelper.convertUserToRequestDto(user);
+        return userDtoRequest;
+    }
+
+    @Override
+    public List<User> findByAuthorities(String role) {
+        return userRepository.findByAuthorities(role);
     }
 }

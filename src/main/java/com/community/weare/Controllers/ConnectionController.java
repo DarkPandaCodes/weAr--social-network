@@ -2,8 +2,7 @@ package com.community.weare.Controllers;
 
 import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.*;
-import com.community.weare.Models.factories.ExpertiseProfileFactory;
-import com.community.weare.Services.SkillCategoryService;
+import com.community.weare.Models.dto.UserDtoRequest;
 import com.community.weare.Services.connections.RequestService;
 import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
-import java.util.Collection;
 
 @Controller
 @RequestMapping("/auth/connection")
@@ -31,44 +29,42 @@ public class ConnectionController {
     }
 
     @PostMapping("/request")
-    public String sendRequest(@ModelAttribute ("user") User userToConnect, Principal principal) {
+    public String sendRequest(@ModelAttribute ("userRequest") UserDtoRequest userToConnect, Principal principal) {
 
         try {
-            User userSender = userService.getUserById(userToConnect.getUserId());
-            User userReceiver=userService.getUserByUserName(principal.getName());
+            User userReceiver = userService.getUserById(userToConnect.getId());
+            User userSender=userService.getUserByUserName(principal.getName());
             requestService.createRequest(userSender,userReceiver);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return "redirect:/auth/users/" + userToConnect.getUserId() + "/profile";
+        return "redirect:/auth/users/" + userToConnect.getId() + "/profile";
     }
-//    @GetMapping("/users/{id}/request")
-//    public String getUserRequests(@PathVariable (name = "id") int id, Model model,Principal principal) {
-//
-//        try {
-//            User user = userService.getUserById(id);
-//            if (!user.getUsername().equals(principal.getName())){
-//                //TODO method isAuthoriesed
-//                throw new EntityNotFoundException();
-//            }
-//           model.addAttribute("requests", requestService.getAllRequestsForUserUnSeen(user));
-//        } catch (EntityNotFoundException e) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
-//        }
-//      return "";
-//    }
+    @GetMapping("/{id}/request")
+    public String getUserRequests(@PathVariable (name = "id") int id, Model model,Principal principal) {
+
+        try {
+            User user = userService.getUserById(id);
+            userService.isProfileOwner(principal.getName(),user);
+            model.addAttribute("requests", requestService.getAllRequestsForUserUnSeen(user));
+            model.addAttribute("requestN", new Request());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
+        }
+      return "request-list";
+    }
 
     @PostMapping("/request/approve")
     public String getUserRequests(@ModelAttribute Request request, Principal principal) {
 
         try {
-
+            if (request.isApproved()){
             Request approvedRequest= requestService.approveRequest(request.getId());
-            userService.addToFriendList(approvedRequest);
+            userService.addToFriendList(approvedRequest);}
         } catch (InvalidOperationException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,e.getMessage());
         }
-        return "";
+        return "request-list";
     }
 
 

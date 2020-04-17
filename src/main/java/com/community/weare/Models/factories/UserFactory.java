@@ -3,6 +3,7 @@ package com.community.weare.Models.factories;
 import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
 import com.community.weare.Models.dto.UserDTO;
+import com.community.weare.Models.dto.UserDtoRequest;
 import com.community.weare.Repositories.RoleRepository;
 import com.community.weare.Repositories.SkillCategoryRepository;
 import com.community.weare.Repositories.SkillRepository;
@@ -39,8 +40,8 @@ public class UserFactory {
         this.personalProfileFactory = personalProfileFactory;
     }
 
-    public User convertDTOtoUSER(UserDTO userDTO){
-        User user=modelMapper.map(userDTO,User.class);
+    public User convertDTOtoUSER(UserDTO userDTO) {
+        User user = modelMapper.map(userDTO, User.class);
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setAuthorities(new HashSet<>(roleRepository.findByAuthority("ROLE_USER")));
         user.setEnabled(1);
@@ -48,26 +49,27 @@ public class UserFactory {
     }
 
 
-
-    public UserDTO convertUSERtoDTO(User user){
-        UserDTO userDTO=modelMapper.map(user,UserDTO.class);
+    public UserDTO convertUSERtoDTO(User user) {
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         userDTO.setAuthorities(Arrays.asList(user.getAuthorities().toString()));
         return userDTO;
     }
-    public UserModel convertUSERtoModel(User user){
-        UserModel userModel=modelMapper.map(user, UserModel.class);
 
-        PersonalProfile personalProfile=user.getPersonalProfile();
-        ExpertiseProfile expertiseProfile=user.getExpertiseProfile();
+    public UserModel convertUSERtoModel(User user) {
+        UserModel userModel = modelMapper.map(user, UserModel.class);
+
+        PersonalProfile personalProfile = user.getPersonalProfile();
+        ExpertiseProfile expertiseProfile = user.getExpertiseProfile();
         userModel.setFirstName(personalProfile.getFirstName());
         userModel.setLastNAme(personalProfile.getLastName());
         userModel.setBirthYear(personalProfile.getBirthYear());
         userModel.setGender(personalProfile.getSex());
-        if (personalProfile.getLocation()!=null){
-        userModel.setCity(personalProfile.getLocation().getCity().getCity());}
-        if (expertiseProfile.getCategory()!=null) {
+        if (personalProfile.getLocation() != null) {
+            userModel.setCity(personalProfile.getLocation().getCity().getCity());
+        }
+        if (expertiseProfile.getCategory() != null) {
             userModel.setExpertise(expertiseProfile.getCategory().getName());
-            for (Skill skill:expertiseProfile.getSkills()
+            for (Skill skill : expertiseProfile.getSkills()
             ) {
                 userModel.setSkill(skillRepository.getOne(skill.getSkillId()).getSkill());
             }
@@ -78,44 +80,53 @@ public class UserFactory {
 
         return userModel;
     }
+
     @Transactional
     public User convertModelToUser(UserModel userModel) {
-        User user=userRepository.getOne(userModel.getId());
+        User user = userRepository.getOne(userModel.getId());
         user.setEmail(userModel.getEmail());
         user.getPersonalProfile().setBirthYear(userModel.getBirthYear());
-        Location location=personalProfileFactory.createLocation(userModel.getCity());
+        Location location = personalProfileFactory.createLocation(userModel.getCity());
         user.getPersonalProfile().setLocation(location);
         user.getPersonalProfile().setSex(userModel.getGender());
         user.getPersonalProfile().setPersonalReview(userModel.getPersonalReview());
         user.getPersonalProfile().setFirstName(userModel.getFirstName());
         user.getPersonalProfile().setLastName(userModel.getLastNAme());
-        List<Skill>skills=new ArrayList<>();
-        for (String skill:userModel.getSkills()
+        List<Skill> skills = new ArrayList<>();
+        for (String skill : userModel.getSkills()
         ) {
-            if (!skillRepository.findSkillBySkill(skill).isPresent()){
+            if (!skillRepository.findSkillBySkill(skill).isPresent()) {
                 skills.add(new Skill(skill));
             }
         }
         user.getExpertiseProfile().setSkills(skills);
-        if (userModel.getExpertise()!=null){
-        user.getExpertiseProfile().setCategory(categoryRepository.findByName(userModel.getExpertise()).get());}
+        if (userModel.getExpertise() != null) {
+            user.getExpertiseProfile().setCategory(categoryRepository.findByName(userModel.getExpertise()).get());
+        }
 //        userModel.getSkills()
 //                .forEach(s-> {user.getExpertiseProfile().setSkill(skillRepository.findSkillBySkill(s).get());});
 //        user.getExpertiseProfile().setCategory(categoryRepository.findByCategory(userModel.getExpertise()).get());
         return user;
 
     }
+
     public UserModel mergeUserModels(UserModel model, UserModel userModel) {
-        model.setEmail(getNotNull(model.getEmail(),userModel.getEmail()));
-        model.setGender(getNotNull(model.getGender(),userModel.getGender()));
-        model.setFirstName(getNotNull(model.getFirstName(),userModel.getFirstName()));
-        model.setLastNAme(getNotNull(model.getLastNAme(),userModel.getLastNAme()));
-        model.setBirthYear(getNotNull(model.getBirthYear(),userModel.getBirthYear()));
-        model.setCity(getNotNull(model.getCity(),userModel.getCity()));
-        model.setExpertise(getNotNull(model.getCity(),userModel.getCity()));
-        model.setSkills(getNotNull(model.getSkills(),userModel.getSkills()));
-         return model;
+        model.setEmail(getNotNull(model.getEmail(), userModel.getEmail()));
+        model.setGender(getNotNull(model.getGender(), userModel.getGender()));
+        model.setFirstName(getNotNull(model.getFirstName(), userModel.getFirstName()));
+        model.setLastNAme(getNotNull(model.getLastNAme(), userModel.getLastNAme()));
+        model.setBirthYear(getNotNull(model.getBirthYear(), userModel.getBirthYear()));
+        model.setCity(getNotNull(model.getCity(), userModel.getCity()));
+        model.setExpertise(getNotNull(model.getCity(), userModel.getCity()));
+        model.setSkills(getNotNull(model.getSkills(), userModel.getSkills()));
+        return model;
 
     }
 
+    public UserDtoRequest convertUserToRequestDto(User user) {
+        UserDtoRequest userDtoRequest = new UserDtoRequest();
+        userDtoRequest.setId(user.getUserId());
+        userDtoRequest.setUsername(user.getUsername());
+        return userDtoRequest;
+    }
 }

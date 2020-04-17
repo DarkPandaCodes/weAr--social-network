@@ -57,7 +57,7 @@
 
                 <!--				<li sec:authorize="isAuthenticated()" class="nav-item cta mr-md-1"><a th:href="@{'/auth/users/'+${user.userId}+'/profile'}" class="nav-link">Your Profile</a></li>-->
 
-                <li class="nav-item cta cta-colored"><a href="job-post.html" class="nav-link">Want a Job</a></li>
+<!--                <li class="nav-item cta cta-colored"><a href="job-post.html" class="nav-link">Want a Job</a></li>-->
 
             </ul>
         </div>
@@ -65,6 +65,15 @@
 </nav>
 
 <div class="hero-wrap hero-wrap-2">
+    <form action="#" th:action="@{/auth/connection/request}"  th:object="${userRequest}" method="post" >
+        <label>
+            <input type="hidden" data-th-value ="${user.getUserId()}"
+                   th:value="${user.getUserId()}" class="mb-2" th:field="*{id}" />
+            <input type="hidden" data-th-value ="${user.getUsername()}"
+                   th:value="${user.getUsername()}" class="mb-2" th:field="*{username}" />
+        </label>
+        <input type="submit" value="connect/disconect" />
+    </form>
 <div class="container ">
 <div class="emp-profile">
     <form method="post" th:object="${user}" >
@@ -87,11 +96,9 @@
                         Web Developer and Designer
                     </h6>
                     <p class="proile-rating">RANKINGS : <span>8/10</span></p>
-                    <form action="#" th:action="@{/auth/connection/request}"  th:object="${user}" method="post" enctype="multipart/form-data">
-                        <input class="icon-stack-overflow" type="submit" value="connect" />
-                    </form>
 
-                    <input  th:action="@{'/auth/users/'+${user.getUserId()}+'/request'}" type="submit" method="get" value="View my Requests">
+
+                    <input  th:action="@{'/auth/connection/'+${user.getUserId()}+'/request'}" type="submit" method="get" value="View my Requests">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">About</a>

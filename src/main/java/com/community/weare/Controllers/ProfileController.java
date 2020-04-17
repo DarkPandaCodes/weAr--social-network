@@ -5,6 +5,7 @@ import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
 import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
+import com.community.weare.Models.dto.UserDtoRequest;
 import com.community.weare.Models.factories.ExpertiseProfileFactory;
 import com.community.weare.Services.SkillCategoryService;
 import com.community.weare.Services.models.SkillService;
@@ -45,6 +46,7 @@ public class ProfileController {
 
         try {
             User user = userService.getUserById(id);
+            model.addAttribute("userRequest",new UserDtoRequest());
             model.addAttribute("user", user);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);

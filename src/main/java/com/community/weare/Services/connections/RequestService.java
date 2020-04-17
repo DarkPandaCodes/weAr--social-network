@@ -12,4 +12,6 @@ public interface RequestService {
     Request approveRequest(int id);
     Collection<Request> getAllRequestsForUserUnSeen(User receiver);
     Collection<Request> getAllRequestsForUserSeen(User receiver);
+
+    Request getById(Integer id);
 }
