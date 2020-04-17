@@ -93,6 +93,7 @@ public class User implements UserDetails {
         return true;
     }
 
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -148,5 +149,9 @@ public class User implements UserDetails {
 
     public void addToFriendList(User friend) {
         friendList.add(friend);
+    }
+
+    public boolean isFriend(String username){
+        return friendList.stream().anyMatch(u->u.getUsername().equals(username));
     }
 }

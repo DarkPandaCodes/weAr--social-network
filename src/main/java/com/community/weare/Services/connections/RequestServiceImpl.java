@@ -35,6 +35,7 @@ public class RequestServiceImpl implements RequestService{
     public Request approveRequest(int id) {
        Request requestApproved=requestRepository.getOne(id);
        requestApproved.setApproved(true);
+       requestRepository.saveAndFlush(requestApproved);
         return requestApproved;
     }
 
@@ -53,5 +54,10 @@ public class RequestServiceImpl implements RequestService{
     @Override
     public Collection<Request> getAllRequestsForUserSeen(User receiver) {
         return requestRepository.findRequestsByReceiverIsAndSeenTrue(receiver);
+    }
+
+    @Override
+    public Request getById(Integer id) {
+        return requestRepository.getOne(id);
     }
 }

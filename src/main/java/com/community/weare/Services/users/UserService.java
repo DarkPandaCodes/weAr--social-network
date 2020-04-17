@@ -4,6 +4,7 @@ import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
 import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
+import com.community.weare.Models.dto.UserDtoRequest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.security.Principal;
@@ -42,4 +43,6 @@ public interface UserService extends UserDetailsService {
 
     void isProfileOwner(String principal, User user);
 
+    UserDtoRequest getUserRequestFromUser(User user);
+    List<User> findByAuthorities(String role);
 }

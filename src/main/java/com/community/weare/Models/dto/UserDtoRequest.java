@@ -5,6 +5,7 @@ public class UserDtoRequest {
     int id;
     String username;
 
+
     public UserDtoRequest() {
     }
 
