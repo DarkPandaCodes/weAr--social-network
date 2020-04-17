@@ -38,7 +38,14 @@
     <input class="col-md-4" id="b4" type="submit" value="Show feed"/>
 </form>
 <!-- END-->
-
+<p sec:authorize="isAuthenticated()">
+    <a th:if="${user!=null}" th:href="@{'/auth/users/' + ${user.userId} + '/profile'}"
+       class="btn btn-primary">See profile</a>
+</p>
+<p sec:authorize="!isAuthenticated()">
+    <a th:href="@{/auth}"
+       class="btn btn-primary">go to Personal zone</a>
+</p>
 <p sec:authorize="isAuthenticated()">
     User:<span sec:authentication="name"></span>
     <br/>

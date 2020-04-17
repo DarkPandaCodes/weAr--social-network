@@ -6,6 +6,7 @@ import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -38,4 +39,7 @@ public interface UserService extends UserDetailsService {
     void addToFriendList(Request request);
 
     void updateExpertise(User user, ExpertiseProfile expertiseProfileNew, ExpertiseProfile expertiseProfileOld);
+
+    void isProfileOwner(String principal, User user);
+
 }

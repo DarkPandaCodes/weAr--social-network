@@ -18,7 +18,7 @@ import java.security.Principal;
 import java.util.Collection;
 
 @Controller
-@RequestMapping("/auth")
+@RequestMapping("/auth/connection")
 public class ConnectionController {
     private static final String TYPE = "USER";
     private final UserService userService;
@@ -30,7 +30,7 @@ public class ConnectionController {
         this.requestService = requestService;
     }
 
-    @PostMapping("/users/request")
+    @PostMapping("/request")
     public String sendRequest(@ModelAttribute ("user") User userToConnect, Principal principal) {
 
         try {
@@ -42,23 +42,23 @@ public class ConnectionController {
         }
         return "redirect:/auth/users/" + userToConnect.getUserId() + "/profile";
     }
-    @GetMapping("/users/{id}/request")
-    public String getUserRequests(@PathVariable (name = "id") int id, Model model,Principal principal) {
+//    @GetMapping("/users/{id}/request")
+//    public String getUserRequests(@PathVariable (name = "id") int id, Model model,Principal principal) {
+//
+//        try {
+//            User user = userService.getUserById(id);
+//            if (!user.getUsername().equals(principal.getName())){
+//                //TODO method isAuthoriesed
+//                throw new EntityNotFoundException();
+//            }
+//           model.addAttribute("requests", requestService.getAllRequestsForUserUnSeen(user));
+//        } catch (EntityNotFoundException e) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
+//        }
+//      return "";
+//    }
 
-        try {
-            User user = userService.getUserById(id);
-            if (!user.getUsername().equals(principal.getName())){
-                //TODO method isAuthoriesed
-                throw new EntityNotFoundException();
-            }
-           model.addAttribute("requests", requestService.getAllRequestsForUserUnSeen(user));
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
-        }
-      return "";
-    }
-
-    @PostMapping("/users/request/approve")
+    @PostMapping("/request/approve")
     public String getUserRequests(@ModelAttribute Request request, Principal principal) {
 
         try {

@@ -1,5 +1,6 @@
 package com.community.weare.Controllers;
 
+import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
 import com.community.weare.Models.dto.ExpertiseProfileDTO;
@@ -61,40 +62,40 @@ public class ProfileController {
         }
         try {
             User user = userService.getUserById(id);
-            ExpertiseProfileDTO expertiseProfileDTO=new ExpertiseProfileDTO();
+            ExpertiseProfileDTO expertiseProfileDTO = new ExpertiseProfileDTO();
             expertiseProfileDTO.setId(user.getExpertiseProfile().getId());
-            model.addAttribute("userToEdit",userService.getUserModelById(id) );
-            model.addAttribute("profile",user.getExpertiseProfile());
-            model.addAttribute("profileDTO",expertiseProfileDTO);
+            model.addAttribute("userToEdit", userService.getUserModelById(id));
+            model.addAttribute("profile", user.getExpertiseProfile());
+            model.addAttribute("profileDTO", expertiseProfileDTO);
 //            Category category=user.getExpertiseProfile().getCategory();
 //            model.addAttribute("services",skillService.getAllByCategory(category));
-
-            if (principal.getName().equals(user.getUsername())){
-                model.addAttribute("user", user);
-            }else {
-                //TODO refactor error
-                throw new EntityNotFoundException();
-            }
+            userService.isProfileOwner(principal.getName(), user);
+            model.addAttribute("user", user);
 
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }catch (InvalidOperationException e){
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,e.getMessage());
         }
         //TODO validation fields in template
 
         return "user-profile-edit";
     }
 
+
     @PostMapping("/{id}/profile/personal")
     public String editUserProfile(@PathVariable(name = "id") int id,
-                                  @ModelAttribute UserModel userModel,Model model) {
+                                  @ModelAttribute UserModel userModel, Model model) {
 
         try {
             User userToCheck = userService.getUserById(id);
 
-            model.addAttribute("userToEdit",userModel);
-            userService.updateUserModel(userToCheck,userModel);
+            model.addAttribute("userToEdit", userModel);
+            userService.updateUserModel(userToCheck, userModel);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }catch (InvalidOperationException e){
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,e.getMessage());
         }
 
         return "redirect:/auth/users/" + id + "/profile/editor";
@@ -103,21 +104,21 @@ public class ProfileController {
 
     @RequestMapping("/{id}/profile/expertise")
     public String editUserExpertiseProfile(@PathVariable(name = "id") int id,
-                                  @ModelAttribute ExpertiseProfileDTO expertiseProfileDTO,@ModelAttribute ExpertiseProfile expertiseProfile) {
+                                           @ModelAttribute ExpertiseProfileDTO expertiseProfileDTO, @ModelAttribute ExpertiseProfile expertiseProfile) {
 
         try {
             User userToCheck = userService.getUserById(id);
 
 
-            if (expertiseProfileDTO.getSkill1()!=null){
+            if (expertiseProfileDTO.getSkill1() != null) {
                 expertiseProfileDTO.setCategory(userToCheck.getExpertiseProfile().getCategory());
                 ExpertiseProfile expertiseProfileNew =
                         expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
                 userService.updateExpertise
-                        (userToCheck,expertiseProfileNew,userToCheck.getExpertiseProfile());
-            }else {
+                        (userToCheck, expertiseProfileNew, userToCheck.getExpertiseProfile());
+            } else {
                 userService.updateExpertise
-                        (userToCheck,expertiseProfile,userToCheck.getExpertiseProfile());
+                        (userToCheck, expertiseProfile, userToCheck.getExpertiseProfile());
             }
 
         } catch (EntityNotFoundException e) {
@@ -132,6 +133,7 @@ public class ProfileController {
         List<Sex> genders = Arrays.asList(Sex.values());
         model.addAttribute("genders", genders);
     }
+
     @ModelAttribute(name = "categories")
     public void addExpertiseList(Model model) {
         List<Category> expertise = skillCategoryService.getAll();
@@ -142,6 +144,5 @@ public class ProfileController {
 //        List<Skill> skills = skillService.getAllByCategory(category);
 //        model.addAttribute("skills", skills);
 //    }
-
 
 }

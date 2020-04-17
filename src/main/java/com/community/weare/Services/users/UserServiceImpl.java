@@ -1,6 +1,7 @@
 package com.community.weare.Services.users;
 
 import com.community.weare.Exceptions.DuplicateEntityException;
+import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Exceptions.ValidationEntityException;
 import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -148,12 +150,20 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void addToFriendList(Request request) {
-     Request approvedRequest = requestService.approveRequest(request.getId());
-     User owner=userRepository.getOne(approvedRequest.getReceiver().getUserId());
-     owner.addToFriendList(approvedRequest.getSender());
-     userRepository.saveAndFlush(owner);
-     User sender=userRepository.getOne(approvedRequest.getSender().getUserId());
-     sender.addToFriendList(approvedRequest.getReceiver());
-     userRepository.saveAndFlush(sender);
+        Request approvedRequest = requestService.approveRequest(request.getId());
+        User owner = userRepository.getOne(approvedRequest.getReceiver().getUserId());
+        owner.addToFriendList(approvedRequest.getSender());
+        userRepository.saveAndFlush(owner);
+        User sender = userRepository.getOne(approvedRequest.getSender().getUserId());
+        sender.addToFriendList(approvedRequest.getReceiver());
+        userRepository.saveAndFlush(sender);
+    }
+
+    @Override
+    public void isProfileOwner(String principal, User user) {
+        if (principal.equals(user.getUsername())) {
+        } else {
+            throw new InvalidOperationException("User isn't authorised");
+        }
     }
 }
