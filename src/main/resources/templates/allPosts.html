@@ -28,6 +28,7 @@
     <link rel="stylesheet" th:href="@{/css/icomoon.css}" href="../static/css/icomoon.css">
     <link rel="stylesheet" th:href="@{/css/style.css}" href="../static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <style>
         .fa {
@@ -42,6 +43,23 @@
     </style>
 </head>
 <body>
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/jquery-migrate-3.0.1.min.js"></script>
+<script src="/js/popper.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/jquery.easing.1.3.js"></script>
+<script src="/js/jquery.waypoints.min.js"></script>
+<script src="/js/jquery.stellar.min.js"></script>
+<script src="/js/owl.carousel.min.js"></script>
+<script src="/js/jquery.magnific-popup.min.js"></script>
+<script src="/js/aos.js"></script>
+<script src="/js/jquery.animateNumber.min.js"></script>
+<script src="/js/scrollax.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+<script src="/js/google-map.js"></script>
+<script src="/js/main.js"></script>
 
 
 
@@ -97,7 +115,7 @@
 <!--	<td class="cell" th:text="${post.comments.size()}">email@abv.bg</td>-->
 <!--</tr>-->
 
-<section class="ftco-section ftco-candidates ftco-candidates-2 bg-light pt-5 mt-5 ">
+<section class="ftco-section ftco-candidates ftco-candidates-2 bg-light">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 pr-lg-4">
@@ -108,122 +126,53 @@
 
                     <div class="col-md-12" th:each="post : ${posts}">
                         <div class="team d-md-flex p-4 bg-white">
-                            <div class="img"><img
-                                                  th:src="@{'/posts/post/' + ${post.postId} + '/postImage'}"
-                                                  th:href="@{'/posts/post/' + ${post.postId} + '/postImage'}"></div>
+<!--                            <div class="img" style="background-image: url(images/person_1.jpg);"></div>-->
+<!--                            <div class="img" style="background-image:-moz-image-rect(" th:src="@{'/posts/' + ${post.postId} + '/postImage'}" ")-->
+                                <div class="img" ><img
+                                        th:src="@{'/posts/' + ${post.postId} + '/postImage'}"></div>
+<!--                                                  th:href="@{'/posts/' + ${post.postId} + '/postImage'}"></div>-->
+
                             <div class="text pl-md-4">
                                 <span class="location mb-0">Rating: x.x</span>
 								<h2><span th:text="${post.user.username}">username</span></h2>
                                 <span class="position" th:text="'Public post: ' + ${post.public}">public</span>
                                 <p class="mb-2" th:text="${post.content}">content</p>
                                 <span class="seen"th:text="${post.date}"></span>
-                                <p><a th:href="@{'/posts/post/' + ${post.postId}}" class="btn btn-primary">Explore this post</a>
+                                <p><a th:href="@{'/posts/' + ${post.postId}}" class="btn btn-primary">Explore this post</a>
                                 <a th:href="@{'/auth/users/' + ${post.user.getUserId()} + '/profile'}"
                                    class="btn btn-primary">See profile</a></p>
                                 <span class="position" th:text="'Likes: ' + ${post.likes.size()}"></span>
                                 <span class="position" th:text="'Comments: ' + ${post.comments.size()}">public</span>
 
-                                <form th:object="${postDTO2}" method="post" sec:authorize="isAuthenticated()" enctype="multipart/form-data">
-                                    <label>
-                                        <input type="hidden" data-th-value ="${post.getPostId()}"
+                                <form id="like-form" th:object="${postDTO2}" method="post" sec:authorize="isAuthenticated()" enctype="multipart/form-data">
+                                    <div>
+                                        <input name="postId" type="hidden" data-th-value ="${post.getPostId()}"
                                                th:value="${post.getPostId()}" class="mb-2" th:field="*{postId}" />
-                                    </label>
+                                    </div>
+<!--                                    <a href="#" id="like-btn"> <i class="fas fa-heart"></i> </a>-->
                                     <input class="fa-heart" type="submit" value="Like/Dislike" />
                                 </form>
 
-<!--                                <input class="fa fa-thumbs-up" type="submit" onclick="myFunction(this) " th:object="${postDTO2}">-->
-<!--                                    <i  method="post" sec:authorize="isAuthenticated()" onclick="myFunction(this)" class="fa fa-thumbs-up"></i>-->
-<!--                                    <input type="hidden" data-th-value ="${post.getPostId()}"-->
-<!--                                           th:value="${post.getPostId()}" class="mb-2" th:field="*{postDTO2.postId}" />-->
-<!--                                    <script>-->
-<!--                                        function myFunction(x) {-->
-<!--                                            x.classList.toggle("fa-thumbs-down");-->
-<!--                                        }-->
-<!--                                    </script>-->
 
                             </div>
                         </div>
                     </div>
 
-<!--                    <script type="text/javascript">-->
-<!--                        var list = new Array();-->
-<!--                        var pageList = new Array();-->
-<!--                        var currentPage = 1;-->
-<!--                        var numberPerPage = 1;-->
-<!--                        var numberOfPages = 1;-->
 
-<!--                        function makeList() {-->
-<!--                            for (x = 1; x < 200; x++)-->
-<!--                                list.push(x);-->
-
-<!--                            numberOfPages = getNumberOfPages();-->
-<!--                        }-->
-
-<!--                        function getNumberOfPages() {-->
-<!--                            return Math.ceil(list.length / numberPerPage);-->
-<!--                        }-->
-
-<!--                        function nextPage() {-->
-<!--                            currentPage += 1;-->
-<!--                            loadList();-->
-<!--                        }-->
-
-<!--                        function previousPage() {-->
-<!--                            currentPage -= 1;-->
-<!--                            loadList();-->
-<!--                        }-->
-
-<!--                        function firstPage() {-->
-<!--                            currentPage = 1;-->
-<!--                            loadList();-->
-<!--                        }-->
-
-<!--                        function lastPage() {-->
-<!--                            currentPage = numberOfPages;-->
-<!--                            loadList();-->
-<!--                        }-->
-
-<!--                        function loadList() {-->
-<!--                            var begin = ((currentPage - 1) * numberPerPage);-->
-<!--                            var end = begin + numberPerPage;-->
-
-<!--                            pageList = list.slice(begin, end);-->
-<!--                            drawList();-->
-<!--                            check();-->
-<!--                        }-->
-
-<!--                        function drawList() {-->
-<!--                            document.getElementById("list").innerHTML = "";-->
-<!--                            for (r = 0; r < pageList.length; r++) {-->
-<!--                                document.getElementById("list").innerHTML += pageList[r] + "<br/>";-->
-<!--                            }-->
-<!--                        }-->
-
-<!--                        function check() {-->
-<!--                            document.getElementById("next").disabled = currentPage == numberOfPages ? true : false;-->
-<!--                            document.getElementById("previous").disabled = currentPage == 1 ? true : false;-->
-<!--                            document.getElementById("first").disabled = currentPage == 1 ? true : false;-->
-<!--                            document.getElementById("last").disabled = currentPage == numberOfPages ? true : false;-->
-<!--                        }-->
-
-<!--                        function load() {-->
-<!--                            makeList();-->
-<!--                            loadList();-->
-<!--                        }-->
-
-<!--                        window.onload = load;-->
-<!--                    </script>-->
-
-<!--&lt;!&ndash;&lt;!&ndash;                                th:href="@{'/posts/post/' + ${post.postId} + '/postImage'}"&ndash;&gt;-->
-
-<!--                    <div style="text-align:center;">-->
-<!--                        <input type="button" id="first" onclick="firstPage()"  value="first" />-->
-<!--                        <input type="button" id="next" onclick="nextPage()" value="next" />-->
-<!--                        <input type="button" id="previous" onclick="previousPage()" value="previous" />-->
-<!--                        <input type="button" id="last" onclick="lastPage()" value="last" />-->
-
-<!--                        <div id="list"></div>-->
-<!--                    </div>-->
+                    <script>
+                        $("#like-form").submit(function (event){
+                            console.log("this is a like log:)") //check
+                            event.preventDefault()
+                            var data = $(this).serialize()
+                            console.log(data) //check
+                            $.ajax({
+                                type: "PUT",
+                                url: "/api/post/like",
+                                data: data,
+                                success: function(d){console.log("success")}
+                            })
+                        })
+                    </script>
 
                     <div class="row mt-5">
                         <div class="pagination">
@@ -430,21 +379,7 @@
 </div>
 
 
-<script src="/js/jquery.min.js"></script>
-<script src="/js/jquery-migrate-3.0.1.min.js"></script>
-<script src="/js/popper.min.js"></script>
-<script src="/js/bootstrap.min.js"></script>
-<script src="/js/jquery.easing.1.3.js"></script>
-<script src="/js/jquery.waypoints.min.js"></script>
-<script src="/js/jquery.stellar.min.js"></script>
-<script src="/js/owl.carousel.min.js"></script>
-<script src="/js/jquery.magnific-popup.min.js"></script>
-<script src="/js/aos.js"></script>
-<script src="/js/jquery.animateNumber.min.js"></script>
-<script src="/js/scrollax.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
-<script src="/js/google-map.js"></script>
-<script src="/js/main.js"></script>
+
 
 
 </body>

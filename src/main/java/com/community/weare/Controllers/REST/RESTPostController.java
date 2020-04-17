@@ -48,24 +48,32 @@ public class RESTPostController {
     }
 
     @PutMapping("/like")
-    public void likeAPost(@RequestParam int postId, int userId) {
-        if (!postService.ifUserExistsById(userId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
-        }
-        User userLike = postService.getUserById(userId);
-        try {
-            postService.likePost(postId, userLike);
-        } catch (DuplicateEntityException | EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+    public void likeAPost(@RequestParam int postId, Principal principal) {
+        User user = userService.getUserByUserName(principal.getName());
+        //if user = null throw
+        boolean isPostLiked = postService.getOne(postId).isLiked(user.getUsername());
+
+        if (isPostLiked) {
+            try {
+                postService.dislikePost(postId, user);
+            } catch (DuplicateEntityException | EntityNotFoundException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            }
+        } else {
+            try {
+                postService.likePost(postId, user);
+            } catch (DuplicateEntityException | EntityNotFoundException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            }
         }
     }
 
     @PutMapping("/unlike")
-    public void unlikeAPost(@RequestParam int postId, int userId) {
+    public void dislikeAPost(@RequestParam int postId, int userId) {
         if (!postService.ifUserExistsById(userId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
         }
-        User userUnlike = postService.getUserById(userId);
+        User userUnlike = userService.getUserById(userId);
         try {
             postService.dislikePost(postId, userUnlike);
         } catch (DuplicateEntityException | EntityNotFoundException e) {

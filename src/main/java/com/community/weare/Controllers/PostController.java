@@ -12,9 +12,7 @@ import com.community.weare.Models.dto.PostDTO2;
 import com.community.weare.Services.contents.CommentService;
 import com.community.weare.Services.contents.PostService;
 import com.community.weare.Services.users.UserService;
-import io.swagger.annotations.ResponseHeader;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.bouncycastle.crypto.agreement.jpake.JPAKERound1Payload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
@@ -29,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
 import java.util.Base64;
-import java.util.List;
 
 @Controller
 @RequestMapping("/posts")
@@ -64,18 +61,19 @@ public class PostController {
     public String likeDislikePost(@ModelAttribute("postDTO2") PostDTO2 postDTO2,
                                   Model model, Principal principal, Sort sort) {
         model.addAttribute("posts", postService.findAll(sort));
-        boolean isPostLiked = postService.isLiked(postDTO2.getPostId(), principal);
+        boolean isPostLiked = postService.getOne(postDTO2.getPostId()).isLiked(principal.getName());
+        User user = userService.getUserByUserName(principal.getName());
 
         if (isPostLiked) {
             try {
-                postService.dislikePost(postDTO2.getPostId(), userService.getUserByUserName(principal.getName()));
+                postService.dislikePost(postDTO2.getPostId(), user);
             } catch (EntityNotFoundException e) {
                 model.addAttribute("error", e.getMessage());
                 return "allPosts";
             }
         } else {
             try {
-                postService.likePost(postDTO2.getPostId(), userService.getUserByUserName(principal.getName()));
+                postService.likePost(postDTO2.getPostId(), user);
             } catch (DuplicateEntityException e) {
                 model.addAttribute("error", e.getMessage());
                 return "allPosts";
@@ -84,7 +82,7 @@ public class PostController {
         return "allPosts";
     }
 
-    @GetMapping("/post/{id}")
+    @GetMapping("/{id}")
     public String showPost(Model model, @PathVariable(name = "id") int postId) {
         Post post01 = postService.getOne(postId);
         model.addAttribute("post", post01);
@@ -93,7 +91,7 @@ public class PostController {
         return "post-single";
     }
 
-    @PostMapping("/post/{id}")
+    @PostMapping("/{id}")
     public String leaveComment(@ModelAttribute("comment") CommentDTO commentDTO,
                                @PathVariable(name = "id") int postId, Principal principal) {
         Comment newComment = new Comment();
@@ -101,7 +99,7 @@ public class PostController {
         newComment.setPost(postService.getOne(postId));
         newComment.setUser(userService.getUserByUserName(principal.getName()));
         commentService.save(newComment);
-        return "redirect:/posts/post/" + postId + "#leaveComment";
+        return "redirect:/posts/" + postId + "#leaveComment";
     }
 
     @GetMapping("/newPost")
@@ -111,7 +109,7 @@ public class PostController {
         return "newPost";
     }
 
-    @GetMapping("/post/{id}/postImage")
+    @GetMapping("/{id}/postImage")
     public void renderPostImageFormDB(@PathVariable int id, HttpServletResponse response) throws IOException {
         Post post = postService.getOne(id);
 

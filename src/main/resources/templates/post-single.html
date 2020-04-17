@@ -77,8 +77,8 @@
             <h2 class="mb-3" th:text="${post.user.username}"> </h2>
             <p th:text="${post.content}"> </p>
             <p>
-              <img th:src="@{'/posts/post/' + ${post.postId} + '/postImage'}"
-                   th:href="@{'/posts/post/' + ${post.postId} + '/postImage'}">
+              <img th:src="@{'/posts/' + ${post.postId} + '/postImage'}">
+<!--                   th:href="@{'/posts/' + ${post.postId} + '/postImage'}">-->
             </p>
             <p>Additional info...</p>
             <h2 class="mb-3 mt-5">#2. Creative WordPress Themes</h2>

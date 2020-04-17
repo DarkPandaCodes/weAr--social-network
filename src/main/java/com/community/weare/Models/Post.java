@@ -46,9 +46,6 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
     private List<Comment> comments = new ArrayList<>();
 
-    @Transient
-    private boolean isLiked = false;
-
     public Post() {
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -120,12 +117,9 @@ public class Post {
         this.likes = likes;
     }
 
-    @Transient
-    public boolean isLiked(Principal principal) {
-        return Mapper.isLiked(getPostId(), principal);
+    public boolean isLiked(String userName) {
+        return likes.stream()
+                .anyMatch(u -> u.getUsername().equals(userName));
     }
 
-    public void setLiked(boolean liked) {
-        isLiked = liked;
-    }
 }
