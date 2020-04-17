@@ -87,7 +87,7 @@
                         Web Developer and Designer
                     </h6>
                     <p class="proile-rating">RANKINGS : <span>8/10</span></p>
-                    <form th:action="@{'/auth/users/request'}"  th:object="${user}" method="post">
+                    <form action="#" th:action="@{/auth/connection/request}"  th:object="${user}" method="post" enctype="multipart/form-data">
                         <input class="icon-stack-overflow" type="submit" value="connect" />
                     </form>
 

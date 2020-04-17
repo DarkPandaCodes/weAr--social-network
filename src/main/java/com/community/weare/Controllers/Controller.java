@@ -6,6 +6,8 @@ import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.security.Principal;
 
@@ -21,15 +23,13 @@ public class Controller {
 
     @GetMapping("/")
     public String showHomePage() {
-
         return "index";
     }
 
-    @GetMapping("/auth")
+    @RequestMapping(value = {"/auth"},method = RequestMethod.GET)
     public String showAuthPage(Principal principal, Model model) {
         User user=userService.getUserByUserName(principal.getName());
         model.addAttribute("user",user);
-        return
-                "index";
+        return "index";
     }
 }
