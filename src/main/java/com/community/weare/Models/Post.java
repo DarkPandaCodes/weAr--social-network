@@ -124,6 +124,10 @@ public class Post {
                 .anyMatch(u -> u.getUsername().equals(userName));
     }
 
+    public Category getCategory() {
+        return getUser().getExpertiseProfile().getCategory();
+    }
+
     public double getRank() {
         return rank;
     }
