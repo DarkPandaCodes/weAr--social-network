@@ -103,7 +103,9 @@
                             <div class="text pl-md-4">
                                 <span class="location mb-0">User rating: x.x</span>
                                 <h2><span th:text="${post.user.username}">username</span></h2>
+                                <p class="mb-2" th:text="${post.getCategory().getName()}">category</p>
                                 <span class="position" th:text="'Public post: ' + ${post.public}">public</span>
+                                <h5><span>Topic:</span></h5>
                                 <p class="mb-2" th:text="${post.content}">content</p>
                                 <span class="seen" th:text="${post.date}"></span>
                                 <p><a th:href="@{'/posts/' + ${post.postId}}" class="btn btn-primary">Explore this
@@ -161,8 +163,9 @@
                     </div>
                 </div>
             </div>
-<!--            *******************FILTER*****************************-->
+            <!--            *******************FILTER*****************************-->
             <div class="col-lg-4 sidebar">
+
                 <div class="sidebar-box bg-white p-4 ftco-animate">
                     <h3 class="heading-sidebar">Browse post's visibility</h3>
                     <form action="#" class="browse-form" th:object="${postDTO}" method="post">
@@ -178,7 +181,28 @@
                         <input type="submit" value="Filter" class="btn py-3 px-4 btn-primary">
                     </form>
                 </div>
+
+
+                <!--            *******************FILTER*****************************-->
+                <div class="sidebar-box bg-white p-4 ftco-animate">
+                    <h3 class="heading-sidebar">Browse post's category</h3>
+                    <form action="#" class="browse-form" th:object="${category}" method="post">
+                        <div class="form-group">
+                            <br/>
+                            <label for="StringListId"></label>
+                            <select th:field="*{name}">
+                                <option th:each="category : ${allCategories}"
+                                        th:value="${category.getName()}"
+                                        th:text="${category.getName()}">Category
+                                </option>
+                            </select>
+                        </div>
+                        <input type="submit" value="Filter" class="btn py-3 px-4 btn-primary">
+                    </form>
+                </div>
+
             </div>
+
 
         </div>
     </div>
