@@ -1,6 +1,5 @@
 package com.community.weare.Services.users;
 
-import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Exceptions.ValidationEntityException;
 import com.community.weare.Models.*;
@@ -13,7 +12,6 @@ import com.community.weare.Models.factories.UserFactory;
 import com.community.weare.Services.connections.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,8 +42,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username);
+    public UserDetails loadUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new);
     }
 
     @Override
@@ -73,7 +71,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByUserName(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Override
+    public List<User> getUserByFirstNameLastName(String name) {
+        String param[] = name.split(" ");
+        if (param.length == 2) {
+            return userRepository.getByFirstNameLastName(param[0], param[1]);
+        } else {
+            return userRepository.getByFirstName(param[0]);
+        }
+
+    }
+
+    @Override
+    public List<User> getUsersByExpertise(String expertise) {
+        return userRepository.getAllByExpertise(expertise);
     }
 
     @Override
@@ -132,7 +146,8 @@ public class UserServiceImpl implements UserService {
                                 ExpertiseProfile expertiseProfileNew, ExpertiseProfile expertiseProfileOld) {
 
 
-        ExpertiseProfile expertiseProfileMerged = expertiseProfileFactory.mergeExpertProfile(expertiseProfileNew, expertiseProfileOld);
+        ExpertiseProfile expertiseProfileMerged =
+                expertiseProfileFactory.mergeExpertProfile(expertiseProfileNew, expertiseProfileOld);
 
         expertiseProfileService.upgradeProfile(user, expertiseProfileMerged);
 
@@ -185,7 +200,7 @@ public class UserServiceImpl implements UserService {
         if (principal.equals(user.getUsername())) {
             return true;
         } else {
-           return false;
+            return false;
         }
     }
 
@@ -200,3 +215,4 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByAuthorities(role);
     }
 }
+

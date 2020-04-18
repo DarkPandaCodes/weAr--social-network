@@ -1,6 +1,8 @@
 package com.community.weare.Models;
 
 import com.community.weare.Constrains.ValidPassword;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,6 +23,7 @@ public class User implements UserDetails {
     @Column(name = "username", unique = true, nullable = false, length = 30)
     private String username;
 
+    @JsonBackReference
     @ValidPassword
     @Column(name = "password", nullable = false)
     private String password;
@@ -45,9 +48,11 @@ public class User implements UserDetails {
     @JoinColumn(name = "expertise_profile_id", referencedColumnName = "id")
     private ExpertiseProfile expertiseProfile;
 
+    
     @Column(name = "enabled")
     private int enabled;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(name = "connection_users",
             joinColumns = @JoinColumn(name = "user_a"),
