@@ -19,6 +19,12 @@ public interface PostService {
 
     List<Post> findPostsByAlgorithm(Sort sort, Principal principal);
 
+    List<Post> filterPostsByPublicity(List<Post> posts, boolean isPublic);
+
+    List<Post> filterPostsByCategory(List<Post> posts, String categoryName);
+
+    List<Post> filterPostsByUsername(List<Post> posts, String userName);
+
     Post getOne(int postId);
 
     boolean existsById(int postId);

@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
 import java.util.Base64;
+import java.util.List;
 
 @Controller
 @RequestMapping("/posts")
@@ -49,30 +50,51 @@ public class PostController {
     public String showFeed(Model model, Sort sort, Principal principal) {
         model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
         model.addAttribute("postDTO2", new PostDTO2());
+        model.addAttribute("postDTO", new PostDTO());
         return "allPosts";
     }
 
+//    @PutMapping("")
+//    public String filterFeed(@ModelAttribute("postDTO") PostDTO postDTO,
+//                             Model model, Sort sort, Principal principal) {
+//        model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
+//        return "allPosts";
+//    }
+
     @PostMapping("")
     public String likeDislikePost(@ModelAttribute("postDTO2") PostDTO2 postDTO2,
+                                  @ModelAttribute("postDTO") PostDTO postDTO,
                                   Model model, Principal principal, Sort sort) {
-        model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
-        boolean isPostLiked = postService.getOne(postDTO2.getPostId()).isLiked(principal.getName());
-        User user = userService.getUserByUserName(principal.getName());
+        if (postDTO2.getPostId() != 0) {
+            model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
+            boolean isPostLiked = postService.getOne(postDTO2.getPostId()).isLiked(principal.getName());
+            User user = userService.getUserByUserName(principal.getName());
 
-        if (isPostLiked) {
-            try {
-                postService.dislikePost(postDTO2.getPostId(), user);
-            } catch (EntityNotFoundException e) {
-                model.addAttribute("error", e.getMessage());
-                return "allPosts";
+            if (isPostLiked) {
+                try {
+                    postService.dislikePost(postDTO2.getPostId(), user);
+                } catch (EntityNotFoundException e) {
+                    model.addAttribute("error", e.getMessage());
+                    return "allPosts";
+                }
+            } else {
+                try {
+                    postService.likePost(postDTO2.getPostId(), user);
+                } catch (DuplicateEntityException | EntityNotFoundException e) {
+                    model.addAttribute("error", e.getMessage());
+                    return "allPosts";
+                }
             }
+        }
+
+        //filter
+        if (!postDTO.getContent().equals("all")) {
+            boolean isPublic = Boolean.parseBoolean(postDTO.getContent());
+            List<Post> filteredPosts = postService.filterPostsByPublicity
+                    (postService.findPostsByAlgorithm(sort, principal), isPublic);
+            model.addAttribute("posts", filteredPosts);
         } else {
-            try {
-                postService.likePost(postDTO2.getPostId(), user);
-            } catch (DuplicateEntityException | EntityNotFoundException e) {
-                model.addAttribute("error", e.getMessage());
-                return "allPosts";
-            }
+            model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
         }
         return "allPosts";
     }
