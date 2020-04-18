@@ -46,8 +46,18 @@ public class ProfileController {
 
         try {
             User user = userService.getUserById(id);
-            model.addAttribute("userRequest",new UserDtoRequest());
+            model.addAttribute("userRequest", new UserDtoRequest());
             model.addAttribute("user", user);
+
+            boolean areFriends = false;
+
+            if (user.isFriend(principal.getName())) {
+                areFriends = true;
+            }
+            model.addAttribute("friends", areFriends);
+            model.addAttribute("isOwner", userService.isOwner(principal.getName(),user));
+
+
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -76,8 +86,8 @@ public class ProfileController {
 
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }catch (InvalidOperationException e){
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,e.getMessage());
+        } catch (InvalidOperationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, e.getMessage());
         }
         //TODO validation fields in template
 
@@ -96,8 +106,8 @@ public class ProfileController {
             userService.updateUserModel(userToCheck, userModel);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }catch (InvalidOperationException e){
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,e.getMessage());
+        } catch (InvalidOperationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, e.getMessage());
         }
 
         return "redirect:/auth/users/" + id + "/profile/editor";

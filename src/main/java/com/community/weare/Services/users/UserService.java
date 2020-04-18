@@ -17,7 +17,7 @@ public interface UserService extends UserDetailsService {
 
     int registerUser(UserDTO userDTO);
 
-    PersonalProfile upgradeProfile(User user, PersonalProfile personalProfile);
+   void upgradeProfile(User user, PersonalProfile personalProfile);
 
     User getUserByUserName(String username);
 
@@ -31,7 +31,7 @@ public interface UserService extends UserDetailsService {
 
     List<Role> getUserRoles(User user);
 
-    boolean checkIfUserExist(User user);
+    boolean isUserDuplicate(User user);
 
     void updateUserModel(User userToCheck,UserModel user);
 
@@ -43,6 +43,11 @@ public interface UserService extends UserDetailsService {
 
     void isProfileOwner(String principal, User user);
 
+    boolean isOwner(String principal, User user);
+
+
     UserDtoRequest getUserRequestFromUser(User user);
     List<User> findByAuthorities(String role);
+
+    void removeFromFriendsList(Request request);
 }
