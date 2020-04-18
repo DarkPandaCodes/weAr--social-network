@@ -5,28 +5,22 @@ import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Exceptions.ValidationEntityException;
 import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
-import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
 import com.community.weare.Models.dto.UserDtoRequest;
 import com.community.weare.Models.factories.ExpertiseProfileFactory;
-import com.community.weare.Repositories.PersonalInfoRepository;
-import com.community.weare.Repositories.RoleRepository;
 import com.community.weare.Repositories.UserRepository;
 import com.community.weare.Models.factories.UserFactory;
 import com.community.weare.Services.connections.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
-import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -58,7 +52,10 @@ public class UserServiceImpl implements UserService {
     public int registerUser(UserDTO userDTO) {
         try {
             User user = mapperHelper.convertDTOtoUSER(userDTO);
-            checkIfUserExist(user);
+
+            if (isUserDuplicate(user)) {
+                isUserDuplicate(user);
+            }
             PersonalProfile personalProfile
                     = personalInfoService.createProfile(new PersonalProfile());
             ExpertiseProfile expertiseProfile
@@ -67,6 +64,7 @@ public class UserServiceImpl implements UserService {
             user.setPersonalProfile(personalProfile);
             userRepository.saveAndFlush(user);
             return user.getUserId();
+
         } catch (ValidationException e) {
             throw new ValidationEntityException(e.getMessage());
         }
@@ -84,10 +82,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PersonalProfile upgradeProfile(User user, PersonalProfile personalProfile) {
+    public void upgradeProfile(User user, PersonalProfile personalProfile) {
         user.setPersonalProfile(personalProfile);
         userRepository.saveAndFlush(user);
-        return null;
+
     }
 
     @Override
@@ -111,11 +109,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean checkIfUserExist(User user) {
+    public boolean isUserDuplicate(User user) {
         if (userRepository.findByUsernameIs(user.getUsername()).isPresent()) {
-            throw new DuplicateEntityException(TYPE, "name", user.getUsername());
-        } else {
             return true;
+        } else {
+            return false;
         }
     }
 
@@ -162,11 +160,32 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
+    @Override
+    public void removeFromFriendsList(Request request) {
+        Request requestToDelete = requestService.getById(request.getId());
+        User receiver = userRepository.getOne(requestToDelete.getReceiver().getUserId());
+        User sender = userRepository.getOne(requestToDelete.getSender().getUserId());
+        receiver.removeFromFriendList(sender);
+        sender.removeFromFriendList(receiver);
+        userRepository.saveAndFlush(receiver);
+        userRepository.saveAndFlush(sender);
+    }
+
     @Override
     public void isProfileOwner(String principal, User user) {
         if (principal.equals(user.getUsername())) {
         } else {
             throw new InvalidOperationException("User isn't authorised");
+        }
+    }
+
+    @Override
+    public boolean isOwner(String principal, User user) {
+        if (principal.equals(user.getUsername())) {
+            return true;
+        } else {
+           return false;
         }
     }
 

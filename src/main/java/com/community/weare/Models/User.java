@@ -49,11 +49,11 @@ public class User implements UserDetails {
     private int enabled;
 
     @ManyToMany
-    @JoinTable( name = "connection_users",
-            joinColumns = @JoinColumn(name = "owner_user"),
-            inverseJoinColumns = @JoinColumn(name = "connected_user"))
+    @JoinTable(name = "connection_users",
+            joinColumns = @JoinColumn(name = "user_a"),
+            inverseJoinColumns = @JoinColumn(name = "user_b"))
 
-    private Set<User> friendList=new HashSet<>();
+    private Set<User> friendList = new HashSet<>();
 
     public User() {
     }
@@ -151,7 +151,11 @@ public class User implements UserDetails {
         friendList.add(friend);
     }
 
-    public boolean isFriend(String username){
-        return friendList.stream().anyMatch(u->u.getUsername().equals(username));
+    public void removeFromFriendList(User friend) {
+        friendList.remove(friend);
+    }
+
+    public boolean isFriend(String username) {
+        return friendList.stream().anyMatch(u -> u.getUsername().equals(username));
     }
 }

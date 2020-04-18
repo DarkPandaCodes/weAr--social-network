@@ -8,10 +8,21 @@ import java.util.List;
 
 public interface RequestService {
 
-    Request createRequest(User sender,User receiver);
+    Request createRequest(User sender, User receiver);
+
     Request approveRequest(int id);
+
     Collection<Request> getAllRequestsForUserUnSeen(User receiver);
+
+    Collection<Request> getAllRequestsForUser(User receiver);
+
     Collection<Request> getAllRequestsForUserSeen(User receiver);
 
     Request getById(Integer id);
+
+    Request getByUsers(User receiver,User sender);
+
+    Request getByUsersApproved(User receiver,User sender);
+
+    void deleteRequest(Request request);
 }

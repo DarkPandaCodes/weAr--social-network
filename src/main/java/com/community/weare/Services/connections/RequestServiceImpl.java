@@ -1,5 +1,6 @@
 package com.community.weare.Services.connections;
 
+import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.Request;
 import com.community.weare.Models.User;
 import com.community.weare.Repositories.RequestRepository;
@@ -8,9 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class RequestServiceImpl implements RequestService{
@@ -39,7 +40,11 @@ public class RequestServiceImpl implements RequestService{
         return requestApproved;
     }
 
-
+    @Transactional
+    @Override
+    public void deleteRequest(Request request) {
+    requestRepository.delete(request);
+    }
 
     @Override
     public Collection<Request> getAllRequestsForUserUnSeen(User receiver) {
@@ -57,7 +62,29 @@ public class RequestServiceImpl implements RequestService{
     }
 
     @Override
+    public Collection<Request> getAllRequestsForUser(User receiver) {
+        return requestRepository.findRequestsByReceiverIsAndApprovedIsFalse(receiver);
+    }
+
+    @Override
     public Request getById(Integer id) {
         return requestRepository.getOne(id);
+    }
+
+    @Override
+    public Request getByUsers(User receiver,User sender) {
+        return requestRepository.
+                findRequestsByUsersUnApproved(receiver.getUserId(),sender.getUserId());
+    }
+
+    @Override
+    public Request getByUsersApproved(User receiver, User sender) {
+       Set<User> users=new HashSet<>();
+       users.add(receiver);
+       users.add(sender);
+       if (requestRepository.findRequestByUsers(users).isApproved()){
+           return requestRepository.findRequestByUsers(users);
+       }
+        throw new EntityNotFoundException("Request not found");
     }
 }
