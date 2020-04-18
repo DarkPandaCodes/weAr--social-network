@@ -46,8 +46,8 @@ public class PostController {
     }
 
     @GetMapping("")
-    public String showFeed(Model model, Sort sort) {
-        model.addAttribute("posts", postService.findAll(sort));
+    public String showFeed(Model model, Sort sort, Principal principal) {
+        model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
         model.addAttribute("postDTO2", new PostDTO2());
         return "allPosts";
     }
@@ -55,7 +55,7 @@ public class PostController {
     @PostMapping("")
     public String likeDislikePost(@ModelAttribute("postDTO2") PostDTO2 postDTO2,
                                   Model model, Principal principal, Sort sort) {
-        model.addAttribute("posts", postService.findAll(sort));
+        model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
         boolean isPostLiked = postService.getOne(postDTO2.getPostId()).isLiked(principal.getName());
         User user = userService.getUserByUserName(principal.getName());
 

@@ -14,13 +14,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class PostServiceImpl implements PostService {
 
     public static final int POSTS_PER_PAGE = 5;
+    private static final double ALGORITHM_EFFECT_LIKES = -1.0;
+    private static final double ALGORITHM_EFFECT_COMMENTS = -3.0;
+    private static final double ALGORITHM_EFFECT_FRIENDS = -10.0;
+    private static final double ALGORITHM_EFFECT_MULTI_POSTS = 10.0;
 
     private PostRepository postRepository;
     private UserService userService;
@@ -53,6 +59,18 @@ public class PostServiceImpl implements PostService {
 //            }
 //        }
         return allPost;
+    }
+
+    @Override
+    public List<Post> findAllByUser(String userName) {
+        return postRepository.findAllByUserUsername(Sort.by(Sort.Direction.DESC, "date"), userName);
+    }
+
+    @Override
+    @Transactional
+    public List<Post> findPostsByAlgorithm(Sort sort, Principal principal) {
+        List<Post> allPost = findAll(sort);
+        return applyAlgorithm(principal, allPost);
     }
 
     @Override
@@ -155,5 +173,52 @@ public class PostServiceImpl implements PostService {
         }
         Post post = getOne(postId);
         return post.getComments();
+    }
+
+    private List<Post> applyAlgorithm(Principal principal, List<Post> allPost) {
+        User loggedUser = new User();
+        if (principal != null) {
+            loggedUser = userService.getUserByUserName(principal.getName());
+        }
+
+        double timeEffect;
+        double likesEffect;
+        double commentsEffect;
+        double friendsEffect;
+        double multiPostsEffect;
+        int numberOfPostsForMonth = 0;
+
+        for (int i = 0; i < allPost.size(); i++) {
+            Post currentPost = allPost.get(i);
+            List<Post> allPostsOfUser = findAllByUser(currentPost.getUser().getUsername());
+            timeEffect = i;
+            likesEffect = currentPost.getLikes().size() * ALGORITHM_EFFECT_LIKES;
+            commentsEffect = currentPost.getComments().size() * ALGORITHM_EFFECT_COMMENTS;
+            if (principal != null && loggedUser.getFriendList().contains(currentPost.getUser())) {
+                friendsEffect = 1 * ALGORITHM_EFFECT_FRIENDS;
+            } else {
+                friendsEffect = 0;
+            }
+
+            String monthOfCurrentPost = currentPost.getDate().substring(3, 10);
+            String monthOfPreviousPost;
+
+            for (Post post : allPostsOfUser) {
+                if (currentPost.getPostId() == post.getPostId()) {
+                    break;
+                }
+                monthOfPreviousPost = post.getDate().substring(3, 10);
+                if (monthOfCurrentPost.equals(monthOfPreviousPost)) {
+                    numberOfPostsForMonth++;
+                }
+            }
+
+            multiPostsEffect = numberOfPostsForMonth * ALGORITHM_EFFECT_MULTI_POSTS;
+            numberOfPostsForMonth = 0;
+
+            currentPost.setRank(timeEffect + likesEffect + commentsEffect + friendsEffect + multiPostsEffect);
+            save(currentPost);
+        }
+        return postRepository.findAll(Sort.by(Sort.Direction.ASC, "rank"));
     }
 }

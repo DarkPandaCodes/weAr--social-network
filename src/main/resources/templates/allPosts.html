@@ -144,7 +144,8 @@
                                 <a th:href="@{'/auth/users/' + ${post.user.getUserId()} + '/profile'}"
                                    class="btn btn-primary">See profile</a></p>
                                 <span class="position" th:text="'Likes: ' + ${post.likes.size()}"></span>
-                                <span class="position" th:text="'Comments: ' + ${post.comments.size()}">public</span>
+                                <span class="position" th:text="'Comments: ' + ${post.comments.size()}"></span>
+                                <span class="position" th:text="'Rank: ' + ${post.getRank()}"></span>
 
                                 <form id="like-form" th:object="${postDTO2}" method="post" sec:authorize="isAuthenticated()" enctype="multipart/form-data">
                                     <div>

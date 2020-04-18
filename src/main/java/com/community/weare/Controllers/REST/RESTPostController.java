@@ -33,8 +33,8 @@ public class RESTPostController {
     }
 
     @GetMapping("/")
-    public List<Post> findAll(Sort sort) {
-        return postService.findAll(sort);
+    public List<Post> findAll(Sort sort, Principal principal) {
+        return postService.findPostsByAlgorithm(sort, principal);
     }
 
     @GetMapping("/showComments")

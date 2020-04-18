@@ -72,7 +72,7 @@ public class RESTCommentController {
 //        if (!userService.checkIfUserExist(user)) {
 //            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
 //        }
-
+        //TODO Fix it when the method userService.checkIfUserExist is fixed
         try {
             commentService.likeComment(commentId, user);
         } catch (DuplicateEntityException | EntityNotFoundException e) {
@@ -86,7 +86,7 @@ public class RESTCommentController {
 //        if (!userService.checkIfUserExist(user)) {
 //            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
 //        }
-
+        //TODO Fix it when the method userService.checkIfUserExist is fixed
         try {
             commentService.dislikeComment(commentId, user);
         } catch (DuplicateEntityException | EntityNotFoundException e) {

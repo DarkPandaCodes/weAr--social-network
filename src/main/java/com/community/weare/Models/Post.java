@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -46,6 +45,8 @@ public class Post {
 
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
     private List<Comment> comments = new ArrayList<>();
+
+    private double rank;
 
     public Post() {
         Date date = new Date();
@@ -123,4 +124,11 @@ public class Post {
                 .anyMatch(u -> u.getUsername().equals(userName));
     }
 
+    public double getRank() {
+        return rank;
+    }
+
+    public void setRank(double rank) {
+        this.rank = rank;
+    }
 }

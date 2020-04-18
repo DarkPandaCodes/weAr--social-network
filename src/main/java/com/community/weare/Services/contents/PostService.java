@@ -8,13 +8,16 @@ import org.springframework.data.domain.Sort;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Set;
 
 public interface PostService {
 
     List<Post> findAll();
 
     List<Post> findAll(Sort sort);
+
+    List<Post> findAllByUser(String userName);
+
+    List<Post> findPostsByAlgorithm(Sort sort, Principal principal);
 
     Post getOne(int postId);
 
