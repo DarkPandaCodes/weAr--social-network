@@ -42,7 +42,7 @@
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
-                <li class="nav-item"><a sec:authorize="isAuthenticated()" th:href="@{'/auth/auth'}" class="nav-link">GO
+                <li class="nav-item"><a sec:authorize="!isAuthenticated()" th:href="@{'/auth'}" class="nav-link">GO
                     TO personal zone</a></li>
                 <li class="nav-item"><a sec:authorize="isAuthenticated()" th:if="${user!=null}"
                                         th:href="@{'/auth/users/' + ${user.userId} + '/profile'}" class="nav-link">PERSONAL
@@ -86,10 +86,9 @@
                             <div class="nav nav-pills text-center" id="v-pills-tab" role="tablist"
                                  aria-orientation="vertical">
                                 <a class="nav-link active mr-md-1" id="v-pills-1-tab" data-toggle="pill"
-                                   href="#v-pills-1" role="tab" aria-controls="v-pills-1" aria-selected="true">Find
-                                    by Category</a>
+                                   href="#v-pills-1" role="tab" aria-controls="v-pills-1" aria-selected="true">Find your Professional</a>
                                 <a class="nav-link" id="v-pills-2-tab" data-toggle="pill" href="#v-pills-2"
-                                   role="tab" aria-controls="v-pills-2" aria-selected="false">Find user by Name</a>
+                                   role="tab" aria-controls="v-pills-2" aria-selected="false">Find not working</a>
                             </div>
                         </div>
                         <div class="col-md-12 tab-wrap">
