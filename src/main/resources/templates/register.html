@@ -13,8 +13,9 @@
 <form action="#" th:action="@{/register}" th:object="${user}" method="post" enctype="multipart/form-data">
     <label>Username:</label>
     <br/>
-    <input type="text" th:field="*{username}"/>
     <label class="error" th:errors="*{username}"></label>
+    <input type="text" th:field="*{username}"/>
+
     <br/>
     <label>Password:</label>
     <br/>
@@ -28,6 +29,19 @@
     <br/>
     <input type="text" th:field="*{email}"/>
     <br/>
+    <div class="form-group row">
+        <label class="col-4 col-form-label">What is your proffesional category?</label>
+        <div class="col-8">
+            <select required="required" name="select" th:field="*{category.id}" class="custom-select">
+                <option  option
+                         th:each="category: ${categories}"
+                         th:value="${category.id}"
+                         th:text="${category.name}"
+                >Choose...
+                </option>
+            </select>
+        </div>
+    </div>
     <input type="submit" value="Register"/>
 </form>
 <h3>

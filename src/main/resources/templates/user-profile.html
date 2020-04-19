@@ -6,12 +6,14 @@
     <title>Register</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script th:src="@{/jquery/__cdnjs.cloudflare.com_ajax_libs_jquery_3.2.1_jquery}" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script th:src="@{/js/bootstrap.min.js}" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+
     <link rel="stylesheet" type="text/css" th:href="@{/style.css}" href="/static/style.css"/>
     <link rel="stylesheet"  th:href="@{/css/bootstrap.min.css}"
           href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" id="bootstrap-css">
 
-    <script th:src="@{/js/bootstrap.min.js}" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" th:href="@{/css/open-iconic-bootstrap.min.css}"
@@ -93,9 +95,9 @@
             <div class="col-md-4">
                 <div class="profile-img">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52y5aInsxSm31CvHOFHWujqUx_wWTS9iM6s7BAm21oEN_RiGoog" alt=""/>
-                    <div class="file btn btn-lg btn-primary">
+                    <div class="control-label file btn-lg btn-primary">
                         Change Photo
-                        <input type="file" name="file"/>
+                        <input id="imagefile" name="imagefile" type="file" class="file">
                     </div>
                 </div>
             </div>
@@ -111,12 +113,17 @@
 
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">About</a>
+                            <a class="nav-link active" id="home-tab" data-toggle="list" href="#home" role="tab" aria-controls="home" aria-selected="true">About</a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Timeline</a>
+                            <a class="nav-link" id="profile-tab" data-toggle="list" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Timeline</a>
                         </li>
                     </ul>
+                    <script>    $('#myTab a').on('click', function (e) {
+                        e.preventDefault()
+                        $(this).tab('show')
+                    })</script>
                 </div>
             </div>
             <div class="col-md-2"  th:if="${isOwner}">
@@ -144,12 +151,13 @@
                     <div class="col-8">
                         <h6  th:type="datetime-local" th:text="*{expertiseProfile.endTime}"></h6>
                     </div>
-
                 </div>
             </div>
             <div class="col-md-8">
                 <div class="tab-content profile-tab" id="myTabContent">
                     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                        <script>
+                            $('#myTab a[href="#home"]').tab('show') // Select tab by name</script>
                         <div class="row">
                             <div class="col-md-6">
                                 <label>User Id</label>
@@ -192,6 +200,8 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                        <script>
+                            $('#myTab a:first-child').tab('show') // Select tab by name</script>
                         <div class="row">
                             <div class="col-md-6">
                                 <label>Experience</label>

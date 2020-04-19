@@ -20,15 +20,6 @@ public class SkillCategoryServiceImpl implements SkillCategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    @Override
-    public Category create(Category category) {
-        return null;
-    }
-
-    @Override
-    public Category update(Category category) {
-        return null;
-    }
 
     @Override
     public void delete(Category category) {
@@ -45,14 +36,13 @@ public class SkillCategoryServiceImpl implements SkillCategoryService {
         return Optional.empty();
     }
 
-   @Transactional
+    @Transactional
     @Override
     public Category createIfNotExist(Category category1) {
         boolean exists = categoryRepository.findByName(category1.getName()).isPresent();
         Category categoryDB = new Category();
-
         if (exists == true) {
-           categoryDB = categoryRepository.findByName(category1.getName()).get();
+            categoryDB = categoryRepository.findByName(category1.getName()).get();
         } else {
             categoryDB = categoryRepository.saveAndFlush(category1);
         }

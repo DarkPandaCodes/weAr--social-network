@@ -23,4 +23,6 @@ public interface SkillService {
 
     List<Skill>getAllByCategory(Category category);
 
+    Skill createIfNotExist(Skill skill);
+
 }

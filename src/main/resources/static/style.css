@@ -14,6 +14,8 @@ Distributed by Tooplate.com
  License:  GARAGE template is under Creative Commons Attribution 4.0 International License.
  Template: GARAGE
  /**!register*/
+
+
 #playground-container {
     height: 500px;
     overflow: hidden !important;
@@ -128,14 +130,14 @@ span.input-group-addon i {
 
 /*Profile user */
 body{
-    background: -webkit-linear-gradient(left, #3931af, #00c6ff);
+    background: -webkit-linear-gradient(left, #fefeff, #fbe9b7);
 }
 .emp-profile{
     padding: 3%;
     margin-top: 3%;
     margin-bottom: 3%;
     border-radius: 0.5rem;
-    background:  -webkit-linear-gradient(left, #d3d1f8, #00c6ff);
+    background:  -webkit-linear-gradient(left, #d3d1f8, #ffad3d);
 }
 .profile-img{
     text-align: center;
@@ -164,7 +166,7 @@ body{
     color: #333;
 }
 .profile-head h6{
-    color: #00adcc;
+    color: #004ecc;
 }
 .profile-edit-btn{
     border: none;

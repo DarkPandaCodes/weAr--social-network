@@ -16,7 +16,7 @@ import java.util.*;
 import static com.community.weare.Models.factories.FactoryUtils.getNotNull;
 
 @Service
-public class ExpertiseProfileFactory  {
+public class ExpertiseProfileFactory {
     private final SkillService skillService;
     private final SkillCategoryService skillCategoryService;
     private final ModelMapper modelMapper;
@@ -28,46 +28,52 @@ public class ExpertiseProfileFactory  {
         this.skillService = skillService;
         this.skillCategoryService = skillCategoryService;
         this.modelMapper = modelMapper;
-        this.resourceRepository=resourceRepository;
+        this.resourceRepository = resourceRepository;
     }
 
-@Transactional
-   public ExpertiseProfile convertDTOtoExpertiseProfile(ExpertiseProfileDTO profileDTO){
+    @Transactional
+    public ExpertiseProfile convertDTOtoExpertiseProfile(ExpertiseProfileDTO profileDTO) {
 
-        ExpertiseProfile expertiseProfile=new ExpertiseProfile();
+        ExpertiseProfile expertiseProfile = new ExpertiseProfile();
 
-        List<Skill> skillList =new ArrayList<>();
+        List<Skill> skillList = new ArrayList<>();
 
-        Category skillCategory= skillCategoryService.createIfNotExist(profileDTO.getCategory());
+        Category skillCategory = skillCategoryService.createIfNotExist(profileDTO.getCategory());
 
+        expertiseProfile.setCategory(skillCategory);
+        expertiseProfile.setId(profileDTO.getId());
         profileDTO.setSkills();
 
-    for (String skillValue:profileDTO.getSkills()) {
-        if (!skillValue.isEmpty()){
-        Skill skill =new Skill();
-        skill.setSkill(skillValue);
-        skillList.add(skill); }
-    }
-        for (Skill skill : skillList
-             ) {
-            if (!skillService.getByName(skill.getSkill().toLowerCase()).isPresent()){
+        for (String skillValue : profileDTO.getSkills()) {
+            if (!skillValue.isEmpty()) {
+                Skill skill = new Skill();
+                skill.setSkill(skillValue);
                 skill.setCategory(skillCategory);
-                skillService.save(skill);
-            } }
+                skill=skillService.createIfNotExist(skill);
+                skillList.add(skill);
+            }
+        }
+
         expertiseProfile.setStartTime(profileDTO.getStartTime());
         expertiseProfile.setEndTime(profileDTO.getEndTime());
         expertiseProfile.setSkills(skillList);
         return expertiseProfile;
     }
 
-   public ExpertiseProfile mergeExpertProfile(ExpertiseProfile newProfile,ExpertiseProfile oldProfile){
-    oldProfile.setSkills(getNotNull(newProfile.getSkills(),oldProfile.getSkills()));
-    oldProfile.setCategory(getNotNull(newProfile.getCategory(),oldProfile.getCategory()));
-    oldProfile.setStartTime(getNotNull(newProfile.getStartTime(),oldProfile.getStartTime()));
-    oldProfile.setEndTime(getNotNull(newProfile.getEndTime(),oldProfile.getEndTime()));
-    return oldProfile;
-    }
+    public ExpertiseProfile mergeExpertProfile(ExpertiseProfile newProfile, ExpertiseProfile oldProfile) {
 
+        if (!newProfile.getCategory().equals(oldProfile.getCategory())) {
+            oldProfile.setSkills(newProfile.getSkills());
+            oldProfile.setCategory(newProfile.getCategory());
+            oldProfile.setStartTime(getNotNull(newProfile.getStartTime(), oldProfile.getStartTime()));
+            oldProfile.setEndTime(getNotNull(newProfile.getEndTime(), oldProfile.getEndTime()));
+        }else {
+            oldProfile.setSkills(getNotNull(newProfile.getSkills(),oldProfile.getSkills()));
+            oldProfile.setStartTime(getNotNull(newProfile.getStartTime(), oldProfile.getStartTime()));
+            oldProfile.setEndTime(getNotNull(newProfile.getEndTime(), oldProfile.getEndTime()));
+        }
+        return oldProfile;
+    }
 
 }
 

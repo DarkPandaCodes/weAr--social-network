@@ -1,5 +1,6 @@
 package com.community.weare.Services.users;
 
+import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Exceptions.ValidationEntityException;
 import com.community.weare.Models.*;
@@ -48,24 +49,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int registerUser(UserDTO userDTO) {
-        try {
-            User user = mapperHelper.convertDTOtoUSER(userDTO);
 
-            if (isUserDuplicate(user)) {
-                isUserDuplicate(user);
-            }
-            PersonalProfile personalProfile
-                    = personalInfoService.createProfile(new PersonalProfile());
-            ExpertiseProfile expertiseProfile
-                    = expertiseProfileService.createProfile(new ExpertiseProfile());
-            user.setExpertiseProfile(expertiseProfile);
-            user.setPersonalProfile(personalProfile);
-            userRepository.saveAndFlush(user);
-            return user.getUserId();
-
-        } catch (ValidationException e) {
-            throw new ValidationEntityException(e.getMessage());
+        User user = mapperHelper.convertDTOtoUSER(userDTO);
+        if (isUserDuplicate(user)) {
+            throw new DuplicateEntityException("User with this username already exist");
         }
+        PersonalProfile personalProfile
+                = personalInfoService.createProfile(new PersonalProfile());
+        ExpertiseProfile expertiseProfile
+                = expertiseProfileService.createProfile(new ExpertiseProfile());
+        expertiseProfile.setCategory(userDTO.getCategory());
+        user.setExpertiseProfile(expertiseProfile);
+        user.setPersonalProfile(personalProfile);
+        userRepository.saveAndFlush(user);
+        return user.getUserId();
 
     }
 
@@ -99,27 +96,19 @@ public class UserServiceImpl implements UserService {
     public void upgradeProfile(User user, PersonalProfile personalProfile) {
         user.setPersonalProfile(personalProfile);
         userRepository.saveAndFlush(user);
-
     }
 
     @Override
     public Collection<User> getAllUsers() {
-        return null;
+        return userRepository.findAll();
     }
 
-    @Override
-    public void updateUser(User user) {
-
-    }
 
     @Override
     public void deleteUser(int userId) {
-
-    }
-
-    @Override
-    public List<Role> getUserRoles(User user) {
-        return null;
+        User user = userRepository.getOne(userId);
+        user.setEnabled(0);
+        userRepository.saveAndFlush(user);
     }
 
     @Override
@@ -134,9 +123,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void updateUserModel(User userToCheck, UserModel userModel) {
-        UserModel model = mapperHelper.convertUSERtoModel(userToCheck);
-        model = mapperHelper.mergeUserModels(model, userModel);
-        User user = mapperHelper.convertModelToUser(userModel);
+        User user = mapperHelper.mergeUserAndModel(userToCheck, userModel);
         userRepository.saveAndFlush(user);
     }
 
@@ -144,13 +131,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateExpertise(User user,
                                 ExpertiseProfile expertiseProfileNew, ExpertiseProfile expertiseProfileOld) {
-
-
         ExpertiseProfile expertiseProfileMerged =
                 expertiseProfileFactory.mergeExpertProfile(expertiseProfileNew, expertiseProfileOld);
-
         expertiseProfileService.upgradeProfile(user, expertiseProfileMerged);
-
         userRepository.saveAndFlush(user);
     }
 

@@ -10,8 +10,9 @@ public class Location {
     @Column(name = "location_id")
     private Integer id;
 
+
     @ManyToOne
-    @JoinColumn(name = "city_id")
+    @JoinColumn(name = "city_id", unique = true)
     private City city;
 
     public Location() {

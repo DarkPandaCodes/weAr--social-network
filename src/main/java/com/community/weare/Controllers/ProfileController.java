@@ -10,16 +10,23 @@ import com.community.weare.Models.factories.ExpertiseProfileFactory;
 import com.community.weare.Services.SkillCategoryService;
 import com.community.weare.Services.models.SkillService;
 import com.community.weare.Services.users.UserService;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
 import java.util.*;
 
@@ -43,7 +50,6 @@ public class ProfileController {
 
     @GetMapping("/{id}/profile")
     public String showProfilePage(@PathVariable(name = "id") int id, Model model, Principal principal) {
-
         try {
             User user = userService.getUserById(id);
             model.addAttribute("userRequest", new UserDtoRequest());
@@ -55,20 +61,28 @@ public class ProfileController {
                 areFriends = true;
             }
             model.addAttribute("friends", areFriends);
-            model.addAttribute("isOwner", userService.isOwner(principal.getName(),user));
-
+            model.addAttribute("isOwner", userService.isOwner(principal.getName(), user));
 
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return "user-profile";
+        return "profile_new";
+    }
+
+    @GetMapping("/{id}/userImage")
+    public void renderPostImageFormDB(@PathVariable int id, HttpServletResponse response) throws IOException {
+        User user = userService.getUserById(id);
+        if (user.getPersonalProfile().getPicture() != null) {
+            response.setContentType("image/jpeg");
+            InputStream is = new ByteArrayInputStream(Base64.getDecoder().decode(user.getPersonalProfile().getPicture()));
+            IOUtils.copy(is, response.getOutputStream());
+        }
     }
 
     @GetMapping("/{id}/profile/editor")
     public String editFormUserProfile(@PathVariable(name = "id") int id, Model model, Principal principal,
                                       @ModelAttribute @Valid UserDTO user1,
                                       BindingResult bindingResult) {
-
         if (bindingResult.hasErrors()) {
             return "user-profile-edit";
         }
@@ -76,11 +90,10 @@ public class ProfileController {
             User user = userService.getUserById(id);
             ExpertiseProfileDTO expertiseProfileDTO = new ExpertiseProfileDTO();
             expertiseProfileDTO.setId(user.getExpertiseProfile().getId());
+            expertiseProfileDTO.setCategory(user.getExpertiseProfile().getCategory());
             model.addAttribute("userToEdit", userService.getUserModelById(id));
             model.addAttribute("profile", user.getExpertiseProfile());
             model.addAttribute("profileDTO", expertiseProfileDTO);
-//            Category category=user.getExpertiseProfile().getCategory();
-//            model.addAttribute("services",skillService.getAllByCategory(category));
             userService.isProfileOwner(principal.getName(), user);
             model.addAttribute("user", user);
 
@@ -96,13 +109,18 @@ public class ProfileController {
 
 
     @PostMapping("/{id}/profile/personal")
-    public String editUserProfile(@PathVariable(name = "id") int id,
-                                  @ModelAttribute UserModel userModel, Model model) {
+    public String editUserProfile(@PathVariable(name = "id") int id, @RequestParam("imagefile") MultipartFile file,
+                                  @ModelAttribute UserModel userModel, BindingResult bindingResult, Model model) throws IOException {
 
+        if (bindingResult.hasErrors()) {
+            return "user-profile-edit";
+        }
         try {
             User userToCheck = userService.getUserById(id);
-
             model.addAttribute("userToEdit", userModel);
+            if (file != null) {
+                userToCheck.getPersonalProfile().setPicture(Base64.getEncoder().encodeToString(file.getBytes()));
+            }
             userService.updateUserModel(userToCheck, userModel);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -110,20 +128,19 @@ public class ProfileController {
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, e.getMessage());
         }
 
-        return "redirect:/auth/users/" + id + "/profile/editor";
+        return "redirect:/auth/users/" + id + "/profile/editor#profile-services";
     }
 
-
+    @Transactional
     @RequestMapping("/{id}/profile/expertise")
     public String editUserExpertiseProfile(@PathVariable(name = "id") int id,
-                                           @ModelAttribute ExpertiseProfileDTO expertiseProfileDTO, @ModelAttribute ExpertiseProfile expertiseProfile) {
+                                           @ModelAttribute(name = "profileDTO") ExpertiseProfileDTO expertiseProfileDTO, @ModelAttribute ExpertiseProfile expertiseProfile) {
 
         try {
             User userToCheck = userService.getUserById(id);
 
-
-            if (expertiseProfileDTO.getSkill1() != null) {
-                expertiseProfileDTO.setCategory(userToCheck.getExpertiseProfile().getCategory());
+            if (userToCheck.getExpertiseProfile().getCategory().getName().
+                    equals(expertiseProfileDTO.getCategory().getName())) {
                 ExpertiseProfile expertiseProfileNew =
                         expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
                 userService.updateExpertise
@@ -136,7 +153,7 @@ public class ProfileController {
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return "redirect:/auth/users/" + id + "/profile";
+        return "redirect:/auth/users/" + id + "/profile#profile";
     }
 
 
@@ -151,10 +168,5 @@ public class ProfileController {
         List<Category> expertise = skillCategoryService.getAll();
         model.addAttribute("categories", expertise);
     }
-//    @ModelAttribute(name = "skills")
-//    public void addSkillsList(String category,Model model) {
-//        List<Skill> skills = skillService.getAllByCategory(category);
-//        model.addAttribute("skills", skills);
-//    }
 
 }

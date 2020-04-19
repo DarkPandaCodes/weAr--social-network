@@ -22,18 +22,18 @@
     <link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
 </head>
 <body>
-<div class="row main ">
+<div class="row main pl-5 pr-5 ">
     <div class="main-login main-center">
         <h5>Sign up Join Our Growing Free of money Community.</h5>
         <i th:if="${error != null}" th:text="${error}" style="color: red"></i>
-        <form action="#" th:action="@{/register}" th:object="${user}" method="post" enctype="multipart/form-data">
+        <form action="#" th:action="@{/register}" th:object="${user}" method="post" >
             <div class="form-group">
                 <label for="name" class="cols-sm-2 control-label">Username</label>
                 <div class="cols-sm-10">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
-                        <input type="text"  th:field="*{username}" class="form-control" name="name" id="name"  placeholder="Enter your Name"/>
-                        <label class="error" th:errors="*{username}"></label>
+                        <input type="text"
+                               th:field="*{username}" th:required="required" class="form-control" name="name" id="name"  placeholder="Enter your Name"/>
                     </div>
                 </div>
             </div>
@@ -43,7 +43,7 @@
                 <div class="cols-sm-10">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
-                        <input type="text" th:field="*{email}" class="form-control" name="email" id="email"  placeholder="Enter your Email"/>
+                        <input type="text" th:required="required" th:field="*{email}" class="form-control" name="email" id="email"  placeholder="Enter your Email"/>
                         <label class="error" th:errors="*{email}"></label>
                     </div>
                 </div>
@@ -53,7 +53,7 @@
                 <div class="cols-sm-10">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
-                        <input type="password"  th:field="*{password}" class="form-control" name="password" id="password"  placeholder="Enter your Password"/>
+                        <input type="password"  th:required="required" th:field="*{password}" class="form-control" name="password" id="password"  placeholder="Enter your Password"/>
                        <label class="error" th:errors="*{username}"></label>
                     </div>
                 </div>
@@ -69,7 +69,19 @@
                     </div>
                 </div>
             </div>
-
+            <div class="form-group row">
+            <label class="col-4 col-form-label">What is your professional category?*</label>
+            <div class="col-8">
+                <select required="required" name="select" th:field="*{category.id}" class="custom-select">
+                        <option  option
+                                 th:each="category: ${categories}"
+                                 th:value="${category.id}"
+                                 th:text="${category.name}"
+                        >Choose...
+                        </option>
+                    </select>
+            </div>
+            </div>
             <div class="form-group ">
                 <input type="submit" class="btn btn-primary btn-lg btn-block login-button" value="Register"/>
             </div>

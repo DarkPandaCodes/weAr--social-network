@@ -3,6 +3,7 @@ package com.community.weare.Models;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -18,15 +19,16 @@ public class ExpertiseProfile {
     private Integer id;
 
     @OneToMany(cascade = CascadeType.ALL)
-    private List <Skill> skills ;
+    private List<Skill> skills;
+
 
     @ManyToOne
     private Category category;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.NONE,pattern = "yyyy-MM-dd HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH")
     private LocalDateTime startTime;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.NONE,pattern = "yyyy-MM-dd HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH")
     private LocalDateTime endTime;
 
 
@@ -77,9 +79,9 @@ public class ExpertiseProfile {
         this.category = category;
     }
 
-    public String calculateAvailability(){
-        Duration duration=Duration.between(startTime, endTime);
-        long hours=Math.abs(duration.toHours());
-        return String.format("%d hours",hours);
+    public String calculateAvailability() {
+        Duration duration = Duration.between(startTime, endTime);
+        long hours = Math.abs(duration.toHours());
+        return String.format("%d hours", hours);
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+
 @Entity
 @Table(name = "personal_profile")
 public class PersonalProfile {
@@ -29,9 +30,10 @@ public class PersonalProfile {
 
     private String personalReview;
 
+    @Lob
     private String picture;
 
-    public PersonalProfile(Integer id, String firstName, String lastName, Location location, LocalDate birthYear, String personalReview){
+    public PersonalProfile(Integer id, String firstName, String lastName, Location location, LocalDate birthYear, String personalReview) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
