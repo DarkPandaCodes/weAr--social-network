@@ -114,8 +114,10 @@
                                        class="btn btn-primary">See profile</a></p>
                                 <span class="position" th:text="'Likes: ' + ${post.likes.size()}"></span>
                                 <span class="position" th:text="'Comments: ' + ${post.comments.size()}"></span>
-                                <span class="position" th:text="'Rank: ' + ${post.getRank()}"></span>
-
+                                <span class="position" th:text="'Rank: ' + ${post.getRank()}"></span><br>
+                                <span class="position" sec:authorize="isAuthenticated()"
+                                      th:if="${post.isLiked(UserPrincipal.getUsername()) == true}">You already liked</span><br>
+                                <!--                                      th:text="'Liked: ' + ${post.isLiked2(principal)}">Liked</span>-->
                                 <form id="like-form" th:object="${postDTO2}" method="post"
                                       sec:authorize="isAuthenticated()" enctype="multipart/form-data">
                                     <div>

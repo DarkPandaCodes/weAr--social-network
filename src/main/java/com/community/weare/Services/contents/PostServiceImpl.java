@@ -101,6 +101,7 @@ public class PostServiceImpl implements PostService {
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
         }
+        Post post03 = postRepository.getOne(postId);
         return postRepository.getOne(postId);
     }
 
@@ -144,7 +145,6 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public boolean isLiked(int postId, Principal principal) {
-        User loggedUser = userService.getUserByUserName(principal.getName());
         Post post = postRepository.getOne(postId);
         return post.isLiked(principal.getName());
     }

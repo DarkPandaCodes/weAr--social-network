@@ -118,7 +118,7 @@
                     <h3 class="mb-5" th:text="${post.comments.size()} + ' Comments'"></h3>
                     <ul class="comment-list">
 
-                        <li class="comment" th:each="comment : ${comments}">
+                        <li class="comment" th:each="comment : ${post.comments}">
                             <div class="vcard bio">
                                 <img src="/images/person_1.jpg" alt="Image placeholder">
                             </div>
@@ -168,7 +168,23 @@
                 </div>
 
             </div> <!-- .col-md-8 -->
-            <div class="col-md-4 pl-md-5 sidebar ftco-animate">
+            <br>
+
+            <div class="col-lg-4 sidebar">
+                <div class="sidebar-box bg-white p-4 ftco-animate">
+                    <form id="Posts-form" th:object="${User}" method="post"
+                           enctype="multipart/form-data">
+                        <div>
+                            <input name="userId" type="hidden" data-th-value="${post.getUser().getUserId()}"
+                                   th:value="${post.getUser().getUserId()}" class="btn py-3 px-4 btn-primary" th:field="*{id}"/>
+                        </div>
+                        <!--                                    <a href="#" id="like-btn"> <i class="fas fa-heart"></i> </a>-->
+                        <input class="fa-heart" type="submit" value="All posts of this user"/>
+                    </form>
+
+                </div>
+                <br>
+
                 <div class="sidebar-box">
                     <form action="#" class="search-form">
                         <div class="form-group">

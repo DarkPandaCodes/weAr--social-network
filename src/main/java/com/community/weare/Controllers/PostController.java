@@ -6,9 +6,7 @@ import com.community.weare.Models.Category;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
-import com.community.weare.Models.dto.CommentDTO;
-import com.community.weare.Models.dto.PostDTO;
-import com.community.weare.Models.dto.PostDTO2;
+import com.community.weare.Models.dto.*;
 import com.community.weare.Models.factories.PostFactory;
 import com.community.weare.Services.SkillCategoryService;
 import com.community.weare.Services.contents.CommentService;
@@ -56,6 +54,9 @@ public class PostController {
         model.addAttribute("postDTO2", new PostDTO2());
         model.addAttribute("postDTO", new PostDTO());
         model.addAttribute("category", new Category());
+        if (principal != null) {
+            model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+        }
         return "allPosts";
     }
 
@@ -76,6 +77,7 @@ public class PostController {
                                         @ModelAttribute("postDTO") PostDTO postDTO,
                                         @ModelAttribute("category") Category category,
                                         @ModelAttribute("allCategories") List<Category> allCategories,
+                                        @ModelAttribute("UserPrincipal") User userPrincipal,
                                         Model model, Principal principal, Sort sort) {
         if (postDTO2.getPostId() != 0) {
             model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
@@ -87,6 +89,9 @@ public class PostController {
                     postService.dislikePost(postDTO2.getPostId(), user);
                 } catch (EntityNotFoundException e) {
                     model.addAttribute("error", e.getMessage());
+                    if (principal != null) {
+                        model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+                    }
                     return "allPosts";
                 }
             } else {
@@ -94,6 +99,9 @@ public class PostController {
                     postService.likePost(postDTO2.getPostId(), user);
                 } catch (DuplicateEntityException | EntityNotFoundException e) {
                     model.addAttribute("error", e.getMessage());
+                    if (principal != null) {
+                        model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+                    }
                     return "allPosts";
                 }
             }
@@ -121,6 +129,9 @@ public class PostController {
                 model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
             }
         }
+        if (principal != null) {
+            model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+        }
         return "allPosts";
     }
 
@@ -128,14 +139,29 @@ public class PostController {
     public String showPost(Model model, @PathVariable(name = "id") int postId) {
         Post post01 = postService.getOne(postId);
         model.addAttribute("post", post01);
-        model.addAttribute("comments", post01.getComments());
         model.addAttribute("comment", new CommentDTO());
+        model.addAttribute("User", new UserDtoRequest());
         return "post-single";
     }
 
     @PostMapping("/{id}")
-    public String leaveComment(@ModelAttribute("comment") CommentDTO commentDTO,
-                               @PathVariable(name = "id") int postId, Principal principal) {
+    public String leaveCommentAndShowPosts(@ModelAttribute("comment") CommentDTO commentDTO,
+                                           @ModelAttribute("User") UserDtoRequest user,
+                                           @ModelAttribute("postDTO") PostDTO postDTO,
+                                           @ModelAttribute("postDTO2") PostDTO2 postDTO2,
+                                           @ModelAttribute("category") Category category,
+                                           @ModelAttribute("UserPrincipal") User userPrincipal,
+                                           @PathVariable(name = "id") int postId, Principal principal, Model model) {
+        if (user.getId() != 0) {
+            List<Post> postsOfUser = postService.findAllByUser
+                    (userService.getUserById(user.getId()).getUsername());
+            model.addAttribute("posts", postsOfUser);
+            if (principal != null) {
+                model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+            }
+            return "allPosts";
+        }
+
         Comment newComment = new Comment();
         newComment.setContent(commentDTO.getContent());
         newComment.setPost(postService.getOne(postId));
