@@ -22,7 +22,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
-import java.util.Optional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.community.weare.utils.HttpMessages.ERROR_NOT_FOUND_MESSAGE_FORMAT;
 
@@ -76,37 +78,60 @@ public class RESTUserController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         } catch (ValidationEntityException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        } catch (EntityNotFoundException e){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,("User not found"));
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ("User not found"));
         }
 
     }
+
     @PostMapping("/{id}/expertise")
     public ExpertiseProfile upgradeUserExpertiseProfile(@PathVariable(name = "id") int id,
-                                                       @RequestBody @Valid ExpertiseProfileDTO expertiseProfileDTO) {
+                                                        @RequestBody @Valid ExpertiseProfileDTO expertiseProfileDTO) {
         try {
             User user = userService.getUserById(id);
 
-            ExpertiseProfile expertiseProfileNEW= expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
-            ExpertiseProfile expertiseProfile= expertiseProfileFactory.mergeExpertProfile(expertiseProfileNEW,user.getExpertiseProfile());
-            return expertiseProfileService.upgradeProfile(user,expertiseProfile);
+            ExpertiseProfile expertiseProfileNEW = expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
+            ExpertiseProfile expertiseProfile = expertiseProfileFactory.mergeExpertProfile(expertiseProfileNEW, user.getExpertiseProfile());
+            return expertiseProfileService.upgradeProfile(user, expertiseProfile);
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         } catch (ValidationEntityException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        } catch (EntityNotFoundException e){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,("User not found"));
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ("User not found"));
         }
 
     }
 
+    @GetMapping("/{id}")
+    public UserModel getUserById(@PathVariable(name = "id") int id) {
+        try {
+            User user = userService.getUserById(id);
+            return mapperHelper.convertUSERtoModel(user);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
+        }
+    }
+
     @GetMapping("/")
-    public UserModel getUserById(@RequestHeader(name = "id") int id) {
-       try {
-           User user = userService.getUserById(id);
-           return mapperHelper.convertUSERtoModel(user);
-        }catch (EntityNotFoundException e){
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
-    }}
+    public List<User> getUser(@RequestParam(name = "name", required = false) String name,
+                              @RequestParam(name = "expertise", required = false) String expertise) {
+        try {
+            if (name != null && expertise == null) {
+                return userService.getUserByFirstNameLastName(name);
+            } else if (name == null && expertise != null) {
+                return userService.getUsersByExpertise(expertise);
+            } else {
+                List<User> users = userService.getUserByFirstNameLastName(name);
+                return users.stream().
+                        filter(u -> u.getExpertiseProfile()
+                                .getCategory().getName().equals(expertise)).
+                        collect(Collectors.toList());
+            }
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
+        }
+    }
 
 }

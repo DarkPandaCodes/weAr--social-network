@@ -4,6 +4,7 @@ import com.community.weare.Models.Role;
 import com.community.weare.Models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.swing.text.html.Option;
@@ -14,11 +15,21 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-    User findByUsername(String username);
+    Optional<User> findByUsername(String username);
 
     @Query(value = "SELECT u,a FROM User as u join u.authorities as a where a.authority = ?1")
     List<User> findByAuthorities(String role);
 
     Optional<User> findByUsernameIs(String name);
 
+    @Query(value = "SELECT u,e from User as u join u.expertiseProfile as e where e.category.name like :expertise")
+    List<User> getAllByExpertise(@Param("expertise") String expertise);
+
+    @Query(value = "SELECT u,p from User as u join u.personalProfile " +
+            "as p where p.firstName like :firstName and p.lastName like :lastName")
+    List<User> getByFirstNameLastName(@Param("firstName") String firstName, @Param("lastName") String lastName);
+
+    @Query(value = "SELECT u,p from User as u join u.personalProfile " +
+            "as p where p.firstName like :firstName")
+    List<User> getByFirstName(@Param("firstName") String firstName);
 }

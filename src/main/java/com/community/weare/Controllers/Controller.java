@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
+import java.util.Optional;
 
 @org.springframework.stereotype.Controller
 
@@ -22,14 +24,14 @@ public class Controller {
     }
 
     @GetMapping("/")
-    public String showHomePage() {
-        return "index";
+    public String showHomePage( ) {
+        return "index_new";
     }
 
-    @RequestMapping(value = {"/auth"},method = RequestMethod.GET)
+    @GetMapping("/auth")
     public String showAuthPage(Principal principal, Model model) {
         User user=userService.getUserByUserName(principal.getName());
         model.addAttribute("user",user);
-        return "index";
+        return "index_new";
     }
 }
