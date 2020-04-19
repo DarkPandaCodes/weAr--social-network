@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -72,6 +73,28 @@ public class PostServiceImpl implements PostService {
         List<Post> allPost = findAll(sort);
         return applyAlgorithm(principal, allPost);
     }
+
+    @Override
+    public List<Post> filterPostsByPublicity(List<Post> posts, boolean isPublic) {
+        return posts.stream()
+                .filter(p -> p.isPublic() == isPublic)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Post> filterPostsByCategory(List<Post> posts, String categoryName) {
+        return posts.stream()
+                .filter(p -> p.getCategory().getName().equals(categoryName))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Post> filterPostsByUsername(List<Post> posts, String userName) {
+        return posts.stream()
+                .filter(p -> p.getUser().getUsername().equals(userName))
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     public Post getOne(int postId) {

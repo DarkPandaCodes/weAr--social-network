@@ -2,6 +2,7 @@ package com.community.weare.Controllers;
 
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
+import com.community.weare.Models.Category;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
@@ -9,6 +10,7 @@ import com.community.weare.Models.dto.CommentDTO;
 import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Models.dto.PostDTO2;
 import com.community.weare.Models.factories.PostFactory;
+import com.community.weare.Services.SkillCategoryService;
 import com.community.weare.Services.contents.CommentService;
 import com.community.weare.Services.contents.PostService;
 import com.community.weare.Services.users.UserService;
@@ -27,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
 import java.util.Base64;
+import java.util.List;
 
 @Controller
 @RequestMapping("/posts")
@@ -35,43 +38,87 @@ public class PostController {
     private UserService userService;
     private CommentService commentService;
     private PostFactory postFactory;
+    private SkillCategoryService skillCategoryService;
 
     @Autowired
     public PostController(PostService postService, UserService userService, CommentService commentService,
-                          PostFactory postFactory) {
+                          PostFactory postFactory, SkillCategoryService skillCategoryService) {
         this.postService = postService;
         this.userService = userService;
         this.commentService = commentService;
         this.postFactory = postFactory;
+        this.skillCategoryService = skillCategoryService;
     }
 
     @GetMapping("")
     public String showFeed(Model model, Sort sort, Principal principal) {
         model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
         model.addAttribute("postDTO2", new PostDTO2());
+        model.addAttribute("postDTO", new PostDTO());
+        model.addAttribute("category", new Category());
         return "allPosts";
     }
 
-    @PostMapping("")
-    public String likeDislikePost(@ModelAttribute("postDTO2") PostDTO2 postDTO2,
-                                  Model model, Principal principal, Sort sort) {
-        model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
-        boolean isPostLiked = postService.getOne(postDTO2.getPostId()).isLiked(principal.getName());
-        User user = userService.getUserByUserName(principal.getName());
+//    @PutMapping("")
+//    public String filterFeed(@ModelAttribute("postDTO") PostDTO postDTO,
+//                             Model model, Sort sort, Principal principal) {
+//        model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
+//        return "allPosts";
+//    }
 
-        if (isPostLiked) {
-            try {
-                postService.dislikePost(postDTO2.getPostId(), user);
-            } catch (EntityNotFoundException e) {
-                model.addAttribute("error", e.getMessage());
-                return "allPosts";
+    @ModelAttribute("allCategories")
+    public List<Category> populateCategories() {
+        return skillCategoryService.getAll();
+    }
+
+    @PostMapping("")
+    public String likeDislikeFilterPost(@ModelAttribute("postDTO2") PostDTO2 postDTO2,
+                                        @ModelAttribute("postDTO") PostDTO postDTO,
+                                        @ModelAttribute("category") Category category,
+                                        @ModelAttribute("allCategories") List<Category> allCategories,
+                                        Model model, Principal principal, Sort sort) {
+        if (postDTO2.getPostId() != 0) {
+            model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
+            boolean isPostLiked = postService.getOne(postDTO2.getPostId()).isLiked(principal.getName());
+            User user = userService.getUserByUserName(principal.getName());
+
+            if (isPostLiked) {
+                try {
+                    postService.dislikePost(postDTO2.getPostId(), user);
+                } catch (EntityNotFoundException e) {
+                    model.addAttribute("error", e.getMessage());
+                    return "allPosts";
+                }
+            } else {
+                try {
+                    postService.likePost(postDTO2.getPostId(), user);
+                } catch (DuplicateEntityException | EntityNotFoundException e) {
+                    model.addAttribute("error", e.getMessage());
+                    return "allPosts";
+                }
             }
-        } else {
-            try {
-                postService.likePost(postDTO2.getPostId(), user);
-            } catch (DuplicateEntityException | EntityNotFoundException e) {
-                model.addAttribute("error", e.getMessage());
-                return "allPosts";
+        }
+
+        //filter isPublic
+        if (postDTO.getContent() != null) {
+            if (!postDTO.getContent().equals("all")) {
+                boolean isPublic = Boolean.parseBoolean(postDTO.getContent());
+                List<Post> filteredPosts = postService.filterPostsByPublicity
+                        (postService.findPostsByAlgorithm(sort, principal), isPublic);
+                model.addAttribute("posts", filteredPosts);
+            } else {
+                model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
+            }
+        }
+
+        //filter Category
+        if (category.getName() != null) {
+            if (!category.getName().equals("All")) {
+                List<Post> filteredPosts = postService.filterPostsByCategory
+                        (postService.findPostsByAlgorithm(sort, principal), category.getName());
+                model.addAttribute("posts", filteredPosts);
+            } else {
+                model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
             }
         }
         return "allPosts";
