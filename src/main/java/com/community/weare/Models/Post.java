@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -123,6 +122,17 @@ public class Post {
     public boolean isLiked(String userName) {
         return likes.stream()
                 .anyMatch(u -> u.getUsername().equals(userName));
+    }
+
+    public boolean canEdit(String userName) {
+        return getUser().getUsername().equals(userName);
+//                ||
+//                getUser().getAuthorities().stream()
+//                        .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
+    }
+
+    public boolean canDelete(String userName) {
+        return getUser().getUsername().equals(userName);
     }
 
     public Category getCategory() {

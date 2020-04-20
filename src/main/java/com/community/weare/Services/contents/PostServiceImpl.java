@@ -164,6 +164,9 @@ public class PostServiceImpl implements PostService {
         }
         postToEdit.setPublic(postDTO.isPublic());
         postToEdit.setContent(postDTO.getContent());
+        if (postDTO.getPicture().length() > 200) {
+            postToEdit.setPicture(postDTO.getPicture());
+        }
         postRepository.save(postToEdit);
     }
 

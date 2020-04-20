@@ -136,11 +136,17 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public String showPost(Model model, @PathVariable(name = "id") int postId) {
+    public String showPost(Model model, @PathVariable(name = "id") int postId, Principal principal) {
         Post post01 = postService.getOne(postId);
         model.addAttribute("post", post01);
         model.addAttribute("comment", new CommentDTO());
         model.addAttribute("User", new UserDtoRequest());
+        if (principal != null) {
+            model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+            model.addAttribute("isAdmin", userService.getUserByUserName(principal.getName()).getAuthorities().stream()
+                    .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN")));
+        }
+//        model.addAttribute("sourceText", "");
         return "post-single";
     }
 
@@ -152,6 +158,17 @@ public class PostController {
                                            @ModelAttribute("category") Category category,
                                            @ModelAttribute("UserPrincipal") User userPrincipal,
                                            @PathVariable(name = "id") int postId, Principal principal, Model model) {
+//                                           @RequestParam String sourceText) {
+        if (commentDTO.getContent() != null) {
+            Comment newComment = new Comment();
+            newComment.setContent(commentDTO.getContent());
+            newComment.setPost(postService.getOne(postId));
+            newComment.setUser(userService.getUserByUserName(principal.getName()));
+            commentService.save(newComment);
+            model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+            return "redirect:/posts/" + postId + "#leaveComment";
+        }
+
         if (user.getId() != 0) {
             List<Post> postsOfUser = postService.findAllByUser
                     (userService.getUserById(user.getId()).getUsername());
@@ -161,13 +178,7 @@ public class PostController {
             }
             return "allPosts";
         }
-
-        Comment newComment = new Comment();
-        newComment.setContent(commentDTO.getContent());
-        newComment.setPost(postService.getOne(postId));
-        newComment.setUser(userService.getUserByUserName(principal.getName()));
-        commentService.save(newComment);
-        return "redirect:/posts/" + postId + "#leaveComment";
+        return "redirect:/posts/" + postId;
     }
 
     @GetMapping("/newPost")
@@ -204,6 +215,51 @@ public class PostController {
             return "newPost";
         }
         return "newPost";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editPostData(Model model, @PathVariable(name = "id") int postId, Principal principal) {
+        Post postToEdit = postService.getOne(postId);
+        model.addAttribute("post", postToEdit);
+        model.addAttribute("postDTO", new PostDTO());
+        if (principal == null) {
+            model.addAttribute("error", "You can only edit your posts");
+            return "redirect:/posts/" + postId;
+        }
+//        if (!postToEdit.getUser().getUsername().equals(principal.getName())) {
+//            model.addAttribute("error", "You can only edit your posts");
+//            return "redirect:/posts/" + postId;
+//        }
+//
+//        if (principal != null) {
+            boolean isAdmin = userService.getUserByUserName(principal.getName()).getAuthorities().stream()
+                    .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
+//        }
+        if (!(postToEdit.getUser().getUsername().equals(principal.getName()) ||
+                userService.getUserByUserName(principal.getName()).getAuthorities().stream()
+                        .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN")))) {
+            model.addAttribute("error", "You can only edit your posts");
+            return "redirect:/posts/" + postId;
+        }
+        return "postEdit";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String editPost(Model model, @PathVariable(name = "id") int postId,
+                           @ModelAttribute("post") Post postToEdit,
+                           @ModelAttribute("postDTO") PostDTO postDTO, Principal principal,
+                           @RequestParam("imagefile") MultipartFile file) throws IOException {
+        postDTO.setPicture(Base64.getEncoder().encodeToString(file.getBytes()));
+        try {
+            postService.editPost(postId, postDTO, principal);
+        } catch (IllegalArgumentException | EntityNotFoundException e) {
+            model.addAttribute("error", e.getMessage());
+            return "redirect:/posts/edit/" + postId;
+        }
+        if (principal != null) {
+            model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+        }
+        return "redirect:/posts/" + postId;
     }
 }
 
