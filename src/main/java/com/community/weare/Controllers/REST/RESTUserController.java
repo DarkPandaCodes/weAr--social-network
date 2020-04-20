@@ -54,7 +54,8 @@ public class RESTUserController {
     public String registerUser(@RequestBody @Valid UserDTO userDTO) {
 
         try {
-            userService.registerUser(userDTO);
+            User userDB = mapperHelper.convertDTOtoUSER(userDTO);
+            userService.registerUser(userDB,userDTO.getCategory());
             User user = userService.getUserByUserName(userDTO.getUsername());
             return String.format("User with name %s and id %d was created",
                     user.getUsername(), user.getUserId());

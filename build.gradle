@@ -17,15 +17,20 @@ dependencies {
     implementation 'mysql:mysql-connector-java'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
     compile group: 'org.json', name: 'json', version: '20190722'
     compile 'org.webjars:bootstrap:4.4.1'
+
     compile group: 'org.modelmapper', name: 'modelmapper', version: '0.7.5'
     compile group: 'org.passay', name: 'passay', version: '1.0'
+
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
+
+
+    implementation 'junit:junit:4.12'
+    implementation 'junit:junit:4.13'
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
 
     compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'

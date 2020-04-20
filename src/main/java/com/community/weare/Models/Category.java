@@ -17,9 +17,11 @@ public class Category {
     private String name;
 
 
+    public Category(String category) {
+        this.name=category;
+    }
     public Category() {
     }
-
     public Integer getId() {
         return id;
     }

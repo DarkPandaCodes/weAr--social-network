@@ -7,6 +7,7 @@ import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
 import com.community.weare.Models.dto.UserDtoRequest;
 import com.community.weare.Models.factories.ExpertiseProfileFactory;
+import com.community.weare.Models.factories.UserFactory;
 import com.community.weare.Services.SkillCategoryService;
 import com.community.weare.Services.models.SkillService;
 import com.community.weare.Services.users.UserService;
@@ -38,14 +39,16 @@ public class ProfileController {
     private final ExpertiseProfileFactory expertiseProfileFactory;
     private final SkillCategoryService skillCategoryService;
     private SkillService skillService;
+    private UserFactory userFactory;
 
     @Autowired
     public ProfileController(UserService userService, ExpertiseProfileFactory expertiseProfileFactory,
-                             SkillCategoryService skillCategoryService, SkillService skillService) {
+                             SkillCategoryService skillCategoryService, SkillService skillService,UserFactory userFactory) {
         this.userService = userService;
         this.expertiseProfileFactory = expertiseProfileFactory;
         this.skillCategoryService = skillCategoryService;
         this.skillService = skillService;
+        this.userFactory= userFactory;
     }
 
     @GetMapping("/{id}/profile")
@@ -121,7 +124,8 @@ public class ProfileController {
             if (file != null) {
                 userToCheck.getPersonalProfile().setPicture(Base64.getEncoder().encodeToString(file.getBytes()));
             }
-            userService.updateUserModel(userToCheck, userModel);
+            User userToSave= userFactory.mergeUserAndModel(userToCheck, userModel);
+            userService.updateUser(userToSave);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         } catch (InvalidOperationException e) {
@@ -141,13 +145,20 @@ public class ProfileController {
 
             if (userToCheck.getExpertiseProfile().getCategory().getName().
                     equals(expertiseProfileDTO.getCategory().getName())) {
+
                 ExpertiseProfile expertiseProfileNew =
                         expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
+                ExpertiseProfile expertiseProfileMerged =
+                        expertiseProfileFactory.mergeExpertProfile(expertiseProfileNew,
+                                userToCheck.getExpertiseProfile());
                 userService.updateExpertise
-                        (userToCheck, expertiseProfileNew, userToCheck.getExpertiseProfile());
+                        (userToCheck, expertiseProfileMerged );
             } else {
+                ExpertiseProfile expertiseProfileMerged =
+                        expertiseProfileFactory.mergeExpertProfile(expertiseProfile,
+                                userToCheck.getExpertiseProfile());
                 userService.updateExpertise
-                        (userToCheck, expertiseProfile, userToCheck.getExpertiseProfile());
+                        (userToCheck, expertiseProfile);
             }
 
         } catch (EntityNotFoundException e) {

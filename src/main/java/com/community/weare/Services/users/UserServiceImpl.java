@@ -1,13 +1,12 @@
 package com.community.weare.Services.users;
 
-import com.community.weare.Exceptions.DuplicateEntityException;
-import com.community.weare.Exceptions.InvalidOperationException;
-import com.community.weare.Exceptions.ValidationEntityException;
+
+import com.community.weare.Exceptions.*;
 import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
-import com.community.weare.Models.dto.UserDTO;
-import com.community.weare.Models.dto.UserDtoRequest;
 import com.community.weare.Models.factories.ExpertiseProfileFactory;
+import com.community.weare.Repositories.ExpertiseRepository;
+import com.community.weare.Repositories.PersonalInfoRepository;
 import com.community.weare.Repositories.UserRepository;
 import com.community.weare.Models.factories.UserFactory;
 import com.community.weare.Services.connections.RequestService;
@@ -16,8 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
-import javax.validation.ValidationException;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -28,18 +26,18 @@ public class UserServiceImpl implements UserService {
     private final RequestService requestService;
     private final ExpertiseProfileFactory expertiseProfileFactory;
     private final UserFactory mapperHelper;
-    private final PersonalInfoService personalInfoService;
-    private final ExpertiseProfileService expertiseProfileService;
+    private final ExpertiseRepository expertiseRepository;
+    private final PersonalInfoRepository personalInfoRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RequestService requestService, ExpertiseProfileFactory expertiseProfileFactory, UserFactory mapperHelper,
-                           PersonalInfoService personalInfoService, ExpertiseProfileService expertiseProfileService) {
+    public UserServiceImpl(UserRepository userRepository, RequestService requestService, ExpertiseProfileFactory expertiseProfileFactory,
+                           UserFactory mapperHelper, ExpertiseRepository expertiseRepository, PersonalInfoRepository personalInfoRepository) {
         this.userRepository = userRepository;
         this.requestService = requestService;
         this.expertiseProfileFactory = expertiseProfileFactory;
         this.mapperHelper = mapperHelper;
-        this.personalInfoService = personalInfoService;
-        this.expertiseProfileService = expertiseProfileService;
+        this.expertiseRepository = expertiseRepository;
+        this.personalInfoRepository = personalInfoRepository;
     }
 
     @Override
@@ -47,18 +45,20 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new);
     }
 
+    @Transactional
     @Override
-    public int registerUser(UserDTO userDTO) {
+    public int registerUser(User user, Category category) {
 
-        User user = mapperHelper.convertDTOtoUSER(userDTO);
         if (isUserDuplicate(user)) {
             throw new DuplicateEntityException("User with this username already exist");
         }
         PersonalProfile personalProfile
-                = personalInfoService.createProfile(new PersonalProfile());
+                = personalInfoRepository.saveAndFlush(new PersonalProfile());
         ExpertiseProfile expertiseProfile
-                = expertiseProfileService.createProfile(new ExpertiseProfile());
-        expertiseProfile.setCategory(userDTO.getCategory());
+                = expertiseRepository.saveAndFlush(new ExpertiseProfile());
+        if (expertiseProfile != null) {
+            expertiseProfile.setCategory(category);
+        }
         user.setExpertiseProfile(expertiseProfile);
         user.setPersonalProfile(personalProfile);
         userRepository.saveAndFlush(user);
@@ -68,7 +68,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByUserName(String username) {
-        return userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(new EntityNotFoundException("User", "username", username));
+        return user;
     }
 
     @Override
@@ -92,11 +94,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
-    @Override
-    public void upgradeProfile(User user, PersonalProfile personalProfile) {
-        user.setPersonalProfile(personalProfile);
-        userRepository.saveAndFlush(user);
-    }
+//    @Override
+//    public void upgradeProfile(User user, PersonalProfile personalProfile) {
+//        user.setPersonalProfile(personalProfile);
+//        userRepository.saveAndFlush(user);
+//    }
 
     @Override
     public Collection<User> getAllUsers() {
@@ -105,10 +107,10 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void deleteUser(int userId) {
+    public User disableUser(int userId) {
         User user = userRepository.getOne(userId);
         user.setEnabled(0);
-        userRepository.saveAndFlush(user);
+        return userRepository.saveAndFlush(user);
     }
 
     @Override
@@ -122,18 +124,18 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void updateUserModel(User userToCheck, UserModel userModel) {
-        User user = mapperHelper.mergeUserAndModel(userToCheck, userModel);
+    public void updateUser(User user) {
         userRepository.saveAndFlush(user);
     }
 
     @Transactional
     @Override
     public void updateExpertise(User user,
-                                ExpertiseProfile expertiseProfileNew, ExpertiseProfile expertiseProfileOld) {
-        ExpertiseProfile expertiseProfileMerged =
-                expertiseProfileFactory.mergeExpertProfile(expertiseProfileNew, expertiseProfileOld);
-        expertiseProfileService.upgradeProfile(user, expertiseProfileMerged);
+                                ExpertiseProfile expertiseProfileMerged) {
+
+        if (user.getExpertiseProfile().getId() == expertiseProfileMerged.getId()) {
+            expertiseRepository.saveAndFlush(expertiseProfileMerged);
+        }
         userRepository.saveAndFlush(user);
     }
 
@@ -187,11 +189,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public UserDtoRequest getUserRequestFromUser(User user) {
-        UserDtoRequest userDtoRequest = mapperHelper.convertUserToRequestDto(user);
-        return userDtoRequest;
-    }
+//    @Override
+//    public UserDtoRequest getUserRequestFromUser(User user) {
+//        UserDtoRequest userDtoRequest = mapperHelper.convertUserToRequestDto(user);
+//        return userDtoRequest;
+//    }
 
     @Override
     public List<User> findByAuthorities(String role) {

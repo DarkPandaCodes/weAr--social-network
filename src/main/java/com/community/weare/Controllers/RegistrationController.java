@@ -5,6 +5,7 @@ import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Models.Category;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dto.UserDTO;
+import com.community.weare.Models.factories.UserFactory;
 import com.community.weare.Repositories.SkillCategoryRepository;
 import com.community.weare.Services.SkillCategoryService;
 import com.community.weare.Services.models.SkillService;
@@ -25,13 +26,16 @@ import java.util.List;
 
 @Controller
 public class RegistrationController {
-    private UserService userService;
-    private SkillCategoryService skillCategoryService;
+    private final UserService userService;
+    private final SkillCategoryService skillCategoryService;
+    private final UserFactory userFactory;
 
     @Autowired
-    public RegistrationController(UserService userService, SkillCategoryService skillCategoryService) {
+    public RegistrationController(UserService userService, SkillCategoryService skillCategoryService,
+                                  UserFactory userFactory) {
         this.userService = userService;
         this.skillCategoryService = skillCategoryService;
+        this.userFactory = userFactory;
     }
 
     @GetMapping("/register")
@@ -64,7 +68,8 @@ public class RegistrationController {
           return modelAndViewError;
         }
         try {
-            int id = userService.registerUser(user);
+            User userDB = userFactory.convertDTOtoUSER(user);
+            int id = userService.registerUser(userDB,user.getCategory());
             modelAndView.addObject("id", id);
             return modelAndView;
         } catch (DuplicateEntityException e) {

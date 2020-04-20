@@ -119,6 +119,7 @@ public class UserFactory {
         return userDtoRequest;
     }
 
+    @Transactional
     public User mergeUserAndModel(User userToCheck, UserModel userModel) {
 
         User user = userRepository.getOne(userToCheck.getUserId());

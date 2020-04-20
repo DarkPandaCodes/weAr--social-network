@@ -40,7 +40,7 @@ public class SkillCategoryServiceImpl implements SkillCategoryService {
     @Override
     public Category createIfNotExist(Category category1) {
         boolean exists = categoryRepository.findByName(category1.getName()).isPresent();
-        Category categoryDB = new Category();
+        Category categoryDB ;
         if (exists == true) {
             categoryDB = categoryRepository.findByName(category1.getName()).get();
         } else {

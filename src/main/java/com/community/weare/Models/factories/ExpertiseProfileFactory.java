@@ -2,7 +2,6 @@ package com.community.weare.Models.factories;
 
 import com.community.weare.Models.*;
 import com.community.weare.Models.dto.ExpertiseProfileDTO;
-import com.community.weare.Repositories.ResourceRepository;
 import com.community.weare.Services.SkillCategoryService;
 import com.community.weare.Services.models.SkillService;
 import org.modelmapper.ModelMapper;
@@ -20,15 +19,15 @@ public class ExpertiseProfileFactory {
     private final SkillService skillService;
     private final SkillCategoryService skillCategoryService;
     private final ModelMapper modelMapper;
-    private final ResourceRepository resourceRepository;
+
 
     @Autowired
     public ExpertiseProfileFactory(SkillService skillService, SkillCategoryService skillCategoryService,
-                                   ModelMapper modelMapper, ResourceRepository resourceRepository) {
+                                   ModelMapper modelMapper) {
         this.skillService = skillService;
         this.skillCategoryService = skillCategoryService;
         this.modelMapper = modelMapper;
-        this.resourceRepository = resourceRepository;
+
     }
 
     @Transactional

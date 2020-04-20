@@ -2,8 +2,6 @@ package com.community.weare.Services.users;
 
 import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
-import com.community.weare.Models.dto.UserDTO;
-import com.community.weare.Models.dto.UserDtoRequest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Collection;
@@ -12,9 +10,9 @@ import java.util.List;
 
 public interface UserService extends UserDetailsService {
 
-    int registerUser(UserDTO userDTO);
+    int registerUser(User user,Category category);
 
-    void upgradeProfile(User user, PersonalProfile personalProfile);
+//    void upgradeProfile(User user, PersonalProfile personalProfile);
 
     User getUserByUserName(String username);
 
@@ -23,25 +21,25 @@ public interface UserService extends UserDetailsService {
     Collection<User> getAllUsers();
 
 
-    void deleteUser(int userId);
+    User disableUser(int userId);
 
 
     boolean isUserDuplicate(User user);
 
-    void updateUserModel(User userToCheck, UserModel user);
+    void updateUser(User user);
 
     UserModel getUserModelById(int id);
 
     void addToFriendList(Request request);
 
-    void updateExpertise(User user, ExpertiseProfile expertiseProfileNew, ExpertiseProfile expertiseProfileOld);
+    void updateExpertise(User user, ExpertiseProfile expertiseProfileMerged);
 
     void isProfileOwner(String principal, User user);
 
     boolean isOwner(String principal, User user);
 
 
-    UserDtoRequest getUserRequestFromUser(User user);
+//    UserDtoRequest getUserRequestFromUser(User user);
 
     List<User> findByAuthorities(String role);
 
