@@ -5,6 +5,7 @@ public class CommentDTO {
     private int postId;
     private int userId;
     private String content;
+    private boolean isDeletedConfirmed;
 
     public CommentDTO(int postId, int userId, String content) {
         this.postId = postId;
@@ -37,5 +38,13 @@ public class CommentDTO {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public boolean isDeletedConfirmed() {
+        return isDeletedConfirmed;
+    }
+
+    public void setDeletedConfirmed(boolean deletedConfirmed) {
+        isDeletedConfirmed = deletedConfirmed;
     }
 }

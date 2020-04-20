@@ -128,10 +128,6 @@ public class Post {
         return getUser().getUsername().equals(userName);
     }
 
-    public boolean canDelete(String userName) {
-        return getUser().getUsername().equals(userName);
-    }
-
     public Category getCategory() {
         return getUser().getExpertiseProfile().getCategory();
     }

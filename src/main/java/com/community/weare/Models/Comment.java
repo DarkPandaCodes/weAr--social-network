@@ -95,4 +95,13 @@ public class Comment {
     public void setDate(String date) {
         this.date = date;
     }
+
+    public boolean isLiked(String userName) {
+        return likes.stream()
+                .anyMatch(u -> u.getUsername().equals(userName));
+    }
+
+    public boolean canEdit(String userName) {
+        return getUser().getUsername().equals(userName);
+    }
 }

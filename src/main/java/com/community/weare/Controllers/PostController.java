@@ -107,6 +107,7 @@ public class PostController {
         //filter isPublic
         if (postDTO.getContent() != null) {
             if (!postDTO.getContent().equals("all")) {
+                //TODO replace postDTO with postDTO2 - make new field String isPublic (All, Public, Private)
                 boolean isPublic = Boolean.parseBoolean(postDTO.getContent());
                 List<Post> filteredPosts = postService.filterPostsByPublicity
                         (postService.findPostsByAlgorithm(sort, principal), isPublic);
@@ -228,7 +229,8 @@ public class PostController {
             return "redirect:/posts/" + postId;
         }
         if (!(postToEdit.getUser().getUsername().equals(principal.getName()) ||
-                userService.getUserByUserName(principal.getName()).getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN")))) {
+                userService.getUserByUserName(principal.getName()).getAuthorities().stream()
+                        .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN")))) {
             model.addAttribute("error", "You can only edit your posts");
             return "redirect:/posts/" + postId;
         }
@@ -272,8 +274,6 @@ public class PostController {
             model.addAttribute("error", "You can only delete your posts");
             return "redirect:/posts/" + postId;
         }
-        boolean isConfirmed = false;
-//        model.addAttribute("sourceText", "");
         model.addAttribute("postDTO2", new PostDTO2());
         return "postDelete";
     }
@@ -294,11 +294,7 @@ public class PostController {
             model.addAttribute("error", e.getMessage());
             return "redirect:/posts/edit/" + postId;
         }
-        if (principal != null) {
-            model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
-        }
         return "postDeleteConfirmation";
     }
-
 }
 
