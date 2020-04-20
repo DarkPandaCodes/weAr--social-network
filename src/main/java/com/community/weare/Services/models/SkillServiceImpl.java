@@ -74,5 +74,20 @@ public class SkillServiceImpl implements SkillService {
     public List<Skill> getAllByCategory(Category category) {
         return skillRepository.findByCategory(category);
     }
+
+    @Transactional
+    @Override
+    public Skill createIfNotExist(Skill skill) {
+        boolean exists = skillRepository.findSkillBySkill(skill.getSkill()).isPresent();
+        Skill skillDB=new Skill();
+
+        if (exists == true) {
+            skillDB=skillRepository.findSkillBySkill(skill.getSkill()).get();
+        } else {
+            skillDB=skillRepository.saveAndFlush(skill);
+        }
+        return skillDB;
+
+    }
 }
 

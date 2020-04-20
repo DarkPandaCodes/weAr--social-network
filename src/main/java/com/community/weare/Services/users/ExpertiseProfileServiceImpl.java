@@ -35,12 +35,9 @@ public class ExpertiseProfileServiceImpl implements ExpertiseProfileService {
 
     @Transactional
     @Override
-    public ExpertiseProfile upgradeProfile( ExpertiseProfile oldProfile) {
+    public ExpertiseProfile upgradeProfile(ExpertiseProfile oldProfile) {
         expertiseRepository.saveAndFlush(oldProfile);
         return oldProfile;
     }
-
-
-
 
 }

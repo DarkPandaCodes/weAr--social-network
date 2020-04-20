@@ -22,11 +22,9 @@ public interface UserService extends UserDetailsService {
 
     Collection<User> getAllUsers();
 
-    void updateUser(User user);
 
     void deleteUser(int userId);
 
-    List<Role> getUserRoles(User user);
 
     boolean isUserDuplicate(User user);
 

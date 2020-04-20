@@ -13,9 +13,5 @@ public class RoleServiceImpl implements RoleService {
         this.roleRepository = roleRepository;
     }
 
-//    @Override
-//    public void saveRoleUserInDb() {
-//     roleRepository.saveAndFlush(new Role("USER"));
-//    }
 
 }

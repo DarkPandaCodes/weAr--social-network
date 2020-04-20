@@ -23,9 +23,9 @@ public class ExpertiseProfileDTO {
 
     private Category category;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.NONE,pattern = "yyyy-MM-dd HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH")
     private LocalDateTime startTime;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.NONE,pattern = "yyyy-MM-dd HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH")
     private LocalDateTime endTime;
 
     public ExpertiseProfileDTO() {
