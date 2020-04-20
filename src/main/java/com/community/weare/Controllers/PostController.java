@@ -6,7 +6,10 @@ import com.community.weare.Models.Category;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
-import com.community.weare.Models.dto.*;
+import com.community.weare.Models.dto.CommentDTO;
+import com.community.weare.Models.dto.PostDTO;
+import com.community.weare.Models.dto.PostDTO2;
+import com.community.weare.Models.dto.UserDtoRequest;
 import com.community.weare.Models.factories.PostFactory;
 import com.community.weare.Services.SkillCategoryService;
 import com.community.weare.Services.contents.CommentService;
@@ -60,13 +63,6 @@ public class PostController {
         return "allPosts";
     }
 
-//    @PutMapping("")
-//    public String filterFeed(@ModelAttribute("postDTO") PostDTO postDTO,
-//                             Model model, Sort sort, Principal principal) {
-//        model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
-//        return "allPosts";
-//    }
-
     @ModelAttribute("allCategories")
     public List<Category> populateCategories() {
         return skillCategoryService.getAll();
@@ -90,7 +86,8 @@ public class PostController {
                 } catch (EntityNotFoundException e) {
                     model.addAttribute("error", e.getMessage());
                     if (principal != null) {
-                        model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+                        model.addAttribute("UserPrincipal",
+                                userService.getUserByUserName(principal.getName()));
                     }
                     return "allPosts";
                 }
@@ -143,10 +140,10 @@ public class PostController {
         model.addAttribute("User", new UserDtoRequest());
         if (principal != null) {
             model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
-            model.addAttribute("isAdmin", userService.getUserByUserName(principal.getName()).getAuthorities().stream()
+            model.addAttribute("isAdmin", userService.getUserByUserName
+                    (principal.getName()).getAuthorities().stream()
                     .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN")));
         }
-//        model.addAttribute("sourceText", "");
         return "post-single";
     }
 
@@ -158,7 +155,6 @@ public class PostController {
                                            @ModelAttribute("category") Category category,
                                            @ModelAttribute("UserPrincipal") User userPrincipal,
                                            @PathVariable(name = "id") int postId, Principal principal, Model model) {
-//                                           @RequestParam String sourceText) {
         if (commentDTO.getContent() != null) {
             Comment newComment = new Comment();
             newComment.setContent(commentDTO.getContent());
@@ -219,6 +215,11 @@ public class PostController {
 
     @GetMapping("/edit/{id}")
     public String editPostData(Model model, @PathVariable(name = "id") int postId, Principal principal) {
+        //Bug! If you remove boolean principalAdmin the Authority Admin will not work. Admin won't be able to edit posts
+        boolean principalAdmin = userService.getUserByUserName
+                (principal.getName()).getAuthorities().stream()
+                .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
+
         Post postToEdit = postService.getOne(postId);
         model.addAttribute("post", postToEdit);
         model.addAttribute("postDTO", new PostDTO());
@@ -226,18 +227,8 @@ public class PostController {
             model.addAttribute("error", "You can only edit your posts");
             return "redirect:/posts/" + postId;
         }
-//        if (!postToEdit.getUser().getUsername().equals(principal.getName())) {
-//            model.addAttribute("error", "You can only edit your posts");
-//            return "redirect:/posts/" + postId;
-//        }
-//
-//        if (principal != null) {
-            boolean isAdmin = userService.getUserByUserName(principal.getName()).getAuthorities().stream()
-                    .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
-//        }
         if (!(postToEdit.getUser().getUsername().equals(principal.getName()) ||
-                userService.getUserByUserName(principal.getName()).getAuthorities().stream()
-                        .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN")))) {
+                userService.getUserByUserName(principal.getName()).getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN")))) {
             model.addAttribute("error", "You can only edit your posts");
             return "redirect:/posts/" + postId;
         }
@@ -261,5 +252,53 @@ public class PostController {
         }
         return "redirect:/posts/" + postId;
     }
+
+    @GetMapping("/delete/{id}")
+    public String deletePostData(Model model, Principal principal, @PathVariable(name = "id") int postId) {
+        //Bug! If you remove boolean principalAdmin the Authority Admin will not work. Admin won't be able to edit posts
+        boolean principalAdmin = userService.getUserByUserName
+                (principal.getName()).getAuthorities().stream()
+                .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
+
+        Post postToDelete = postService.getOne(postId);
+        model.addAttribute("post", postToDelete);
+        if (principal == null) {
+            model.addAttribute("error", "You can only delete your posts");
+            return "redirect:/posts/" + postId;
+        }
+        if (!(postToDelete.getUser().getUsername().equals(principal.getName()) ||
+                userService.getUserByUserName(principal.getName()).getAuthorities().stream()
+                        .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN")))) {
+            model.addAttribute("error", "You can only delete your posts");
+            return "redirect:/posts/" + postId;
+        }
+        boolean isConfirmed = false;
+//        model.addAttribute("sourceText", "");
+        model.addAttribute("postDTO2", new PostDTO2());
+        return "postDelete";
+    }
+
+    @PostMapping("/delete/{id}")
+    public String deletePost(Model model, Principal principal, @PathVariable(name = "id") int postId,
+                             @ModelAttribute("postDTO2") PostDTO2 postDTO2,
+                             @ModelAttribute("post") Post postToDelete) {
+        if (!postDTO2.isDeletedConfirmed()) {
+            if (principal != null) {
+                model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+            }
+            return "redirect:/posts/" + postId;
+        }
+        try {
+            postService.deletePost(postId, principal);
+        } catch (IllegalArgumentException | EntityNotFoundException e) {
+            model.addAttribute("error", e.getMessage());
+            return "redirect:/posts/edit/" + postId;
+        }
+        if (principal != null) {
+            model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+        }
+        return "postDeleteConfirmation";
+    }
+
 }
 

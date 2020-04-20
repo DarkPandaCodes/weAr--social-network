@@ -189,7 +189,15 @@
                     <br>
                     <!--                ***********************************Edit post********************************-->
                     <a th:href="@{'/posts/edit/' + ${post.postId}}" sec:authorize="isAuthenticated()"
-                       th:if="${(post.canEdit(UserPrincipal.getUsername()) || isAdmin) == true}" class="btn py-3 px-4 btn-primary">Edit post</a>
+                       th:if="${(post.canEdit(UserPrincipal.getUsername()) || isAdmin) == true}"
+                       class="btn py-3 px-4 btn-primary">Edit post</a>
+
+                    <br>
+                    <br>
+                    <!--                ***********************************Delete post********************************-->
+                    <a th:href="@{'/posts/delete/' + ${post.postId}}" sec:authorize="isAuthenticated()"
+                       th:if="${(post.canDelete(UserPrincipal.getUsername()) || isAdmin) == true}"
+                       class="btn py-3 px-4 btn-primary">Delete post</a>
                 </div>
                 <br>
                 <br>

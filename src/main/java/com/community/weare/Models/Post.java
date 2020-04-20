@@ -126,9 +126,6 @@ public class Post {
 
     public boolean canEdit(String userName) {
         return getUser().getUsername().equals(userName);
-//                ||
-//                getUser().getAuthorities().stream()
-//                        .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
     }
 
     public boolean canDelete(String userName) {
