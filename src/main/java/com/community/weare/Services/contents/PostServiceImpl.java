@@ -14,9 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,7 +67,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public List<Post> findPostsByAlgorithm(Sort sort, Principal principal) {
-        List<Post> allPost = findAll(sort);
+        List<Post> allPost = postRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
         return applyAlgorithm(principal, allPost);
     }
 
@@ -156,7 +153,7 @@ public class PostServiceImpl implements PostService {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
         }
         User userPrincipal = userService.getUserByUserName(principal.getName());
-        Post postToEdit = getOne(postId);
+        Post postToEdit = postRepository.getOne(postId);
 
         if (!((postToEdit.getUser().getUsername().equals(principal.getName()))
                 || userService.findByAuthorities("ROLE_ADMIN").contains(userPrincipal))) {
@@ -220,8 +217,12 @@ public class PostServiceImpl implements PostService {
             timeEffect = i;
             likesEffect = currentPost.getLikes().size() * ALGORITHM_EFFECT_LIKES;
             commentsEffect = currentPost.getComments().size() * ALGORITHM_EFFECT_COMMENTS;
-            if (principal != null && loggedUser.getFriendList().contains(currentPost.getUser())) {
-                friendsEffect = 1 * ALGORITHM_EFFECT_FRIENDS;
+            if (principal != null) {
+                if (loggedUser.getFriendList().contains(currentPost.getUser())) {
+                    friendsEffect = 1 * ALGORITHM_EFFECT_FRIENDS;
+                } else {
+                    friendsEffect = 0;
+                }
             } else {
                 friendsEffect = 0;
             }
