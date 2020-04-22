@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
 
@@ -94,6 +95,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
+
 //    @Override
 //    public void upgradeProfile(User user, PersonalProfile personalProfile) {
 //        user.setPersonalProfile(personalProfile);
@@ -107,9 +109,13 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User disableUser(int userId) {
+    public User disableEnableUser(int userId) {
         User user = userRepository.getOne(userId);
-        user.setEnabled(0);
+        if (!user.isEnabled()) {
+            user.setEnabled(0);
+        } else {
+            user.setEnabled(1);
+        }
         return userRepository.saveAndFlush(user);
     }
 
@@ -173,8 +179,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void isProfileOwner(String principal, User user) {
+    public void ifNotProfileOwnerThrow(String principal, User user) {
         if (principal.equals(user.getUsername())) {
+        } else {
+            throw new InvalidOperationException("User isn't authorised");
+        }
+    }
+
+    @Override
+    public void ifNotProfileOrAdminOwnerThrow(String principal, User user) {
+        User admin = userRepository.findByUsername(principal).orElseThrow(new EntityNotFoundException("User not found"));
+        if (admin.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
         } else {
             throw new InvalidOperationException("User isn't authorised");
         }
@@ -189,7 +204,15 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//    @Override
+    @Override
+    public boolean isAdmin(Principal principal) {
+        User admin = userRepository.findByUsername(principal.getName()).orElseThrow(new EntityNotFoundException("This user doesn't exist"));
+        if (admin.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"))) {
+            return true;
+        }
+        return false;
+    }
+    //    @Override
 //    public UserDtoRequest getUserRequestFromUser(User user) {
 //        UserDtoRequest userDtoRequest = mapperHelper.convertUserToRequestDto(user);
 //        return userDtoRequest;

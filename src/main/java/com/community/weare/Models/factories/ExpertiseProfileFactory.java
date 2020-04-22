@@ -61,16 +61,11 @@ public class ExpertiseProfileFactory {
 
     public ExpertiseProfile mergeExpertProfile(ExpertiseProfile newProfile, ExpertiseProfile oldProfile) {
 
-        if (!newProfile.getCategory().equals(oldProfile.getCategory())) {
             oldProfile.setSkills(newProfile.getSkills());
             oldProfile.setCategory(newProfile.getCategory());
             oldProfile.setStartTime(getNotNull(newProfile.getStartTime(), oldProfile.getStartTime()));
             oldProfile.setEndTime(getNotNull(newProfile.getEndTime(), oldProfile.getEndTime()));
-        }else {
-            oldProfile.setSkills(getNotNull(newProfile.getSkills(),oldProfile.getSkills()));
-            oldProfile.setStartTime(getNotNull(newProfile.getStartTime(), oldProfile.getStartTime()));
-            oldProfile.setEndTime(getNotNull(newProfile.getEndTime(), oldProfile.getEndTime()));
-        }
+
         return oldProfile;
     }
 

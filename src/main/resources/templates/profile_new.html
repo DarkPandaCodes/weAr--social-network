@@ -100,6 +100,7 @@
             </label>
             <input type="submit" th:value="${friends} ? 'disconnect': 'connect'"/>
         </form>
+
         <!--    <form sec:authorize="isAuthenticated()" action="#" th:if="${!friends.contains(name)}" th:action="@{/auth/connection/request}"  th:object="${userRequest}" method="post" >-->
         <!--        <label>-->
         <!--            <input type="hidden" data-th-value ="${user.getUserId()}"-->
@@ -114,6 +115,16 @@
                 <button class="btn btn-primary py-2">View my Requests</button>
             </a>
         </div>
+        <form th:if="${!isAdmin}" sec:authorize="isAuthenticated()" action="#" th:action="@{/admin/status}"
+              th:object="${userDisable}" method="post">
+            <label>
+                <input type="hidden" data-th-value="${user.getUserId()}"
+                       th:value="${user.getUserId()}" class="mb-2" th:field="*{userId}"/>
+                <input type="hidden" data-th-value="${user.getUsername()}"
+                       th:value="${user.getUsername()}" class="mb-2" th:field="*{username}"/>
+            </label>
+            <input class="btn btn-primary"  type="submit" th:value="${user.isEnabled() ? 'disable':'enable'}"  />
+        </form>
         <form method="post" th:object="${user.personalProfile}">
             <div class="row">
                 <div class="col-md-4">
@@ -153,8 +164,8 @@
                         })</script>
                     </div>
                 </div>
-                <div class="col-md-2" th:if="${isOwner}">
-                    <a th:href="@{'/auth/users/'+${user.userId}+'/profile/editor'}" class="nav-link">edit Your
+                <div class="col-md-2" th:if="${isOwner or isAdmin}">
+                    <a th:href="@{'/auth/users/'+${user.userId}+'/profile/editor'}" class="nav-link">edit
                         Profile</a>
                 </div>
                 <!--            <div class="col-md-2">-->
@@ -247,9 +258,9 @@
                                         <p class="proile-rating">RANKINGS : <span>8/10</span></p>
                                     </div>
                                 </div>
-                                <div class="col-md-2" th:if="${isOwner}">
+                                <div class="col-md-2" th:if="${isOwner or isAdmin}">
                                     <a th:href="@{'/auth/users/'+${user.userId}+'/profile/editor#profile-services'}"
-                                       class="nav-link">edit Your
+                                       class="nav-link">edit
                                         Services</a>
                                 </div>
                             </div>

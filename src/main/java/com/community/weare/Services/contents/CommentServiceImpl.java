@@ -5,7 +5,6 @@ import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
-import com.community.weare.Models.dto.CommentDTO;
 import com.community.weare.Repositories.CommentRepository;
 import com.community.weare.Repositories.PostRepository;
 import com.community.weare.Services.users.UserService;

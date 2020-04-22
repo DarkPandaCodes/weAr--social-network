@@ -40,7 +40,7 @@ public class SearchUserController {
             if (expertise != null && name.isEmpty()) {
                 users = userService.getUsersByExpertise(expertise);
             }
-            if (name.length()>=2 && name.length()>=2) {
+            if (name.length()>=2 && expertise.length()>=2) {
                 users=userService.getUserByFirstNameLastName(name).stream().
                         filter(u -> u.getExpertiseProfile()
                                 .getCategory().getName().equals(expertise)).

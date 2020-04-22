@@ -58,7 +58,7 @@ public class ConnectionController {
 
         try {
             User user = userService.getUserById(id);
-            userService.isProfileOwner(principal.getName(), user);
+            userService.ifNotProfileOwnerThrow(principal.getName(), user);
             model.addAttribute("requests", requestService.getAllRequestsForUser(user));
             model.addAttribute("requestN", new Request());
         } catch (EntityNotFoundException e) {

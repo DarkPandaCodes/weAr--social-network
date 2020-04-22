@@ -43,12 +43,12 @@ public class ProfileController {
 
     @Autowired
     public ProfileController(UserService userService, ExpertiseProfileFactory expertiseProfileFactory,
-                             SkillCategoryService skillCategoryService, SkillService skillService,UserFactory userFactory) {
+                             SkillCategoryService skillCategoryService, SkillService skillService, UserFactory userFactory) {
         this.userService = userService;
         this.expertiseProfileFactory = expertiseProfileFactory;
         this.skillCategoryService = skillCategoryService;
         this.skillService = skillService;
-        this.userFactory= userFactory;
+        this.userFactory = userFactory;
     }
 
     @GetMapping("/{id}/profile")
@@ -56,6 +56,7 @@ public class ProfileController {
         try {
             User user = userService.getUserById(id);
             model.addAttribute("userRequest", new UserDtoRequest());
+            model.addAttribute("userDisable", new User());
             model.addAttribute("user", user);
 
             boolean areFriends = false;
@@ -65,6 +66,8 @@ public class ProfileController {
             }
             model.addAttribute("friends", areFriends);
             model.addAttribute("isOwner", userService.isOwner(principal.getName(), user));
+            model.addAttribute("isAdmin", userService.isAdmin(principal));
+
 
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -86,9 +89,11 @@ public class ProfileController {
     public String editFormUserProfile(@PathVariable(name = "id") int id, Model model, Principal principal,
                                       @ModelAttribute @Valid UserDTO user1,
                                       BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "user-profile-edit";
-        }
+        if (userService.isAdmin(principal))
+
+            if (bindingResult.hasErrors()) {
+                return "user-profile-edit";
+            }
         try {
             User user = userService.getUserById(id);
             ExpertiseProfileDTO expertiseProfileDTO = new ExpertiseProfileDTO();
@@ -97,7 +102,9 @@ public class ProfileController {
             model.addAttribute("userToEdit", userService.getUserModelById(id));
             model.addAttribute("profile", user.getExpertiseProfile());
             model.addAttribute("profileDTO", expertiseProfileDTO);
-            userService.isProfileOwner(principal.getName(), user);
+
+            userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), user);
+
             model.addAttribute("user", user);
 
         } catch (EntityNotFoundException e) {
@@ -113,18 +120,19 @@ public class ProfileController {
 
     @PostMapping("/{id}/profile/personal")
     public String editUserProfile(@PathVariable(name = "id") int id, @RequestParam("imagefile") MultipartFile file,
-                                  @ModelAttribute UserModel userModel, BindingResult bindingResult, Model model) throws IOException {
+                                  @ModelAttribute UserModel userModel, BindingResult bindingResult, Principal principal, Model model) throws IOException {
 
         if (bindingResult.hasErrors()) {
             return "user-profile-edit";
         }
         try {
             User userToCheck = userService.getUserById(id);
+            userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), userToCheck);
             model.addAttribute("userToEdit", userModel);
             if (file != null) {
                 userToCheck.getPersonalProfile().setPicture(Base64.getEncoder().encodeToString(file.getBytes()));
             }
-            User userToSave= userFactory.mergeUserAndModel(userToCheck, userModel);
+            User userToSave = userFactory.mergeUserAndModel(userToCheck, userModel);
             userService.updateUser(userToSave);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -138,31 +146,35 @@ public class ProfileController {
     @Transactional
     @RequestMapping("/{id}/profile/expertise")
     public String editUserExpertiseProfile(@PathVariable(name = "id") int id,
-                                           @ModelAttribute(name = "profileDTO") ExpertiseProfileDTO expertiseProfileDTO, @ModelAttribute ExpertiseProfile expertiseProfile) {
+                                           @ModelAttribute(name = "profileDTO") ExpertiseProfileDTO expertiseProfileDTO,
+                                           @ModelAttribute ExpertiseProfile expertiseProfile,
+                                           Principal principal) {
 
         try {
             User userToCheck = userService.getUserById(id);
+            userService.ifNotProfileOrAdminOwnerThrow(principal.getName(),userToCheck);
 
             if (userToCheck.getExpertiseProfile().getCategory().getName().
                     equals(expertiseProfileDTO.getCategory().getName())) {
 
                 ExpertiseProfile expertiseProfileNew =
                         expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
+
                 ExpertiseProfile expertiseProfileMerged =
                         expertiseProfileFactory.mergeExpertProfile(expertiseProfileNew,
                                 userToCheck.getExpertiseProfile());
+
                 userService.updateExpertise
-                        (userToCheck, expertiseProfileMerged );
+                        (userToCheck, expertiseProfileMerged);
             } else {
-                ExpertiseProfile expertiseProfileMerged =
-                        expertiseProfileFactory.mergeExpertProfile(expertiseProfile,
-                                userToCheck.getExpertiseProfile());
                 userService.updateExpertise
                         (userToCheck, expertiseProfile);
             }
 
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }catch (InvalidOperationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, e.getMessage());
         }
         return "redirect:/auth/users/" + id + "/profile#profile";
     }
