@@ -22,7 +22,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
 import java.util.List;
@@ -112,7 +111,7 @@ public class UserServiceImplTests {
                 .thenReturn(user);
 
         //act
-        User UserToTest = mockUserService.disableUser(1);
+        User UserToTest = mockUserService.disableEnableUser(1);
         user.setEnabled(0);
 
         //asser
@@ -128,7 +127,7 @@ public class UserServiceImplTests {
                 .thenReturn(user);
 
         //act
-        mockUserService.disableUser(1);
+        mockUserService.disableEnableUser(1);
         //asser
         Mockito.verify(userRepository, Mockito.times(1)).saveAndFlush(user);
     }
@@ -359,7 +358,7 @@ public class UserServiceImplTests {
 
         //assert
         Assertions.assertThrows(InvalidOperationException.class, () -> {
-           mockUserService.isProfileOwner(principal,user);
+           mockUserService.ifNotProfileOwnerThrow(principal,user);
         });
     }
 

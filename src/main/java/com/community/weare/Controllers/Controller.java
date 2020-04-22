@@ -23,15 +23,17 @@ public class Controller {
         this.userService = userService;
     }
 
-    @GetMapping("/")
-    public String showHomePage( ) {
-        return "index_new";
-    }
+//    @GetMapping("/")
+//    public String showHomePage( Model model) {
+//        model.addAttribute("user",);
+//        return "index_new";
+//    }
 
-    @GetMapping("/auth")
+   @RequestMapping(value = {"/","/auth"},method = RequestMethod.GET)
     public String showAuthPage(Principal principal, Model model) {
+        if (principal!=null){
         User user=userService.getUserByUserName(principal.getName());
-        model.addAttribute("user",user);
+        model.addAttribute("user",user);}
         return "index_new";
     }
 }

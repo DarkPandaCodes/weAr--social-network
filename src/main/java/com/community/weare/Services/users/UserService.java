@@ -4,6 +4,7 @@ import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public interface UserService extends UserDetailsService {
     Collection<User> getAllUsers();
 
 
-    User disableUser(int userId);
+    User disableEnableUser(int userId);
 
 
     boolean isUserDuplicate(User user);
@@ -34,9 +35,13 @@ public interface UserService extends UserDetailsService {
 
     void updateExpertise(User user, ExpertiseProfile expertiseProfileMerged);
 
-    void isProfileOwner(String principal, User user);
+    void ifNotProfileOwnerThrow(String principal, User user);
+
+    void ifNotProfileOrAdminOwnerThrow(String principal, User user);
 
     boolean isOwner(String principal, User user);
+
+    boolean isAdmin(Principal principal);
 
 
 //    UserDtoRequest getUserRequestFromUser(User user);
