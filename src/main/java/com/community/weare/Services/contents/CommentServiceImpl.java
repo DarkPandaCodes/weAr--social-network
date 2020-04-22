@@ -132,7 +132,11 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = getOne(commentId);
         User userPrincipal = userService.getUserByUserName(principal.getName());
 
-        if (!((comment.getUser().getUsername().equals(principal.getName()))
+        if (!((comment
+                .getUser()
+                .getUsername()
+                .equals(principal
+                        .getName()))
                 || userService.findByAuthorities("ROLE_ADMIN").contains(userPrincipal))) {
             throw new IllegalArgumentException("You can only edit/delete your comments");
         }

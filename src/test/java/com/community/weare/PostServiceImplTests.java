@@ -23,9 +23,9 @@ import org.springframework.data.domain.Sort;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PostServiceImplTests {
@@ -38,24 +38,7 @@ public class PostServiceImplTests {
     @Mock
     PostRepository postRepository;
     @Mock
-    PostServiceImpl postService;
-    @Mock
-    User userMock;
-    @Mock
     CommentService commentService;
-
-    //@Test
-    //    public void getUserByIdShould_CallRepository() {
-    //        //arrange
-    //        User user = createUser();
-    //        user.setUserId(1);
-    //
-    //        Mockito.when(userRepository.findById(1)).thenReturn(Optional.of(user));
-    //        //act
-    //        mockUserService.getUserById(1);
-    //        //assert
-    //        Mockito.verify(userRepository, Mockito.times(1)).findById(1);
-    //    }
 
     @Test
     public void findAllShould_CallRepository() {
@@ -69,7 +52,6 @@ public class PostServiceImplTests {
         mockPostService.findAll();
         //assert
         Mockito.verify(postRepository, Mockito.times(1)).findAll();
-
     }
 
     @Test
@@ -186,7 +168,6 @@ public class PostServiceImplTests {
         assertEquals(13, listResult.get(2).getRank(), 0);
     }
 
-
     @Test
     public void filterPostsByPublicityShould_ReturnFilteredPosts() {
         //arrange
@@ -278,7 +259,6 @@ public class PostServiceImplTests {
         assertEquals(post3, listResult.get(1));
     }
 
-
     @Test
     public void getOneShould_CallRepositoryIfPostExists() {
         //arrange
@@ -334,7 +314,6 @@ public class PostServiceImplTests {
         assertEquals(1, post.getLikes().size());
     }
 
-
     @Test
     public void likePostShould_Throw_WhenPostDoesNotExist() {
         //Arrange
@@ -379,7 +358,6 @@ public class PostServiceImplTests {
         //assert
         assertEquals(0, post.getLikes().size());
     }
-
 
     @Test
     public void dislikePostShould_Throw_WhenPostDoesNotExist() {
@@ -483,31 +461,27 @@ public class PostServiceImplTests {
                 () -> mockPostService.editPost(post.getPostId(), postDTO, principal));
     }
 
-//    @Test
-//    public void deletePostShould_Delete() {
-//        //Arrange
-//        Post post = FactoryPostComment.createPost();
-//        post.setPostId(1);
-////        post.setPicture("picture");
-////        PostDTO postDTO = new PostDTO();
-////        postDTO.setPicture(new String(new char[501]));
-//        User user = Factory.createUser();
-//        Principal principal = () -> "tedi";
-//
-//        List<User> list = new ArrayList<>();
-//
-//        Mockito.when(postRepository.getOne(1)).thenReturn(post);
-//        Mockito.when(postRepository.existsById(1)).thenReturn(true);
-//        Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(user);
-//        Mockito.when(commentService.deleteCommentByPostPostId(post.getPostId())).thenReturn(1);
-//        Mockito.(postRepository.delete(post))
-//
-//        //Act
-//        mockPostService.deletePost(1, principal);
-//
-//        //Assert
-//        assertNull(post);
-//    }
+    @Test
+    public void deletePostShould_Delete() {
+        //Arrange
+        Post post = FactoryPostComment.createPost();
+        post.setPostId(1);
+        User user = Factory.createUser();
+        Principal principal = () -> "tedi";
+
+        List<User> list = new ArrayList<>();
+
+        Mockito.when(postRepository.getOne(1)).thenReturn(post);
+        Mockito.when(postRepository.existsById(1)).thenReturn(true);
+        Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(user);
+        Mockito.when(commentService.deleteCommentByPostPostId(post.getPostId())).thenReturn(1);
+
+        //Act
+        mockPostService.deletePost(1, principal);
+
+        //Assert
+        Mockito.verify(postRepository, Mockito.times(1)).delete(post);
+    }
 
     @Test
     public void deletePostShould_Throw_WhenPostDoesNotExists() {
@@ -544,7 +518,35 @@ public class PostServiceImplTests {
         Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(user);
         //Act, Assert
         Assert.assertThrows(IllegalArgumentException.class,
-                () -> mockPostService.deletePost(post.getPostId(),principal));
+                () -> mockPostService.deletePost(post.getPostId(), principal));
+    }
+
+    @Test
+    public void showCommentsShould_Throw_WhenPostDoesNotExists() {
+        //Arrange
+
+        //Act, Assert
+        Assert.assertThrows(EntityNotFoundException.class,
+                () -> mockPostService.showComments(1));
+    }
+
+    @Test
+    public void showCommentsShould_ReturnComments() {
+        //Arrange
+        Post post = FactoryPostComment.createPost();
+        post.setPostId(1);
+        User user = Factory.createUser();
+
+        Comment comment1 = new Comment();
+        comment1.setUser(user);
+        comment1.setPost(post);
+        post.getComments().add(comment1);
+
+        Mockito.when(postRepository.existsById(1)).thenReturn(true);
+        Mockito.when(postRepository.getOne(1)).thenReturn(post);
+
+        //Act, Assert
+        assertEquals(comment1, mockPostService.showComments(post.getPostId()).get(0));
     }
 
 }

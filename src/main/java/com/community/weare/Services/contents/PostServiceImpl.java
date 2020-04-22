@@ -194,7 +194,7 @@ public class PostServiceImpl implements PostService {
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
         }
-        Post post = getOne(postId);
+        Post post = postRepository.getOne(postId);
         return post.getComments();
     }
 
