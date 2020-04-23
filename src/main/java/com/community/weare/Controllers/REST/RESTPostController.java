@@ -49,8 +49,9 @@ public class RESTPostController {
         return postService.save(newPost);
     }
 
-    @PutMapping("/like")
+    @PostMapping("/like")
     public void likeAPost(@RequestParam int postId, Principal principal) {
+
         User user = userService.getUserByUserName(principal.getName());
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");

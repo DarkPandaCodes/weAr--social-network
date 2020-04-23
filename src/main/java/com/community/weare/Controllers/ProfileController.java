@@ -152,7 +152,7 @@ public class ProfileController {
 
         try {
             User userToCheck = userService.getUserById(id);
-            userService.ifNotProfileOrAdminOwnerThrow(principal.getName(),userToCheck);
+            userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), userToCheck);
 
             if (userToCheck.getExpertiseProfile().getCategory().getName().
                     equals(expertiseProfileDTO.getCategory().getName())) {
@@ -173,7 +173,7 @@ public class ProfileController {
 
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }catch (InvalidOperationException e) {
+        } catch (InvalidOperationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, e.getMessage());
         }
         return "redirect:/auth/users/" + id + "/profile#profile";

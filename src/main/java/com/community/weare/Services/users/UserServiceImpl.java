@@ -180,37 +180,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void ifNotProfileOwnerThrow(String principal, User user) {
-        if (principal.equals(user.getUsername())) {
-        } else {
+        if (!principal.equals(user.getUsername())) {
             throw new InvalidOperationException("User isn't authorised");
         }
     }
 
     @Override
     public void ifNotProfileOrAdminOwnerThrow(String principal, User user) {
-        User admin = userRepository.findByUsername(principal).orElseThrow(new EntityNotFoundException("User not found"));
-        if (admin.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-        } else {
+        User admin = userRepository.findByUsername(principal)
+                .orElseThrow(new EntityNotFoundException("User not found"));
+        if (!(admin.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")) ||
+                user.getUsername().equals(principal))) {
             throw new InvalidOperationException("User isn't authorised");
         }
     }
 
     @Override
     public boolean isOwner(String principal, User user) {
-        if (principal.equals(user.getUsername())) {
-            return true;
-        } else {
-            return false;
-        }
+        return principal.equals(user.getUsername());
     }
 
     @Override
     public boolean isAdmin(Principal principal) {
-        User admin = userRepository.findByUsername(principal.getName()).orElseThrow(new EntityNotFoundException("This user doesn't exist"));
-        if (admin.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"))) {
-            return true;
-        }
-        return false;
+        User admin = userRepository.findByUsername(principal
+                .getName()).orElseThrow(new EntityNotFoundException("This user doesn't exist"));
+        return admin.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
     }
     //    @Override
 //    public UserDtoRequest getUserRequestFromUser(User user) {

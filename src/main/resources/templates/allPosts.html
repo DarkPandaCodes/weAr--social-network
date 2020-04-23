@@ -137,7 +137,7 @@
                             var data = $(this).serialize()
                             console.log(data) //check
                             $.ajax({
-                                type: "PUT",
+                                type: "POST",
                                 url: "/api/post/like",
                                 data: data,
                                 success: function (d) {
