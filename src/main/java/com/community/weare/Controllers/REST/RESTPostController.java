@@ -2,6 +2,7 @@ package com.community.weare.Controllers.REST;
 
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
+import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
@@ -51,46 +52,34 @@ public class RESTPostController {
 
     @PostMapping("/like")
     public void likeAPost(@RequestParam int postId, Principal principal) {
-
-        User user = userService.getUserByUserName(principal.getName());
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        User user;
+        try {
+            user = userService.getUserByUserName(principal.getName());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
         boolean isPostLiked = postService.getOne(postId).isLiked(user.getUsername());
 
         if (isPostLiked) {
             try {
-                postService.dislikePost(postId, user);
+                postService.dislikePost(postId, principal);
             } catch (DuplicateEntityException | EntityNotFoundException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
             }
         } else {
             try {
-                postService.likePost(postId, user);
+                postService.likePost(postId, principal);
             } catch (DuplicateEntityException | EntityNotFoundException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
             }
         }
     }
 
-//    @PutMapping("/unlike")
-//    public void dislikeAPost(@RequestParam int postId, int userId) {
-//        User user = userService.getUserById(userId);
-//        if (!userService.checkIfUserExist(user)) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
-//        }
-//        try {
-//            postService.dislikePost(postId, user);
-//        } catch (DuplicateEntityException | EntityNotFoundException e) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-//        }
-//    }
-
     @PutMapping("/edit")
     public void editPost(Principal principal, @RequestParam int postId, @RequestBody PostDTO postDTO) {
         try {
             postService.editPost(postId, postDTO, principal);
-        } catch (IllegalArgumentException | EntityNotFoundException e) {
+        } catch (IllegalArgumentException | EntityNotFoundException | InvalidOperationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
@@ -99,7 +88,7 @@ public class RESTPostController {
     public void deletePost(Principal principal, @RequestParam int postId) {
         try {
             postService.deletePost(postId, principal);
-        } catch (IllegalArgumentException | EntityNotFoundException e) {
+        } catch (IllegalArgumentException | EntityNotFoundException | InvalidOperationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }

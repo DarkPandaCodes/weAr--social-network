@@ -2,6 +2,7 @@ package com.community.weare;
 
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
+import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.Category;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
@@ -271,7 +272,7 @@ public class PostServiceImplTests {
         //act
         mockPostService.getOne(1);
         //assert
-        Mockito.verify(postRepository, Mockito.times(2)).getOne(1);
+        Mockito.verify(postRepository, Mockito.times(1)).getOne(1);
     }
 
     @Test
@@ -302,14 +303,13 @@ public class PostServiceImplTests {
         //arrange
         Post post = FactoryPostComment.createPost();
         post.setPostId(1);
-
-        User user = Factory.createUser();
+        Principal principal = () -> "tedi";
 
         Mockito.when(postRepository.existsById(1)).thenReturn(true);
         Mockito.when(postRepository.getOne(1)).thenReturn(post);
 
         //act
-        mockPostService.likePost(1, user);
+        mockPostService.likePost(1, principal);
         //assert
         assertEquals(1, post.getLikes().size());
     }
@@ -317,11 +317,11 @@ public class PostServiceImplTests {
     @Test
     public void likePostShould_Throw_WhenPostDoesNotExist() {
         //Arrange
-        User user = Factory.createUser();
+        Principal principal = () -> "tedi";
 
         //Act, Assert
         Assert.assertThrows(EntityNotFoundException.class,
-                () -> mockPostService.likePost(1, user));
+                () -> mockPostService.likePost(1, principal));
     }
 
     @Test
@@ -329,32 +329,34 @@ public class PostServiceImplTests {
         //Arrange
         Post post = FactoryPostComment.createPost();
         post.setPostId(1);
-        User user = Factory.createUser();
+        Principal principal = () -> "tedi";
+
+        User user = userService.getUserByUserName(principal.getName());
         post.getLikes().add(user);
 
-        Mockito.when(postRepository.existsById(1)).thenReturn(true);
-        Mockito.when(postRepository.getOne(1)).thenReturn(post);
+        Mockito.when(postRepository.existsById(post.getPostId())).thenReturn(true);
+        Mockito.when(postRepository.getOne(post.getPostId())).thenReturn(post);
 
         //Act, Assert
         Assert.assertThrows(DuplicateEntityException.class,
-                () -> mockPostService.likePost(1, user));
+                () -> mockPostService.likePost(post.getPostId(), principal));
     }
 
     @Test
-    public void dislikePostShould_AddLike() {
+    public void dislikePostShould_RemoveLike() {
         //arrange
         Post post = FactoryPostComment.createPost();
         post.setPostId(1);
 
-        User user = Factory.createUser();
-
+        Principal principal = () -> "tedi";
+        User user = userService.getUserByUserName(principal.getName());
         post.getLikes().add(user);
 
         Mockito.when(postRepository.existsById(1)).thenReturn(true);
         Mockito.when(postRepository.getOne(1)).thenReturn(post);
 
         //act
-        mockPostService.dislikePost(1, user);
+        mockPostService.dislikePost(1, principal);
         //assert
         assertEquals(0, post.getLikes().size());
     }
@@ -362,11 +364,11 @@ public class PostServiceImplTests {
     @Test
     public void dislikePostShould_Throw_WhenPostDoesNotExist() {
         //Arrange
-        User user = Factory.createUser();
+        Principal principal = () -> "tedi";
 
         //Act, Assert
         Assert.assertThrows(EntityNotFoundException.class,
-                () -> mockPostService.dislikePost(1, user));
+                () -> mockPostService.dislikePost(1, principal));
     }
 
     @Test
@@ -374,14 +376,14 @@ public class PostServiceImplTests {
         //Arrange
         Post post = FactoryPostComment.createPost();
         post.setPostId(1);
-        User user = Factory.createUser();
+        Principal principal = () -> "tedi";
 
         Mockito.when(postRepository.existsById(1)).thenReturn(true);
         Mockito.when(postRepository.getOne(1)).thenReturn(post);
 
         //Act, Assert
         Assert.assertThrows(EntityNotFoundException.class,
-                () -> mockPostService.dislikePost(1, user));
+                () -> mockPostService.dislikePost(1, principal));
     }
 
     @Test
@@ -407,7 +409,6 @@ public class PostServiceImplTests {
 
         PostDTO postDTO = new PostDTO();
 
-        User user = Factory.createUser();
         Principal principal = () -> "tedi";
 
         //Act, Assert
@@ -423,14 +424,12 @@ public class PostServiceImplTests {
         post.setPicture("picture");
         PostDTO postDTO = new PostDTO();
         postDTO.setPicture(new String(new char[501]));
-        User user = Factory.createUser();
         Principal principal = () -> "tedi";
 
         List<User> list = new ArrayList<>();
 
         Mockito.when(postRepository.getOne(1)).thenReturn(post);
         Mockito.when(postRepository.existsById(1)).thenReturn(true);
-        Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(user);
 
         //Act
         mockPostService.editPost(post.getPostId(), postDTO, principal);
@@ -447,17 +446,16 @@ public class PostServiceImplTests {
         post.setPicture("picture");
         PostDTO postDTO = new PostDTO();
         postDTO.setPicture(new String(new char[501]));
-        User user = Factory.createUser();
         Principal principal = () -> "xxx";
-
         List<User> list = new ArrayList<>();
 
         Mockito.when(postRepository.getOne(1)).thenReturn(post);
         Mockito.when(postRepository.existsById(1)).thenReturn(true);
-        Mockito.when(userService.findByAuthorities("ROLE_ADMIN")).thenReturn(list);
-        Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(user);
+        Mockito.doThrow(new InvalidOperationException())
+                .when(userService).ifNotProfileOrAdminOwnerThrow(principal.getName(), post.getUser());
+
         //Act, Assert
-        Assert.assertThrows(IllegalArgumentException.class,
+        Assert.assertThrows(InvalidOperationException.class,
                 () -> mockPostService.editPost(post.getPostId(), postDTO, principal));
     }
 
@@ -466,14 +464,12 @@ public class PostServiceImplTests {
         //Arrange
         Post post = FactoryPostComment.createPost();
         post.setPostId(1);
-        User user = Factory.createUser();
         Principal principal = () -> "tedi";
 
         List<User> list = new ArrayList<>();
 
         Mockito.when(postRepository.getOne(1)).thenReturn(post);
         Mockito.when(postRepository.existsById(1)).thenReturn(true);
-        Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(user);
         Mockito.when(commentService.deleteCommentByPostPostId(post.getPostId())).thenReturn(1);
 
         //Act
@@ -488,10 +484,6 @@ public class PostServiceImplTests {
         //Arrange
         Post post = FactoryPostComment.createPost();
         post.setPostId(1);
-
-        PostDTO postDTO = new PostDTO();
-
-        User user = Factory.createUser();
         Principal principal = () -> "tedi";
 
         //Act, Assert
@@ -507,17 +499,14 @@ public class PostServiceImplTests {
         post.setPicture("picture");
         PostDTO postDTO = new PostDTO();
         postDTO.setPicture(new String(new char[501]));
-        User user = Factory.createUser();
         Principal principal = () -> "xxx";
-
-        List<User> list = new ArrayList<>();
 
         Mockito.when(postRepository.getOne(1)).thenReturn(post);
         Mockito.when(postRepository.existsById(1)).thenReturn(true);
-        Mockito.when(userService.findByAuthorities("ROLE_ADMIN")).thenReturn(list);
-        Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(user);
+        Mockito.doThrow(new InvalidOperationException())
+                .when(userService).ifNotProfileOrAdminOwnerThrow(principal.getName(), post.getUser());
         //Act, Assert
-        Assert.assertThrows(IllegalArgumentException.class,
+        Assert.assertThrows(InvalidOperationException.class,
                 () -> mockPostService.deletePost(post.getPostId(), principal));
     }
 
@@ -548,5 +537,4 @@ public class PostServiceImplTests {
         //Act, Assert
         assertEquals(comment1, mockPostService.showComments(post.getPostId()).get(0));
     }
-
 }

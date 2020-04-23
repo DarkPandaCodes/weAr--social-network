@@ -31,9 +31,9 @@ public interface PostService {
 
     Post save(Post post);
 
-    void likePost(int postId, User user);
+    void likePost(int postId, Principal principal);
 
-    void dislikePost(int postId, User user);
+    void dislikePost(int postId, Principal principal);
 
     boolean isLiked(int postId, Principal principal);
 

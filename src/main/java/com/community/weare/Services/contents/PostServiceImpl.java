@@ -23,6 +23,7 @@ public class PostServiceImpl implements PostService {
     public static final int POSTS_PER_PAGE = 5;
     private static final double ALGORITHM_EFFECT_LIKES = -1.0;
     private static final double ALGORITHM_EFFECT_COMMENTS = -3.0;
+    private static final double ALGORITHM_EFFECT_TIME = 1.0;
     private static final double ALGORITHM_EFFECT_FRIENDS = -10.0;
     private static final double ALGORITHM_EFFECT_MULTI_POSTS = 10.0;
 
@@ -98,7 +99,6 @@ public class PostServiceImpl implements PostService {
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
         }
-        Post post03 = postRepository.getOne(postId);
         return postRepository.getOne(postId);
     }
 
@@ -114,7 +114,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void likePost(int postId, User user) {
+    public void likePost(int postId, Principal principal) {
+        User user = userService.getUserByUserName(principal.getName());
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
         }
@@ -128,7 +129,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void dislikePost(int postId, User user) {
+    public void dislikePost(int postId, Principal principal) {
+        User user = userService.getUserByUserName(principal.getName());
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
         }
@@ -142,8 +144,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public boolean isLiked(int postId, Principal principal) {
-        Post post = postRepository.getOne(postId);
-        return post.isLiked(principal.getName());
+        return postRepository.getOne(postId).isLiked(principal.getName());
     }
 
     @Override
@@ -152,15 +153,11 @@ public class PostServiceImpl implements PostService {
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
         }
-        User userPrincipal = userService.getUserByUserName(principal.getName());
         Post postToEdit = postRepository.getOne(postId);
-
-        if (!((postToEdit.getUser().getUsername().equals(principal.getName()))
-                || userService.findByAuthorities("ROLE_ADMIN").contains(userPrincipal))) {
-            throw new IllegalArgumentException("You can only edit your posts");
-        }
+        userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), postToEdit.getUser());
         postToEdit.setPublic(postDTO.isPublic());
         postToEdit.setContent(postDTO.getContent());
+        //TODO think of other way to check if the picture needs to be changed
         if (postDTO.getPicture().length() > 200) {
             postToEdit.setPicture(postDTO.getPicture());
         }
@@ -175,13 +172,7 @@ public class PostServiceImpl implements PostService {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
         }
         Post postToDelete = getOne(postId);
-        User userPrincipal = userService.getUserByUserName(principal.getName());
-
-        if (!((postToDelete.getUser().getUsername().equals(principal.getName()))
-                || userService.findByAuthorities("ROLE_ADMIN").contains(userPrincipal))) {
-            throw new IllegalArgumentException("You can only delete your posts");
-        }
-
+        userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), postToDelete.getUser());
         postToDelete.getLikes().clear();
         postToDelete.getComments().clear();
         postRepository.save(postToDelete);
@@ -194,39 +185,25 @@ public class PostServiceImpl implements PostService {
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
         }
-        Post post = postRepository.getOne(postId);
-        return post.getComments();
+        return postRepository.getOne(postId).getComments();
     }
 
     private List<Post> applyAlgorithm(Principal principal, List<Post> allPost) {
-        User loggedUser = new User();
-        if (principal != null) {
-            loggedUser = userService.getUserByUserName(principal.getName());
-        }
-
-        double timeEffect;
-        double likesEffect;
-        double commentsEffect;
-        double friendsEffect;
-        double multiPostsEffect;
-        int numberOfPostsForMonth = 0;
-
         for (int i = 0; i < allPost.size(); i++) {
+            double timeEffect = i * ALGORITHM_EFFECT_TIME;
+            int numberOfPostsForMonth = 0;
             Post currentPost = allPost.get(i);
             List<Post> allPostsOfUser = findAllByUser(currentPost.getUser().getUsername());
-            timeEffect = i;
-            likesEffect = currentPost.getLikes().size() * ALGORITHM_EFFECT_LIKES;
-            commentsEffect = currentPost.getComments().size() * ALGORITHM_EFFECT_COMMENTS;
+            double likesEffect = currentPost.getLikes().size() * ALGORITHM_EFFECT_LIKES;
+            double commentsEffect = currentPost.getComments().size() * ALGORITHM_EFFECT_COMMENTS;
+            double friendsEffect;
             if (principal != null) {
-                if (loggedUser.getFriendList().contains(currentPost.getUser())) {
-                    friendsEffect = 1 * ALGORITHM_EFFECT_FRIENDS;
-                } else {
-                    friendsEffect = 0;
-                }
+                User loggedUser = userService.getUserByUserName(principal.getName());
+                friendsEffect = loggedUser.isFriend
+                        (currentPost.getUser().getUsername()) ? 1 * ALGORITHM_EFFECT_FRIENDS : 0;
             } else {
                 friendsEffect = 0;
             }
-
             String monthOfCurrentPost = currentPost.getDate().substring(3, 10);
             String monthOfPreviousPost;
 
@@ -239,8 +216,7 @@ public class PostServiceImpl implements PostService {
                     numberOfPostsForMonth++;
                 }
             }
-
-            multiPostsEffect = numberOfPostsForMonth * ALGORITHM_EFFECT_MULTI_POSTS;
+            double multiPostsEffect = numberOfPostsForMonth * ALGORITHM_EFFECT_MULTI_POSTS;
             numberOfPostsForMonth = 0;
 
             currentPost.setRank(timeEffect + likesEffect + commentsEffect + friendsEffect + multiPostsEffect);

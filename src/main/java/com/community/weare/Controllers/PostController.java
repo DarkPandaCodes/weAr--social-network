@@ -2,6 +2,7 @@ package com.community.weare.Controllers;
 
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
+import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.Category;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
@@ -10,6 +11,7 @@ import com.community.weare.Models.dto.CommentDTO;
 import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Models.dto.PostDTO2;
 import com.community.weare.Models.dto.UserDtoRequest;
+import com.community.weare.Models.factories.CommentFactory;
 import com.community.weare.Models.factories.PostFactory;
 import com.community.weare.Services.SkillCategoryService;
 import com.community.weare.Services.contents.CommentService;
@@ -40,15 +42,18 @@ public class PostController {
     private CommentService commentService;
     private PostFactory postFactory;
     private SkillCategoryService skillCategoryService;
+    private CommentFactory commentFactory;
 
     @Autowired
     public PostController(PostService postService, UserService userService, CommentService commentService,
-                          PostFactory postFactory, SkillCategoryService skillCategoryService) {
+                          PostFactory postFactory, SkillCategoryService skillCategoryService,
+                          CommentFactory commentFactory) {
         this.postService = postService;
         this.userService = userService;
         this.commentService = commentService;
         this.postFactory = postFactory;
         this.skillCategoryService = skillCategoryService;
+        this.commentFactory = commentFactory;
     }
 
     @GetMapping("")
@@ -76,29 +81,29 @@ public class PostController {
                                         @ModelAttribute("UserPrincipal") User userPrincipal,
                                         Model model, Principal principal, Sort sort) {
         if (postDTO2.getPostId() != 0) {
+            if (principal == null) {
+                model.addAttribute("error", "User isn't authorised");
+                return "allPosts";
+            }
             model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
             boolean isPostLiked = postService.getOne(postDTO2.getPostId()).isLiked(principal.getName());
             User user = userService.getUserByUserName(principal.getName());
 
             if (isPostLiked) {
                 try {
-                    postService.dislikePost(postDTO2.getPostId(), user);
+                    postService.dislikePost(postDTO2.getPostId(), principal);
                 } catch (EntityNotFoundException e) {
                     model.addAttribute("error", e.getMessage());
-                    if (principal != null) {
-                        model.addAttribute("UserPrincipal",
-                                userService.getUserByUserName(principal.getName()));
-                    }
+                    model.addAttribute("UserPrincipal",
+                            userService.getUserByUserName(principal.getName()));
                     return "allPosts";
                 }
             } else {
                 try {
-                    postService.likePost(postDTO2.getPostId(), user);
+                    postService.likePost(postDTO2.getPostId(), principal);
                 } catch (DuplicateEntityException | EntityNotFoundException e) {
                     model.addAttribute("error", e.getMessage());
-                    if (principal != null) {
-                        model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
-                    }
+                    model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
                     return "allPosts";
                 }
             }
@@ -139,11 +144,10 @@ public class PostController {
         model.addAttribute("post", post01);
         model.addAttribute("comment", new CommentDTO());
         model.addAttribute("User", new UserDtoRequest());
+        //TODO refactor this into service, and not in the HTML?
         if (principal != null) {
             model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
-            model.addAttribute("isAdmin", userService.getUserByUserName
-                    (principal.getName()).getAuthorities().stream()
-                    .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN")));
+            model.addAttribute("isAdmin", userService.isAdmin(principal));
         }
         return "post-single";
     }
@@ -157,10 +161,7 @@ public class PostController {
                                            @ModelAttribute("UserPrincipal") User userPrincipal,
                                            @PathVariable(name = "id") int postId, Principal principal, Model model) {
         if (commentDTO.getContent() != null) {
-            Comment newComment = new Comment();
-            newComment.setContent(commentDTO.getContent());
-            newComment.setPost(postService.getOne(postId));
-            newComment.setUser(userService.getUserByUserName(principal.getName()));
+            Comment newComment = commentFactory.createCommnetFromInput(commentDTO, postId, principal);
             commentService.save(newComment);
             model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
             return "redirect:/posts/" + postId + "#leaveComment";
@@ -216,24 +217,12 @@ public class PostController {
 
     @GetMapping("/edit/{id}")
     public String editPostData(Model model, @PathVariable(name = "id") int postId, Principal principal) {
-        //Bug! If you remove boolean principalAdmin the Authority Admin will not work. Admin won't be able to edit posts
-        boolean principalAdmin = userService.getUserByUserName
-                (principal.getName()).getAuthorities().stream()
-                .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
-
-        Post postToEdit = postService.getOne(postId);
-        model.addAttribute("post", postToEdit);
+        //Bug! - It is solved now... If you remove boolean principalAdmin the Authority Admin will not work. Admin won't be able to edit posts
+//        boolean principalAdmin = userService.getUserByUserName
+//                (principal.getName()).getAuthorities().stream()
+//                .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
+        model.addAttribute("post", postService.getOne(postId));
         model.addAttribute("postDTO", new PostDTO());
-        if (principal == null) {
-            model.addAttribute("error", "You can only edit your posts");
-            return "redirect:/posts/" + postId;
-        }
-        if (!(postToEdit.getUser().getUsername().equals(principal.getName()) ||
-                userService.getUserByUserName(principal.getName()).getAuthorities().stream()
-                        .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN")))) {
-            model.addAttribute("error", "You can only edit your posts");
-            return "redirect:/posts/" + postId;
-        }
         return "postEdit";
     }
 
@@ -245,9 +234,9 @@ public class PostController {
         postDTO.setPicture(Base64.getEncoder().encodeToString(file.getBytes()));
         try {
             postService.editPost(postId, postDTO, principal);
-        } catch (IllegalArgumentException | EntityNotFoundException e) {
+        } catch (IllegalArgumentException | EntityNotFoundException | InvalidOperationException e) {
             model.addAttribute("error", e.getMessage());
-            return "redirect:/posts/edit/" + postId;
+            return "postEdit";
         }
         if (principal != null) {
             model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
@@ -257,23 +246,7 @@ public class PostController {
 
     @GetMapping("/delete/{id}")
     public String deletePostData(Model model, Principal principal, @PathVariable(name = "id") int postId) {
-        //Bug! If you remove boolean principalAdmin the Authority Admin will not work. Admin won't be able to edit posts
-        boolean principalAdmin = userService.getUserByUserName
-                (principal.getName()).getAuthorities().stream()
-                .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
-
-        Post postToDelete = postService.getOne(postId);
-        model.addAttribute("post", postToDelete);
-        if (principal == null) {
-            model.addAttribute("error", "You can only delete your posts");
-            return "redirect:/posts/" + postId;
-        }
-        if (!(postToDelete.getUser().getUsername().equals(principal.getName()) ||
-                userService.getUserByUserName(principal.getName()).getAuthorities().stream()
-                        .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN")))) {
-            model.addAttribute("error", "You can only delete your posts");
-            return "redirect:/posts/" + postId;
-        }
+        model.addAttribute("post", postService.getOne(postId));
         model.addAttribute("postDTO2", new PostDTO2());
         return "postDelete";
     }
@@ -290,9 +263,9 @@ public class PostController {
         }
         try {
             postService.deletePost(postId, principal);
-        } catch (IllegalArgumentException | EntityNotFoundException e) {
+        } catch (IllegalArgumentException | EntityNotFoundException | InvalidOperationException e) {
             model.addAttribute("error", e.getMessage());
-            return "redirect:/posts/edit/" + postId;
+            return "postDelete";
         }
         return "postDeleteConfirmation";
     }

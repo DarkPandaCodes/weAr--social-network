@@ -3,9 +3,7 @@ package com.community.weare.Controllers;
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.Comment;
-import com.community.weare.Models.Post;
 import com.community.weare.Models.dto.CommentDTO;
-import com.community.weare.Models.dto.PostDTO2;
 import com.community.weare.Services.contents.CommentService;
 import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +30,9 @@ public class CommentController {
     public String editCommentData(Model model, Principal principal, @PathVariable(name = "id") int commentId) {
         Comment commentToEdit = commentService.getOne(commentId);
         //Bug! If you remove boolean principalAdmin the Authority Admin will not work. Admin won't be able to edit comments
-        boolean principalAdmin = userService.getUserByUserName
-                (principal.getName()).getAuthorities().stream()
-                .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
+//        boolean principalAdmin = userService.getUserByUserName
+//                (principal.getName()).getAuthorities().stream()
+//                .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
 
         if (!(commentToEdit.getUser().getUsername().equals(principal.getName()) ||
                 userService.getUserByUserName(principal.getName()).getAuthorities().stream()
@@ -66,9 +64,9 @@ public class CommentController {
     @GetMapping("/delete/{id}")
     public String deleteCommentData(Model model, Principal principal, @PathVariable(name = "id") int commentId) {
         //Bug! If you remove boolean principalAdmin the Authority Admin will not work. Admin won't be able to edit comments
-        boolean principalAdmin = userService.getUserByUserName
-                (principal.getName()).getAuthorities().stream()
-                .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
+//        boolean principalAdmin = userService.getUserByUserName
+//                (principal.getName()).getAuthorities().stream()
+//                .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
 
         Comment commentToDelete = commentService.getOne(commentId);
         if (principal == null) {
