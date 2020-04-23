@@ -22,9 +22,9 @@ public interface CommentService {
 
     Comment save(Comment comment);
 
-    void likeComment(int commentId, User user);
+    void likeComment(int commentId, Principal principal);
 
-    void dislikeComment(int commentId, User user);
+    void dislikeComment(int commentId, Principal principal);
 
     void editComment(int commentId, String content, Principal principal);
 

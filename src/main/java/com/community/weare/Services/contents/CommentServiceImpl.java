@@ -76,7 +76,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void likeComment(int commentId, User user) {
+    public void likeComment(int commentId, Principal principal) {
+        User user = userService.getUserByUserName(principal.getName());
         if (!commentRepository.existsById(commentId)) {
             throw new EntityNotFoundException(String.format
                     ("Comment with id %d does not exists", commentId));
@@ -91,7 +92,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void dislikeComment(int commentId, User user) {
+    public void dislikeComment(int commentId, Principal principal) {
+        User user = userService.getUserByUserName(principal.getName());
         if (!commentRepository.existsById(commentId)) {
             throw new EntityNotFoundException(String.format
                     ("Comment with id %d does not exists", commentId));
@@ -106,39 +108,33 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void editComment(int commentId, String content, Principal principal) {
-        validatesAuthority(commentId, principal);
+        if (!commentRepository.existsById(commentId)) {
+            throw new EntityNotFoundException(String.format
+                    ("Comment with id %d does not exists", commentId));
+        }
         Comment commentToEdit = commentRepository.getOne(commentId);
+        userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), commentToEdit.getUser());
         commentToEdit.setContent(content);
         commentRepository.save(commentToEdit);
     }
 
     @Override
     public void deleteComment(int commentId, Principal principal) {
-        validatesAuthority(commentId, principal);
+        if (!commentRepository.existsById(commentId)) {
+            throw new EntityNotFoundException(String.format
+                    ("Comment with id %d does not exists", commentId));
+        }
         Comment commentToDelete = commentRepository.getOne(commentId);
+        userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), commentToDelete.getUser());
         commentRepository.delete(commentToDelete);
     }
 
     @Override
     public int deleteCommentByPostPostId(int postId) {
-        return commentRepository.deleteCommentByPostPostId(postId);
-    }
-
-    private void validatesAuthority(int commentId, Principal principal) {
-        if (!commentRepository.existsById(commentId)) {
+        if (!commentRepository.existsById(postId)) {
             throw new EntityNotFoundException(String.format
-                    ("Comment with id %d does not exists", commentId));
+                    ("Comment with id %d does not exists", postId));
         }
-        Comment comment = getOne(commentId);
-        User userPrincipal = userService.getUserByUserName(principal.getName());
-
-        if (!((comment
-                .getUser()
-                .getUsername()
-                .equals(principal
-                        .getName()))
-                || userService.findByAuthorities("ROLE_ADMIN").contains(userPrincipal))) {
-            throw new IllegalArgumentException("You can only edit/delete your comments");
-        }
+        return commentRepository.deleteCommentByPostPostId(postId);
     }
 }

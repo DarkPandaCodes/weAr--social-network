@@ -2,10 +2,10 @@ package com.community.weare;
 
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
+import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
-import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Repositories.CommentRepository;
 import com.community.weare.Repositories.PostRepository;
 import com.community.weare.Services.contents.CommentServiceImpl;
@@ -166,9 +166,6 @@ public class CommentServiceTests {
         comment.setPost(post);
         post.getComments().add(comment);
 
-//        Mockito.when(commentRepository.existsById(comment.getCommentId())).thenReturn(true);
-//        Mockito.when(commentRepository.getOne(comment.getCommentId())).thenReturn(comment);
-
         //act
         mockCommentService.save(comment);
         //assert
@@ -181,14 +178,13 @@ public class CommentServiceTests {
         //arrange
 
         Comment comment = FactoryPostComment.createComment();
-
-        User user = Factory.createUser();
+        Principal principal = () -> "tedi";
 
         Mockito.when(commentRepository.existsById(comment.getCommentId())).thenReturn(true);
         Mockito.when(commentRepository.getOne(comment.getCommentId())).thenReturn(comment);
 
         //act
-        mockCommentService.likeComment(comment.getCommentId(), user);
+        mockCommentService.likeComment(comment.getCommentId(), principal);
         //assert
         assertEquals(1, comment.getLikes().size());
     }
@@ -196,18 +192,19 @@ public class CommentServiceTests {
     @Test
     public void likeCommentShould_Throw_WhenCommentDoesNotExist() {
         //Arrange
-        User user = Factory.createUser();
+        Principal principal = () -> "tedi";
 
         //Act, Assert
         Assert.assertThrows(EntityNotFoundException.class,
-                () -> mockCommentService.likeComment(1, user));
+                () -> mockCommentService.likeComment(1, principal));
     }
 
     @Test
     public void likeCommentShould_Throw_WhenCommentAlreadyLiked() {
         //Arrange
         Comment comment = FactoryPostComment.createComment();
-        User user = Factory.createUser();
+        Principal principal = () -> "tedi";
+        User user = userService.getUserByUserName(principal.getName());
         comment.getLikes().add(user);
 
         Mockito.when(commentRepository.existsById(1)).thenReturn(true);
@@ -215,21 +212,22 @@ public class CommentServiceTests {
 
         //Act, Assert
         Assert.assertThrows(DuplicateEntityException.class,
-                () -> mockCommentService.likeComment(1, user));
+                () -> mockCommentService.likeComment(1, principal));
     }
 
     @Test
-    public void dislikeCommentShould_AddLike() {
+    public void dislikeCommentShould_RemoveLike() {
         //arrange
         Comment comment = FactoryPostComment.createComment();
-        User user = Factory.createUser();
+        Principal principal = () -> "tedi";
+        User user = userService.getUserByUserName(principal.getName());
         comment.getLikes().add(user);
 
         Mockito.when(commentRepository.existsById(comment.getCommentId())).thenReturn(true);
         Mockito.when(commentRepository.getOne(comment.getCommentId())).thenReturn(comment);
 
         //act
-        mockCommentService.dislikeComment(comment.getCommentId(), user);
+        mockCommentService.dislikeComment(comment.getCommentId(), principal);
         //assert
         assertEquals(0, comment.getLikes().size());
     }
@@ -237,33 +235,31 @@ public class CommentServiceTests {
     @Test
     public void dislikeCommentShould_Throw_WhenCommentDoesNotExist() {
         //Arrange
-        User user = Factory.createUser();
+        Principal principal = () -> "tedi";
 
         //Act, Assert
         Assert.assertThrows(EntityNotFoundException.class,
-                () -> mockCommentService.dislikeComment(1, user));
+                () -> mockCommentService.dislikeComment(1, principal));
     }
 
     @Test
     public void dislikeCommentShould_Throw_WhenCommentIsNotLiked() {
         //Arrange
         Comment comment = FactoryPostComment.createComment();
-        User user = Factory.createUser();
+        Principal principal = () -> "tedi";
 
         Mockito.when(commentRepository.existsById(comment.getCommentId())).thenReturn(true);
         Mockito.when(commentRepository.getOne(comment.getCommentId())).thenReturn(comment);
 
         //Act, Assert
         Assert.assertThrows(EntityNotFoundException.class,
-                () -> mockCommentService.dislikeComment(comment.getCommentId(), user));
+                () -> mockCommentService.dislikeComment(comment.getCommentId(), principal));
     }
 
     @Test
     public void editCommentShould_Throw_WhenCommentDoesNotExists() {
         //Arrange
         Comment comment = FactoryPostComment.createComment();
-
-        User user = Factory.createUser();
         Principal principal = () -> "tedi";
 
         //Act, Assert
@@ -281,14 +277,12 @@ public class CommentServiceTests {
         comment.setUser(user);
         Principal principal = () -> "xxx";
 
-        List<User> list = new ArrayList<>();
-
         Mockito.when(commentRepository.getOne(comment.getCommentId())).thenReturn(comment);
         Mockito.when(commentRepository.existsById(comment.getCommentId())).thenReturn(true);
-        Mockito.when(userService.findByAuthorities("ROLE_ADMIN")).thenReturn(list);
-        Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(user);
+        Mockito.doThrow(new InvalidOperationException())
+                .when(userService).ifNotProfileOrAdminOwnerThrow(principal.getName(), comment.getUser());
         //Act, Assert
-        Assert.assertThrows(IllegalArgumentException.class,
+        Assert.assertThrows(InvalidOperationException.class,
                 () -> mockCommentService.editComment(comment.getCommentId(), "newContent", principal));
     }
 
@@ -301,11 +295,8 @@ public class CommentServiceTests {
         comment.setUser(userTedi);
         Principal principal = () -> "tedi";
 
-        List<User> list = new ArrayList<>();
-
         Mockito.when(commentRepository.getOne(comment.getCommentId())).thenReturn(comment);
         Mockito.when(commentRepository.existsById(comment.getCommentId())).thenReturn(true);
-        Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(userTedi);
 
         //Act
         mockCommentService.editComment(comment.getCommentId(), "contentSecond", principal);
@@ -322,13 +313,13 @@ public class CommentServiceTests {
         Comment comment1 = FactoryPostComment.createComment();
         post.getComments().add(comment1);
 
-        Mockito.when(commentRepository.deleteCommentByPostPostId(post.getPostId())).thenReturn(1);
+        Mockito.when(commentRepository.existsById(comment1.getCommentId())).thenReturn(true);
 
         //act
-        mockCommentService.deleteCommentByPostPostId(post.getPostId());
+        mockCommentService.deleteCommentByPostPostId(comment1.getCommentId());
         //assert
         Mockito.verify(commentRepository, Mockito.times(1))
-                .deleteCommentByPostPostId(post.getPostId());
+                .deleteCommentByPostPostId(comment1.getCommentId());
     }
 
     @Test
@@ -339,18 +330,37 @@ public class CommentServiceTests {
         comment1.setUser(user);
         Principal principal = () -> "tedi";
 
-        List<User> list = new ArrayList<>();
-
         Mockito.when(commentRepository.getOne(comment1.getCommentId())).thenReturn(comment1);
         Mockito.when(commentRepository.existsById(comment1.getCommentId())).thenReturn(true);
-        Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(user);
-//        Mockito.when(commentService.deleteCommentByPostPostId(post.getPostId())).thenReturn(1);
 
         //Act
         mockCommentService.deleteComment(comment1.getCommentId(), principal);
 
         //Assert
         Mockito.verify(commentRepository, Mockito.times(1)).delete(comment1);
+    }
+
+    @Test
+    public void deleteCommentShould_ThrowIfCommentDoesNotExists() {
+        //arrange
+        Comment comment1 = FactoryPostComment.createComment();
+        Principal principal = () -> "tedi";
+
+        Mockito.when(commentRepository.existsById(comment1.getCommentId())).thenReturn(false);
+        //Act, Assert
+        Assert.assertThrows(EntityNotFoundException.class,
+                () -> mockCommentService.deleteComment(comment1.getCommentId(),principal));
+    }
+
+    @Test
+    public void deleteCommentByPostPostIdShould_ThrowIfCommentDoesNotExists() {
+        //arrange
+        Comment comment1 = FactoryPostComment.createComment();
+
+        Mockito.when(commentRepository.existsById(comment1.getCommentId())).thenReturn(false);
+        //Act, Assert
+        Assert.assertThrows(EntityNotFoundException.class,
+                () -> mockCommentService.deleteCommentByPostPostId(comment1.getCommentId()));
     }
 
 }

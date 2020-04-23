@@ -2,6 +2,7 @@ package com.community.weare.Controllers.REST;
 
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
+import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
@@ -25,15 +26,13 @@ public class RESTCommentController {
 
     private CommentService commentService;
     private PostService postService;
-    private UserService userService;
     private CommentFactory commentFactory;
 
     @Autowired
-    public RESTCommentController(CommentService commentService, PostService postService, UserService userService,
+    public RESTCommentController(CommentService commentService, PostService postService,
                                  CommentFactory commentFactory) {
         this.commentService = commentService;
         this.postService = postService;
-        this.userService = userService;
         this.commentFactory = commentFactory;
     }
 
@@ -67,29 +66,21 @@ public class RESTCommentController {
     }
 
     @PutMapping("/like")
-    public void likeComment(@RequestParam int commentId, int userId) {
-        User user = userService.getUserById(userId);
-//        if (!userService.checkIfUserExist(user)) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
-//        }
+    public void likeComment(@RequestParam int commentId, Principal principal) {
         //TODO Fix it when the method userService.checkIfUserExist is fixed
         try {
-            commentService.likeComment(commentId, user);
-        } catch (DuplicateEntityException | EntityNotFoundException e) {
+            commentService.likeComment(commentId, principal);
+        } catch (DuplicateEntityException | EntityNotFoundException | InvalidOperationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
     @PutMapping("/dislike")
-    public void dislikeComment(@RequestParam int commentId, int userId) {
-        User user = userService.getUserById(userId);
-//        if (!userService.checkIfUserExist(user)) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists");
-//        }
+    public void dislikeComment(@RequestParam int commentId, Principal principal) {
         //TODO Fix it when the method userService.checkIfUserExist is fixed
         try {
-            commentService.dislikeComment(commentId, user);
-        } catch (DuplicateEntityException | EntityNotFoundException e) {
+            commentService.dislikeComment(commentId, principal);
+        } catch (DuplicateEntityException | EntityNotFoundException | InvalidOperationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
@@ -98,7 +89,7 @@ public class RESTCommentController {
     public void editComment(Principal principal, @RequestParam int commentId, String content) {
         try {
             commentService.editComment(commentId, content, principal);
-        } catch (IllegalArgumentException | EntityNotFoundException e) {
+        } catch (IllegalArgumentException | EntityNotFoundException | InvalidOperationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
@@ -107,7 +98,7 @@ public class RESTCommentController {
     public void deleteComment(Principal principal, @RequestParam int commentId) {
         try {
             commentService.deleteComment(commentId, principal);
-        } catch (IllegalArgumentException | EntityNotFoundException e) {
+        } catch (IllegalArgumentException | EntityNotFoundException | InvalidOperationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }

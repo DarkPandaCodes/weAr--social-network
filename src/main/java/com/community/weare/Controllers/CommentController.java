@@ -2,6 +2,7 @@ package com.community.weare.Controllers;
 
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
+import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.dto.CommentDTO;
 import com.community.weare.Services.contents.CommentService;
@@ -28,18 +29,6 @@ public class CommentController {
 
     @GetMapping("/edit/{id}")
     public String editCommentData(Model model, Principal principal, @PathVariable(name = "id") int commentId) {
-        Comment commentToEdit = commentService.getOne(commentId);
-        //Bug! If you remove boolean principalAdmin the Authority Admin will not work. Admin won't be able to edit comments
-//        boolean principalAdmin = userService.getUserByUserName
-//                (principal.getName()).getAuthorities().stream()
-//                .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
-
-        if (!(commentToEdit.getUser().getUsername().equals(principal.getName()) ||
-                userService.getUserByUserName(principal.getName()).getAuthorities().stream()
-                        .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN")))) {
-            model.addAttribute("error", "You can only edit your posts");
-            return "redirect:/posts/" + commentToEdit.getPost().getPostId() + "#leaveComment";
-        }
         model.addAttribute("commentDTO", new CommentDTO());
         return "commentEdit";
     }
@@ -50,7 +39,7 @@ public class CommentController {
         Comment commentToEdit = commentService.getOne(commentId);
         try {
             commentService.editComment(commentId, commentDTO.getContent(), principal);
-        } catch (IllegalArgumentException | DuplicateEntityException e) {
+        } catch (IllegalArgumentException | DuplicateEntityException | InvalidOperationException e) {
             model.addAttribute("error", e.getMessage());
             return "commentEdit";
         }
@@ -63,22 +52,7 @@ public class CommentController {
 
     @GetMapping("/delete/{id}")
     public String deleteCommentData(Model model, Principal principal, @PathVariable(name = "id") int commentId) {
-        //Bug! If you remove boolean principalAdmin the Authority Admin will not work. Admin won't be able to edit comments
-//        boolean principalAdmin = userService.getUserByUserName
-//                (principal.getName()).getAuthorities().stream()
-//                .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
-
         Comment commentToDelete = commentService.getOne(commentId);
-        if (principal == null) {
-            model.addAttribute("error", "You can only delete your comments");
-            return "redirect:/posts/" + commentToDelete.getPost().getPostId() + "#leaveComment";
-        }
-        if (!(commentToDelete.getUser().getUsername().equals(principal.getName()) ||
-                userService.getUserByUserName(principal.getName()).getAuthorities().stream()
-                        .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN")))) {
-            model.addAttribute("error", "You can only delete your posts");
-            return "redirect:/posts/" + commentToDelete.getPost().getPostId() + "#leaveComment";
-        }
         model.addAttribute("comment", commentToDelete);
         model.addAttribute("commentDTO", new CommentDTO());
         return "commentDelete";
@@ -86,7 +60,8 @@ public class CommentController {
 
     @PostMapping("/delete/{id}")
     public String deleteComment(Model model, Principal principal, @PathVariable(name = "id") int commentId,
-                                @ModelAttribute("commentDTO") CommentDTO commentDTO) {
+                                @ModelAttribute("commentDTO") CommentDTO commentDTO,
+                                @ModelAttribute("comment") Comment comment) {
         Comment commentToDelete = commentService.getOne(commentId);
         if (!commentDTO.isDeletedConfirmed()) {
             if (principal != null) {
@@ -96,9 +71,9 @@ public class CommentController {
         }
         try {
             commentService.deleteComment(commentId, principal);
-        } catch (IllegalArgumentException | EntityNotFoundException e) {
+        } catch (IllegalArgumentException | EntityNotFoundException | InvalidOperationException e) {
             model.addAttribute("error", e.getMessage());
-            return "redirect:/posts/" + commentToDelete.getPost().getPostId() + "#leaveComment";
+            return "commentDelete";
         }
         return "commentDeleteConfirmation";
     }
