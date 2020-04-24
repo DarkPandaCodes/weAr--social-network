@@ -123,9 +123,7 @@ public class UserFactory {
     public User mergeUserAndModel(User userToCheck, UserModel userModel) {
 
         User user = userRepository.getOne(userToCheck.getUserId());
-        user.getPersonalProfile().setPicture(userToCheck.getPersonalProfile().getPicture());
         user.setEmail(getNotNull(userModel.getEmail(), userToCheck.getEmail()));
-
         user.getPersonalProfile().setBirthYear(getNotNull(userModel.getBirthYear(), userToCheck.getPersonalProfile().getBirthYear()));
         Location location = personalProfileFactory.
                 createLocation(getNotNull(userModel.getCity(),

@@ -61,7 +61,7 @@ public class PostController {
         model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
         model.addAttribute("postDTO2", new PostDTO2());
         model.addAttribute("postDTO", new PostDTO());
-        model.addAttribute("category", new Category());
+        model.addAttribute("category", new Category("Marketing"));
         if (principal != null) {
             model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
         }

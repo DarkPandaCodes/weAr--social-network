@@ -1,5 +1,6 @@
 package com.community.weare.Controllers;
 
+import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
@@ -20,9 +21,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.ModelAndView;
 
-import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
@@ -31,10 +31,13 @@ import java.io.InputStream;
 import java.security.Principal;
 import java.util.*;
 
+import static com.community.weare.utils.HttpMessages.ERROR_NOT_FOUND_MESSAGE_FORMAT;
+
 @Controller
 @RequestMapping("/auth/users")
 public class ProfileController {
     private static final String TYPE = "USER";
+    private static final Object NOT_AUTHORISED = "User is not authorised";
     private final UserService userService;
     private final ExpertiseProfileFactory expertiseProfileFactory;
     private final SkillCategoryService skillCategoryService;
@@ -52,27 +55,22 @@ public class ProfileController {
     }
 
     @GetMapping("/{id}/profile")
-    public String showProfilePage(@PathVariable(name = "id") int id, Model model, Principal principal) {
+    public ModelAndView showProfilePage(@PathVariable(name = "id") int id, Principal principal) {
+        ModelAndView modelAndView = new ModelAndView("profile_single");
         try {
             User user = userService.getUserById(id);
-            model.addAttribute("userRequest", new UserDtoRequest());
-            model.addAttribute("userDisable", new User());
-            model.addAttribute("user", user);
-
-            boolean areFriends = false;
-
-            if (user.isFriend(principal.getName())) {
-                areFriends = true;
-            }
-            model.addAttribute("friends", areFriends);
-            model.addAttribute("isOwner", userService.isOwner(principal.getName(), user));
-            model.addAttribute("isAdmin", userService.isAdmin(principal));
-
+            modelAndView.addObject("userRequest", new UserDtoRequest());
+            modelAndView.addObject("userDisable", new User());
+            modelAndView.addObject("user", user);
+            modelAndView.addObject("friends", user.isFriend(principal.getName()));
+            modelAndView.addObject("isOwner", userService.isOwner(principal.getName(), user));
+            modelAndView.addObject("isAdmin", userService.isAdmin(principal));
 
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            modelAndView.setStatus(HttpStatus.NOT_FOUND);
+            return modelAndView.addObject("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
         }
-        return "profile_new";
+        return modelAndView;
     }
 
     @GetMapping("/{id}/userImage")
@@ -89,28 +87,25 @@ public class ProfileController {
     public String editFormUserProfile(@PathVariable(name = "id") int id, Model model, Principal principal,
                                       @ModelAttribute @Valid UserDTO user1,
                                       BindingResult bindingResult) {
-        if (userService.isAdmin(principal))
 
-            if (bindingResult.hasErrors()) {
-                return "user-profile-edit";
-            }
+        if (bindingResult.hasErrors()) {
+            return "user-profile-edit";
+        }
         try {
             User user = userService.getUserById(id);
+            userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), user);
             ExpertiseProfileDTO expertiseProfileDTO = new ExpertiseProfileDTO();
             expertiseProfileDTO.setId(user.getExpertiseProfile().getId());
             expertiseProfileDTO.setCategory(user.getExpertiseProfile().getCategory());
             model.addAttribute("userToEdit", userService.getUserModelById(id));
             model.addAttribute("profile", user.getExpertiseProfile());
             model.addAttribute("profileDTO", expertiseProfileDTO);
-
-            userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), user);
-
             model.addAttribute("user", user);
 
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            model.addAttribute("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
         } catch (InvalidOperationException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, e.getMessage());
+            model.addAttribute("error", NOT_AUTHORISED);
         }
         //TODO validation fields in template
 
@@ -119,36 +114,57 @@ public class ProfileController {
 
 
     @PostMapping("/{id}/profile/personal")
-    public String editUserProfile(@PathVariable(name = "id") int id, @RequestParam("imagefile") MultipartFile file,
+    public String editUserProfile(@PathVariable(name = "id") int id,
                                   @ModelAttribute UserModel userModel, BindingResult bindingResult, Principal principal, Model model) throws IOException {
 
         if (bindingResult.hasErrors()) {
             return "user-profile-edit";
         }
         try {
-            User userToCheck = userService.getUserById(id);
-            userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), userToCheck);
+            User userToCheck = userService.getUserById(userModel.getId());
             model.addAttribute("userToEdit", userModel);
-            if (file != null) {
-                userToCheck.getPersonalProfile().setPicture(Base64.getEncoder().encodeToString(file.getBytes()));
-            }
             User userToSave = userFactory.mergeUserAndModel(userToCheck, userModel);
-            userService.updateUser(userToSave);
+            userService.updateUser(userToSave, principal.getName(), userToCheck);
+
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            model.addAttribute("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
         } catch (InvalidOperationException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, e.getMessage());
+            model.addAttribute("error", NOT_AUTHORISED);
+        }
+        return "redirect:/auth/users/" + userModel.getId() + "/profile/editor#profile-personal";
+    }
+
+    @PostMapping("/{id}/profile/settings")
+    public String editUserPicture(@PathVariable(name = "id") int id, @RequestParam("imagefile") MultipartFile file,
+                                  @ModelAttribute User user, Principal principal, Model model) throws IOException {
+        try {
+            User userToCheck = userService.getUserById(id);
+            if (file != null) {
+                System.out.println("snimka" + file.toString());
+                userToCheck.getPersonalProfile().setPicture(Base64.getEncoder().encodeToString(file.getBytes()));
+                userToCheck.getPersonalProfile().setPicturePrivacy(user.getPersonalProfile().isPicturePrivacy());
+            }
+            userService.updateUser(userToCheck, principal.getName(), userToCheck);
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
+        } catch (InvalidOperationException e) {
+            model.addAttribute("error", NOT_AUTHORISED);
         }
 
-        return "redirect:/auth/users/" + id + "/profile/editor#profile-services";
+        return "redirect:/auth/users/" + id + "/profile";
     }
 
     @Transactional
     @RequestMapping("/{id}/profile/expertise")
     public String editUserExpertiseProfile(@PathVariable(name = "id") int id,
                                            @ModelAttribute(name = "profileDTO") ExpertiseProfileDTO expertiseProfileDTO,
-                                           @ModelAttribute ExpertiseProfile expertiseProfile,
+                                           BindingResult bindingResult,
+                                           @ModelAttribute ExpertiseProfile expertiseProfile, Model model,
                                            Principal principal) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("error", bindingResult.getFieldError().getDefaultMessage());
+            return "user-profile-edit";
+        }
 
         try {
             User userToCheck = userService.getUserById(id);
@@ -156,26 +172,26 @@ public class ProfileController {
 
             if (userToCheck.getExpertiseProfile().getCategory().getName().
                     equals(expertiseProfileDTO.getCategory().getName())) {
-
                 ExpertiseProfile expertiseProfileNew =
                         expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
 
+                //TODO test when skill is duplicated, throw exception
                 ExpertiseProfile expertiseProfileMerged =
                         expertiseProfileFactory.mergeExpertProfile(expertiseProfileNew,
                                 userToCheck.getExpertiseProfile());
 
                 userService.updateExpertise
-                        (userToCheck, expertiseProfileMerged);
+                        (userToCheck, expertiseProfileMerged, principal.getName(), userToCheck);
             } else {
                 userService.updateExpertise
-                        (userToCheck, expertiseProfile);
+                        (userToCheck, expertiseProfile, principal.getName(), userToCheck);
             }
-
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            model.addAttribute("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
         } catch (InvalidOperationException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, e.getMessage());
+            model.addAttribute("error", NOT_AUTHORISED);
         }
+
         return "redirect:/auth/users/" + id + "/profile#profile";
     }
 

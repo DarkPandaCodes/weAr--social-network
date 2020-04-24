@@ -27,13 +27,13 @@ public interface UserService extends UserDetailsService {
 
     boolean isUserDuplicate(User user);
 
-    void updateUser(User user);
+    User updateUser(User user,String principal, User userToCheck);
 
     UserModel getUserModelById(int id);
 
     void addToFriendList(Request request);
 
-    void updateExpertise(User user, ExpertiseProfile expertiseProfileMerged);
+    void updateExpertise(User user, ExpertiseProfile expertiseProfileMerged,String principal, User userToCheck);
 
     void ifNotProfileOwnerThrow(String principal, User user);
 
