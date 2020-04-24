@@ -15,7 +15,7 @@ public class UserDTO {
     private String username;
 
 
-    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\\s).{4,8}$",message = "Password  requires one lower case letter, one upper case letter, one digit, 6-13 length, and no spaces.")
+//    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\\s).{4,8}$",message = "Password  requires one lower case letter, one upper case letter, one digit, 6-13 length, and no spaces.")
     private String password;
 
     private String confirmPassword;
