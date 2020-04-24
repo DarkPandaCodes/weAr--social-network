@@ -65,10 +65,8 @@ public class AdminController {
         try {
             modelAndView.addObject("userDisable",userService.getUserById(user.getUserId()));
             userService.ifNotProfileOrAdminOwnerThrow(principal.getName(),user);
-//            //TODO ask if is good practise
-//            modelAndView.addObject("isEnabled",user.isEnabled());
             userService.disableEnableUser(user.getUserId());
-            userService.updateUser(user);
+
         }catch (EntityNotFoundException e){
             modelAndView.addObject("error","User not found");
             modelAndView.setStatus(HttpStatus.NOT_FOUND);
@@ -78,7 +76,7 @@ public class AdminController {
             modelAndView.setStatus(HttpStatus.UNAUTHORIZED);
             return modelAndView;
         }
-      return new ModelAndView("redirect:/admin/status#enabled");
+      return new ModelAndView("redirect:/auth/users/" + user.getUserId() + "/profile");
     }
 
 

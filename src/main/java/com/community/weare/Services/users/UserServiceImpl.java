@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(int id) {
-        return userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return userRepository.findById(id).orElseThrow(new EntityNotFoundException("User not found!"));
     }
 
 
@@ -130,15 +130,16 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void updateUser(User user) {
-        userRepository.saveAndFlush(user);
+    public User updateUser(User user, String principal, User userToCheck) {
+        ifNotProfileOrAdminOwnerThrow(principal, userToCheck);
+        return userRepository.saveAndFlush(user);
     }
 
     @Transactional
     @Override
     public void updateExpertise(User user,
-                                ExpertiseProfile expertiseProfileMerged) {
-
+                                ExpertiseProfile expertiseProfileMerged, String principal, User userToCheck) {
+        ifNotProfileOrAdminOwnerThrow(principal, userToCheck);
         if (user.getExpertiseProfile().getId() == expertiseProfileMerged.getId()) {
             expertiseRepository.saveAndFlush(expertiseProfileMerged);
         }

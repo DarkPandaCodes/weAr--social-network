@@ -104,7 +104,7 @@
                 <a class="list-group-item list-group-item-action" id="list-messages-list" data-toggle="list"
                    href="#profile-services" role="tab" aria-controls="messages">What services can you offer?</a>
                 <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list"
-                   href="#list-settings" role="tab" aria-controls="settings">Settings</a>
+                   href="#settings" role="tab" aria-controls="settings">Settings</a>
             </div>
         </div>
         <div  class="tab-pane active col-md-9 pb-5 pt-5" role="tabpanel" id="profile-personal">
@@ -121,21 +121,11 @@
                             <form form action="#"
                                   th:action="@{'/auth/users/'+${userToEdit.getId()}+'/profile/personal'}"
                                   th:object="${userToEdit}" method="post" class="contact" role="form" enctype="multipart/form-data">
-                                <div class="form-group row">
-                                <div class="profile-img col-4 col-form-label">
-                                    <img th:if="${user.getPersonalProfile().getPicture()!=null}" th:src="@{'/auth/users/' + ${userToEdit.getId()} + '/userImage'}" alt=""/>
 
-                                </div>
-                                    <div class="col-lg-4">
-                                        <div class="control-label file btn-light ">
-                                            Change Photo
-                                            <input id="imagefile" name="imagefile" type="file" class="file">
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="form-group row">
                                     <label class="col-4 col-form-label">User Name</label>
                                     <div class="col-8">
+                                        <input type="hidden" th:field="*{id}"/>
                                         <p th:text="*{username}"></p>
                                     </div>
                                 </div>
@@ -229,104 +219,6 @@
 
     </div>
 
-
-    <!--        <div class="tab-content">-->
-    <!--        </div>-->
-
-
-    <!--        <div class="tab-pane col-md-9"  role="tabpanel" id="profile-expertise1" >-->
-    <!--            <div class="card">-->
-    <!--                <div class="card-body">-->
-    <!--                    <div class="row">-->
-    <!--                        <div class="col-md-12">-->
-    <!--                            <h4>Expertise Profile</h4>-->
-    <!--                            <hr>-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-    <!--                    <div class="row">-->
-    <!--                        <div class="col-md-12">-->
-    <!--                            <form form action="#" th:action="@{'/auth/users/'+${id}}"  th:object="${userToEdit}" method="post" class="contact" role="form">-->
-    <!--                                <div class="form-group row">-->
-    <!--                                    <label class="col-4 col-form-label">Which industry does the workplace/business belong to?</label>-->
-    <!--                                    <div class="col-8">-->
-    <!--                                        <input  name="name" th:field="*{expertise}" placeholder="ex.Marketing" class="form-control here" type="text">-->
-    <!--                                    </div>-->
-    <!--                                </div>-->
-    <!--                                <div class="form-group row">-->
-    <!--                                    <label for="name" class="col-4 col-form-label">First Name</label>-->
-    <!--                                    <div class="col-8">-->
-    <!--                                        <input id="name1" name="name" th:field="*{firstName}" placeholder="First Name" class="form-control here" type="text">-->
-    <!--                                    </div>-->
-    <!--                                </div>-->
-    <!--                                <div class="form-group row">-->
-    <!--                                    <label for="lastname1" class="col-4 col-form-label">Last Name</label>-->
-    <!--                                    <div class="col-8">-->
-    <!--                                        <input id="lastname1" name="lastname" th:field="*{lastNAme}" placeholder="Last Name" class="form-control here" type="text">-->
-    <!--                                    </div>-->
-    <!--                                </div>-->
-    <!--                                <div class="form-group row">-->
-    <!--                                    <label for="birthDay1" class="col-4 col-form-label">Nick Name*</label>-->
-    <!--                                    <div class="col-8">-->
-    <!--                                        <input id="birthDay1" th:type="datetime-local" th:field="*{birthYear}" placeholder="birthday" class="form-control here" required="required" >-->
-    <!--                                    </div>-->
-    <!--                                </div>-->
-    <!--                                <div class="form-group row">-->
-    <!--                                    <label for="select1" class="col-4 col-form-label">Gender</label>-->
-    <!--                                    <div class="col-8">-->
-    <!--                                        <select id="select1" name="select" th:field="*{gender}" class="custom-select">-->
-    <!--                                            <option option th:each="sex: ${genders}"-->
-    <!--                                                    th:value="${sex}"-->
-    <!--                                                    th:text="${sex.toString()}"-->
-    <!--                                            >Choose...-->
-    <!--                                            </option>-->
-    <!--                                        </select>-->
-    <!--                                    </div>-->
-    <!--                                </div>-->
-    <!--                                <div class="form-group row">-->
-    <!--                                    <label for="email1" class="col-4 col-form-label">Email*</label>-->
-    <!--                                    <div class="col-8">-->
-    <!--                                        <input id="email1" name="email" th:field="*{email}" placeholder="Email" class="form-control here" required="required" type="text">-->
-    <!--                                    </div>-->
-    <!--                                </div>-->
-    <!--                                <div class="form-group row">-->
-    <!--                                    <label for="website1" class="col-4 col-form-label">Website</label>-->
-    <!--                                    <div class="col-8">-->
-    <!--                                        <input id="website1" name="website" placeholder="website" class="form-control here" type="text">-->
-    <!--                                    </div>-->
-    <!--                                </div>-->
-    <!--                                <div class="form-group row">-->
-    <!--                                    <label for="publicinfo1" class="col-4 col-form-label">Public Info</label>-->
-    <!--                                    <div class="col-8">-->
-    <!--                                        <textarea id="publicinfo1" th:field="*{personalReview}" name="publicinfo" cols="40" rows="4" class="form-control"></textarea>-->
-    <!--                                    </div>-->
-    <!--                                </div>-->
-    <!--&lt;!&ndash;                                <div class="form-group row">&ndash;&gt;-->
-    <!--&lt;!&ndash;                                    <label for="newpass" class="col-4 col-form-label">New Password</label>&ndash;&gt;-->
-    <!--&lt;!&ndash;                                    <div class="col-8">&ndash;&gt;-->
-    <!--&lt;!&ndash;                                        <input id="newpass" name="newpass" placeholder="New Password" class="form-control here" type="text">&ndash;&gt;-->
-    <!--&lt;!&ndash;                                    </div>&ndash;&gt;-->
-    <!--&lt;!&ndash;                                </div>&ndash;&gt;-->
-    <!--                                <div class="form-group row">-->
-    <!--                                    <label  class="col-4 col-form-label">Location</label>-->
-    <!--                                    <div class="col-8">-->
-    <!--                                        <input id="location.city1" name="city" th:field="*{city}" placeholder="New Password" class="form-control here" type="text">-->
-    <!--                                    </div>-->
-    <!--                                    <div class="col-8">-->
-    <!--                                        <p id="location.country1" name="country"   type="text">Bulgaria</p>-->
-    <!--                                    </div>-->
-    <!--                                </div>-->
-    <!--                                <div class="form-group row">-->
-    <!--                                    <div class="offset-4 col-8">-->
-    <!--                                        <button name="submit" type="submit" class="btn btn-primary">Update My Profile</button>-->
-    <!--                                    </div>-->
-    <!--                                </div>-->
-    <!--                            </form>-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--        </div>-->
     <div class="row"   >
         <div class="tab-pane col-md-9 pb-5 pt-5" role="tabpanel" id="profile-expertise">
             <div class="card">
@@ -473,6 +365,58 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+    <div class="row"   >
+        <div class="tab-pane col-md-9 pb-5 pt-5" role="tabpanel" id="settings">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Personal info & Safety</h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form form action="#"
+                                  th:action="@{'/auth/users/'+${userToEdit.id}+'/profile/settings'}"
+                                  th:object="${user}" method="post" class="contact" role="form" enctype="multipart/form-data">
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Power Up your profile. Upload Profile picture!</label>
+                                        <div class="profile-img col-4 col-form-label">
+                                            <img th:if="${user.getPersonalProfile().getPicture()!=null}"  th:src="@{'/auth/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="control-label file btn-light ">
+                                                Change Photo
+                                                <input  id="imagefile" name="imagefile" type="file" class="file">
+                                            </div>
+                                        </div>
+                                    </div>
+                                <div class="form-group row">
+                                    <label class="col-4 col-form-label">Choose the privacy of your picture!</label>
+                                    <div class="col-8">
+                                        <div class="col-8">
+                                            <select required="required" name="select" th:field="*{personalProfile.picturePrivacy}" class="custom-select">
+                                                <option  selected="selected" th:value="true" th:text="private">Choose...
+                                                </option>
+                                                <option   th:value="false" th:text="public">Choose...
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="offset-4 col-8">
+                                        <button name="submit" type="submit" class="btn btn-primary">Update
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

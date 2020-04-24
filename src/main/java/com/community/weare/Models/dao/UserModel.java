@@ -32,7 +32,7 @@ public class UserModel {
     private LocalDate birthYear;
 
     private String personalReview;
-    private String picture;
+//    private String picture;
     private String expertise;
     private List<String>skills = new ArrayList<>();
     @DateTimeFormat(iso = DateTimeFormat.ISO.NONE,pattern = "yyyy-MM-dd HH:mm")
@@ -123,13 +123,13 @@ public class UserModel {
         this.personalReview = personalReview;
     }
 
-    public String getPicture() {
-        return picture;
-    }
-
-    public void setPicture(String picture) {
-        this.picture = picture;
-    }
+//    public String getPicture() {
+//        return picture;
+//    }
+//
+//    public void setPicture(String picture) {
+//        this.picture = picture;
+//    }
 
     public String getExpertise() {
         return expertise;

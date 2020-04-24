@@ -34,22 +34,21 @@ public class SearchUserController {
         try {
             List<User> users = new ArrayList<>();
             if (name != null && expertise.isEmpty()) {
-
                 users = userService.getUserByFirstNameLastName(name);
             }
             if (expertise != null && name.isEmpty()) {
                 users = userService.getUsersByExpertise(expertise);
             }
-            if (name.length()>=2 && expertise.length()>=2) {
-                users=userService.getUserByFirstNameLastName(name).stream().
+            if (name.length() >= 2 && expertise.length() >= 2) {
+                users = userService.getUserByFirstNameLastName(name).stream().
                         filter(u -> u.getExpertiseProfile()
                                 .getCategory().getName().equals(expertise)).
                         collect(Collectors.toList());
             }
             model.addAttribute("users", users);
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
+            //TODO add place for error
+            model.addAttribute("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
         }
         return "index_users";
     }

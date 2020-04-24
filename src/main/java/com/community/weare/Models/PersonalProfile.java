@@ -1,9 +1,11 @@
 package com.community.weare.Models;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "personal_profile")
@@ -30,17 +32,15 @@ public class PersonalProfile {
 
     private String personalReview;
 
+    @CreationTimestamp
+    @DateTimeFormat(pattern = "YY-MM-DD-HH")
+    private LocalDateTime memberSince;
+
     @Lob
     private String picture;
 
-    public PersonalProfile(Integer id, String firstName, String lastName, Location location, LocalDate birthYear, String personalReview) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.location = location;
-        this.birthYear = birthYear;
-        this.personalReview = personalReview;
-    }
+    @Column
+    private boolean picturePrivacy;
 
     public PersonalProfile() {
     }
@@ -99,6 +99,22 @@ public class PersonalProfile {
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    public boolean isPicturePrivacy() {
+        return picturePrivacy;
+    }
+
+    public void setPicturePrivacy(boolean picturePrivacy) {
+        this.picturePrivacy = picturePrivacy;
+    }
+
+    public LocalDateTime getMemberSince() {
+        return memberSince;
+    }
+
+    public void setMemberSince(LocalDateTime memberSince) {
+        this.memberSince = memberSince;
     }
 
     public Sex getSex() {
