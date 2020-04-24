@@ -64,7 +64,7 @@
             <div class="col-md-12 ftco-animate text-center mb-5">
                 <p class="breadcrumbs mb-0"><span class="mr-3"><a th:href="@{/}">Home
 					<i class="ion-ios-arrow-forward"></i> </a></span> <span>Login</span>
-<!--                    <i class="ion-ios-arrow-forward"></i> <span>Login</span></p>-->
+                    <!--                    <i class="ion-ios-arrow-forward"></i> <span>Login</span></p>-->
                 <h1 class="mb-3 bread">Login Page</h1>
             </div>
         </div>
@@ -72,31 +72,35 @@
 </div>
 
 
-<br>
-<br>
-<p>
-    <i th:if="${param.logout}"> You have been logged out. </i>
-</p>
+<section>
+    <div class=" container d-flex bd-highlight team justify-content-center p-5 bg-white">
+        <div class="row">
+        <div class="col-lg-12">
+            <p>
+                <i th:if="${param.logout}"> You have been logged out. </i>
+            </p>
 
-<p>
-    <i th:if="${param.error}" style="color: red"> Wrong username or password. </i>
-</p>
+            <p>
+                <i th:if="${param.error}" style="color: red"> Wrong username or password. </i>
+            </p>
+        </div>
+            <div class="col-lg-2 p-5">
 
-<form th:action="@{/authenticate}" method="post">
-    <label>Username:</label>
-    <br/>
-    <input type="text" id="username" name="username"/>
-    <br/>
-    <label>Password:</label>
-    <br/>
-    <input type="password" id="password" name="password"/>
-    <br/><br/>
-    <input type="submit" value="Login"/>
-</form>
-<br>
-<br>
-
-
+                <form th:action="@{/authenticate}" method="post">
+                    <label>Username:</label>
+                    <br/>
+                    <input type="text" id="username" name="username"/>
+                    <br/>
+                    <label>Password:</label>
+                    <br/>
+                    <input type="password" id="password" name="password"/>
+                    <br/><br/>
+                    <input type="submit" value="Login"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
 
 
 <section class="ftco-section-parallax">

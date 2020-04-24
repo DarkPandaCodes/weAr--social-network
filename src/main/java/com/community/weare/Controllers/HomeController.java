@@ -15,11 +15,11 @@ import java.util.Optional;
 
 @org.springframework.stereotype.Controller
 
-public class Controller {
+public class HomeController {
     private final UserService userService;
 
     @Autowired
-    public Controller(UserService userService) {
+    public HomeController(UserService userService) {
         this.userService = userService;
     }
 

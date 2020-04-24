@@ -139,7 +139,7 @@
                         <button class="btn btn-primary">View my Requests</button>
                     </a>
                 </p>
-                <form th:if="${!isAdmin}" sec:authorize="isAuthenticated()" action="#" th:action="@{/admin/status}"
+                <form th:if="${isAdmin}" sec:authorize="isAuthenticated()" action="#" th:action="@{/admin/status}"
                       th:object="${userDisable}" method="post">
                     <label>
                         <input type="hidden" data-th-value="${user.getUserId()}"
@@ -154,13 +154,13 @@
                 <form method="post" th:object="${user}">
                     <div class="row">
                         <div class="col-md-4">
-                            <div class="img" th:if="${user.getPersonalProfile().getPicture()==null}">
+                            <div class="img" th:if="${user.getPersonalProfile().getPicture()==null }">
                                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52y5aInsxSm31CvHOFHWujqUx_wWTS9iM6s7BAm21oEN_RiGoog"
                                      alt=""/>
                             </div>
-                            <div class="img" th:if="${user.getPersonalProfile().getPicture()!=null}">
+                            <div class="img" th:class="img" th:if="${user.getPersonalProfile().getPicture()!=null}">
 
-                                <img th:src="@{'/auth/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
+                                <img th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
 
                             </div>
                         </div>

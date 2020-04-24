@@ -36,21 +36,21 @@ public class AdminController {
         this.expertiseProfileFactory = expertiseProfileFactory;
         this.skillCategoryService = skillCategoryService;
         this.skillService = skillService;
-        this.userFactory= userFactory;
+        this.userFactory = userFactory;
     }
 
     @GetMapping("")
-    public String showAdminHomePage( ) {
+    public String showAdminHomePage() {
         return "admin_users";
     }
 
     @GetMapping("/users")
-    public String showAllUsersPage( Model model, Principal principal) {
+    public String showAllUsersPage(Model model, Principal principal) {
         try {
-            User user=userService.getUserByUserName(principal.getName());
-            model.addAttribute("user",user);
+            User user = userService.getUserByUserName(principal.getName());
+            model.addAttribute("user", user);
             Collection<User> usersAll = userService.getAllUsers();
-            model.addAttribute("users",usersAll);
+            model.addAttribute("users", usersAll);
             model.addAttribute("isAdmin", userService.isAdmin(principal));
 
         } catch (EntityNotFoundException e) {
@@ -60,25 +60,21 @@ public class AdminController {
     }
 
     @PostMapping("/status")
-    public ModelAndView disableEnableUser(@ModelAttribute User user,  Principal principal){
-        ModelAndView modelAndView=new ModelAndView("admin_users");
+    public ModelAndView disableEnableUser(@ModelAttribute User user, Principal principal) {
+        ModelAndView modelAndView = new ModelAndView("admin_users");
         try {
-            modelAndView.addObject("userDisable",userService.getUserById(user.getUserId()));
-            userService.ifNotProfileOrAdminOwnerThrow(principal.getName(),user);
-            userService.disableEnableUser(user.getUserId());
+            userService.disableEnableUser(principal.getName(), user.getUserId());
 
-        }catch (EntityNotFoundException e){
-            modelAndView.addObject("error","User not found");
+        } catch (EntityNotFoundException e) {
+            modelAndView.addObject("error", "User not found");
             modelAndView.setStatus(HttpStatus.NOT_FOUND);
             return modelAndView;
-        }catch (InvalidOperationException e){
-            modelAndView.addObject("error","User not authorised");
+        } catch (InvalidOperationException e) {
+            modelAndView.addObject("error", "User not authorised");
             modelAndView.setStatus(HttpStatus.UNAUTHORIZED);
             return modelAndView;
         }
-      return new ModelAndView("redirect:/auth/users/" + user.getUserId() + "/profile");
+        return new ModelAndView("redirect:/auth/users/" + user.getUserId() + "/profile");
     }
-
-
 
 }
