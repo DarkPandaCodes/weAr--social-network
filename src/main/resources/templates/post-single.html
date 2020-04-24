@@ -31,20 +31,30 @@
 
 <body>
 
-<div class="hero-wrap hero-wrap-2" style="background-image: url('../static/images/bg_1.jpg');"
-     data-stellar-background-ratio="0.5">
-    <div class="overlay"></div>
-    <div class="container">
-        <div class="row no-gutters slider-text align-items-end justify-content-start">
-            <div class="col-md-12 ftco-animate text-center mb-5">
-                <p class="breadcrumbs mb-0"><span class="mr-3"><a th:href="@{/}">Home
-					<i class="ion-ios-arrow-forward"></i> </a></span> <span>Posts</span>
-                    <i class="ion-ios-arrow-forward"></i> <span>Post</span></p>
-                <h1 class="mb-3 bread">Explore post</h1>
-            </div>
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+    <div class="container-fluid px-md-4	">
+        <a class="navbar-brand" th:href="@{/}">WEare</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
+                aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="oi oi-menu"></span> Menu
+        </button>
+
+
+        <div class="collapse navbar-collapse" id="ftco-nav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="browsejobs.html" class="nav-link">Browse Jobs</a></li>
+                <li class="nav-item active"><a th:href="@{/posts}" class="nav-link">Posts</a></li>
+                <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
+                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+                <li class="nav-item cta mr-md-1"><a th:href="@{/posts/newPost}" class="nav-link"
+                                                    sec:authorize="isAuthenticated()">New post</a></li>
+                <li class="nav-item cta cta-colored"><a href="job-post.html" class="nav-link">Want a Job</a></li>
+
+            </ul>
         </div>
     </div>
-</div>
+</nav>
 <!-- END nav -->
 
 <div class="hero-wrap hero-wrap-2" style="background-image: url('../static/images/bg_1.jpg');"
@@ -61,6 +71,7 @@
         </div>
     </div>
 </div>
+<!-- END nav -->
 
 <section class="ftco-section ftco-degree-bg">
     <div class="container">
@@ -72,12 +83,12 @@
                 <h2 class="mb-3" th:text="${post.user.username}"></h2>
                 <p th:text="${post.content}"></p>
                 <p>
-                    <img th:src="@{'/posts/' + ${post.postId} + '/postImage'}">
+                    <img th:src="@{'/posts/' + ${post.postId} + '/postImage'}" height="400">
                     <!--                   th:href="@{'/posts/' + ${post.postId} + '/postImage'}">-->
                 </p>
-                <p>Additional info...</p>
-                <h2 class="mb-3 mt-5">#2. Creative WordPress Themes</h2>
-                <p>Additional info...</p>
+                <p>See my profile for more information or just contact me</p>
+                <h2 class="mb-3 mt-5">#WEare social network</h2>
+                <p>WEare all good at what we do. Why not share?</p>
                 <p>
                     <img src="/images/image_8.jpg" alt="" class="img-fluid">
                 </p>
@@ -94,17 +105,22 @@
                     </div>
                 </div>
 
-                <div class="about-author d-flex p-4 bg-light">
+                <div class="about-author d-flex p-4 bg-light" th:object="${post}">
                     <div class="bio mr-5">
-                        <img src="/images/person_1.jpg" alt="Image placeholder" class="img-fluid mb-4">
+                        <!--                        <img src="/images/person_1.jpg" alt="Image placeholder" class="img-fluid mb-4">-->
+                        <div class="img-fluid mb-4" th:if="${post.getUser().getPersonalProfile().getPicture()==null}">
+                            <img src="/images/person_1.jpg" alt="Image" width="190" >
+                        </div>
+                        <div class="img-fluid mb-4" th:if="${post.getUser().getPersonalProfile().getPicture()!=null}">
+                            <img th:src="@{'/auth/users/' + ${post.getUser().getUserId()} + '/userImage'}" alt="Image"
+                                 width="190" >
+                        </div>
+
                     </div>
                     <div class="desc">
-                        <h3>George Washington</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus itaque, autem
-                            necessitatibus
-                            voluptate quod mollitia delectus aut, sunt placeat nam vero culpa sapiente consectetur
-                            similique,
-                            inventore eos fugit cupiditate numquam!</p>
+                        <h3 th:text="${post.getUser().getPersonalProfile().getFirstName() +' '+
+                        post.getUser().getPersonalProfile().getLastName()}"></h3>
+                        <p th:text="${post.getUser().getPersonalProfile().getPersonalReview()}">text</p>
                     </div>
                 </div>
 
@@ -115,7 +131,16 @@
 
                         <li class="comment" th:each="comment : ${post.comments}">
                             <div class="vcard bio">
-                                <img src="/images/person_1.jpg" alt="Image placeholder">
+                                <!--                                <img src="/images/person_1.jpg" alt="Image placeholder">-->
+                                <div class="vcard bio"
+                                     th:if="${comment.getUser().getPersonalProfile().getPicture()==null}">
+                                    <img src="/images/person_1.jpg" alt="Image">
+                                </div>
+                                <div class="vcard bio"
+                                     th:if="${comment.user.getPersonalProfile().getPicture()!=null}">
+                                    <img th:src="@{'/auth/users/' + ${comment.user.getUserId()} + '/userImage'}"
+                                         alt="Image">
+                                </div>
                             </div>
                             <div class="comment-body">
                                 <h3 th:text="${comment.user.username}"></h3>
@@ -123,9 +148,9 @@
                                 <p th:text="${comment.content}"></p>
                                 <span class="position" th:text="'Likes: ' + ${comment.likes.size()}"></span>
                                 <p>
-<!--                                    <a href="#" class="reply">Reply</a>-->
-                                    <a href="#" class="reply">Like</a>
-                                    <a href="#" class="ion-md-heart-dislike">Dislike</a><br>
+                                    <!--                                    <a href="#" class="reply">Reply</a>-->
+                                    <!--                                    <a href="#" class="reply">Like</a>-->
+                                    <!--                                    <a href="#" class="ion-md-heart-dislike">Dislike</a><br>-->
                                     <a th:href="@{'/comments/edit/' + ${comment.commentId}}"
                                        sec:authorize="isAuthenticated()"
                                        th:if="${(comment.canEdit(UserPrincipal.getUsername()) || isAdmin) == true}"

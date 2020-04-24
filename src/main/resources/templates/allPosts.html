@@ -96,8 +96,9 @@
                         <div class="team d-md-flex p-4 bg-white">
                             <!--                            <div class="img" style="background-image: url(images/person_1.jpg);"></div>-->
                             <!--                            <div class="img" style="background-image:-moz-image-rect(" th:src="@{'/posts/' + ${post.postId} + '/postImage'}" ")-->
-                            <div class="img"><img
-                                    th:src="@{'/posts/' + ${post.postId} + '/postImage'}"></div>
+<!--                            <div class="img" style="background-image: url(images/person_1.jpg);"></div>-->
+                            <div class="img"><img th:class="img"
+                                    th:src="@{'/posts/' + ${post.postId} + '/postImage'}" th:width="190"></div>
                             <!--                                                  th:href="@{'/posts/' + ${post.postId} + '/postImage'}"></div>-->
 
                             <div class="text pl-md-4">
