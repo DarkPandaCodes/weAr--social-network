@@ -34,6 +34,7 @@ public class User implements UserDetails {
 
 
     @ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER)
+    @JsonBackReference
     @JoinTable(
             name = "authorities",
             joinColumns = @JoinColumn(name = "username", referencedColumnName = "username"),

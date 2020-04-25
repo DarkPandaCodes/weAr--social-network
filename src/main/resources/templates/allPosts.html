@@ -113,12 +113,12 @@
                                     post</a>
                                     <a th:href="@{'/auth/users/' + ${post.user.getUserId()} + '/profile'}"
                                        class="btn btn-primary">See profile</a></p>
-                                <span class="position" th:text="'Likes: ' + ${post.likes.size()}"></span>
+                                <span th:id="like-count" class="position" th:text="'Likes: ' + ${post.likes.size()}"></span>
                                 <span class="position" th:text="'Comments: ' + ${post.comments.size()}"></span>
                                 <span class="position" th:text="'Rank: ' + ${post.getRank()}"></span><br>
                                 <span class="position" sec:authorize="isAuthenticated()"
                                       th:if="${post.isLiked(UserPrincipal.getUsername()) == true}">You already liked</span><br>
-                                <form th:class="like-form + ${post.getPostId()}" th:object="${postDTO2}" method="post"
+                                <form th:class="like-form" th:id="${post.getPostId()}" th:object="${postDTO2}" method="post"
                                       sec:authorize="isAuthenticated()" enctype="multipart/form-data">
                                     <div>
                                         <input name="postId" type="hidden" data-th-value="${post.getPostId()}"
@@ -333,26 +333,57 @@
 <!--${post.getPostId()}-->
 <!--th:class="like-form + ${post.getPostId()}"-->
 
+<!--<script>-->
+<!--    $(data).parent().submit(function (event) {-->
+<!--        console.log("this is a like log:)") //check-->
+<!--        event.preventDefault()-->
+
+<!--        var id = $(this).val();-->
+<!--        var idArray = id.split('_');-->
+<!--        var postId= idArray[1];-->
+<!--        var currentPost = $(".like-form_"+postId).html();-->
+
+<!--        var data = $(".like-form_"+postId).html(currentPost+1);-->
+
+<!--        // var data = $(this).serialize()-->
+<!--        console.log(data) //check-->
+<!--        $.ajax({-->
+<!--            type: "POST",-->
+<!--            url: "/api/post/like",-->
+<!--            data: data,-->
+<!--            success: function (d) {-->
+<!--                console.log("success")-->
+<!--            }-->
+<!--        })-->
+<!--    })-->
+<!--</script>-->
+
 <script>
-    $(data).parent().submit(function (event) {
+    $(".like-form").submit(function (event) {
         console.log("this is a like log:)") //check
+        console.log(event) //check
         event.preventDefault()
-
-        var id = $(this).val();
-        var idArray = id.split('_');
-        var postId= idArray[1];
-        var currentPost = $(".like-form_"+postId).html();
-
-        var data = $(".like-form_"+postId).html(currentPost+1);
-
-        // var data = $(this).serialize()
-        console.log(data) //check
+        var data = $(this).serialize()
+        // debugger;
+        console.log("data: " + data) //check
+        console.log("this: " + $(this)) //check
         $.ajax({
             type: "POST",
             url: "/api/post/like",
             data: data,
             success: function (d) {
-                console.log("success")
+                // var results = $.map(d, function(item){
+                //     return { value: item.value, id: item.id }});
+                // cache[request.term] = results; response(results); }
+                // $('.like-count').append(dataObject.value.valueOf().get());   val(d.item('likes').)
+                // d.forEach(function(data) {
+                //     $.each('.like-count').val(d.item('likes'))
+                //     }
+                // )
+
+                    console.log("success")
+                console.log(d) //check
+
             }
         })
     })
