@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -124,6 +125,8 @@ public class PostServiceImpl implements PostService {
             throw new DuplicateEntityException("You already liked this");
         }
         postToLike.getLikes().add(user);
+        double currentRank = postToLike.getRank();
+        postToLike.setRank(currentRank + ALGORITHM_EFFECT_LIKES);
         postRepository.save(postToLike);
     }
 
@@ -139,6 +142,8 @@ public class PostServiceImpl implements PostService {
             throw new EntityNotFoundException("Before dislike you must like");
         }
         postToDislike.getLikes().remove(user);
+        double currentRank = postToDislike.getRank();
+        postToDislike.setRank(currentRank - ALGORITHM_EFFECT_LIKES);
         postRepository.save(postToDislike);
     }
 
@@ -186,6 +191,15 @@ public class PostServiceImpl implements PostService {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
         }
         return postRepository.getOne(postId).getComments();
+    }
+
+    @Override
+    public Post updateRank(Principal principal, Post post) {
+        //it is not correct - we cannot calculate rank if we take only one post..we need to take the whole List
+        List<Post> list = new ArrayList<>();
+        list.add(post);
+        applyAlgorithm(principal, list);
+        return post;
     }
 
     private List<Post> applyAlgorithm(Principal principal, List<Post> allPost) {
