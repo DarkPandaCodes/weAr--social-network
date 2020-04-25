@@ -118,7 +118,7 @@
                                 <span class="position" th:text="'Rank: ' + ${post.getRank()}"></span><br>
                                 <span class="position" sec:authorize="isAuthenticated()"
                                       th:if="${post.isLiked(UserPrincipal.getUsername()) == true}">You already liked</span><br>
-                                <form id="like-form" th:object="${postDTO2}" method="post"
+                                <form th:class="like-form + ${post.getPostId()}" th:object="${postDTO2}" method="post"
                                       sec:authorize="isAuthenticated()" enctype="multipart/form-data">
                                     <div>
                                         <input name="postId" type="hidden" data-th-value="${post.getPostId()}"
@@ -131,22 +131,7 @@
                         </div>
                     </div>
 
-                    <script>
-                        $("#like-form").submit(function (event) {
-                            console.log("this is a like log:)") //check
-                            event.preventDefault()
-                            var data = $(this).serialize()
-                            console.log(data) //check
-                            $.ajax({
-                                type: "POST",
-                                url: "/api/post/like",
-                                data: data,
-                                success: function (d) {
-                                    console.log("success")
-                                }
-                            })
-                        })
-                    </script>
+
                 </div>
 
                 <div class="row mt-5">
@@ -345,6 +330,51 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
 <script src="/js/google-map.js"></script>
 <script src="/js/main.js"></script>
+<!--${post.getPostId()}-->
+<!--th:class="like-form + ${post.getPostId()}"-->
+
+<script>
+    $(data).parent().submit(function (event) {
+        console.log("this is a like log:)") //check
+        event.preventDefault()
+
+        var id = $(this).val();
+        var idArray = id.split('_');
+        var postId= idArray[1];
+        var currentPost = $(".like-form_"+postId).html();
+
+        var data = $(".like-form_"+postId).html(currentPost+1);
+
+        // var data = $(this).serialize()
+        console.log(data) //check
+        $.ajax({
+            type: "POST",
+            url: "/api/post/like",
+            data: data,
+            success: function (d) {
+                console.log("success")
+            }
+        })
+    })
+</script>
+
+
+<!--<script>-->
+<!--    $(".like-form").parent().submit(function (event) {-->
+<!--        console.log("this is a like log:)") //check-->
+<!--        event.preventDefault()-->
+<!--        var data = $(this).serialize()-->
+<!--        console.log(data) //check-->
+<!--        $.ajax({-->
+<!--            type: "POST",-->
+<!--            url: "/api/post/like",-->
+<!--            data: data,-->
+<!--            success: function (d) {-->
+<!--                console.log("success")-->
+<!--            }-->
+<!--        })-->
+<!--    })-->
+<!--</script>-->
 
 </body>
 </html>
