@@ -21,9 +21,7 @@ public interface UserService extends UserDetailsService {
 
     Collection<User> getAllUsers();
 
-
-    User disableEnableUser(int userId);
-
+    User disableEnableUser(String principal,int userId);
 
     boolean isUserDuplicate(User user);
 
@@ -39,6 +37,8 @@ public interface UserService extends UserDetailsService {
 
     void ifNotProfileOrAdminOwnerThrow(String principal, User user);
 
+    void ifNotAdminThrow(String name, User user);
+
     boolean isOwner(String principal, User user);
 
     boolean isAdmin(Principal principal);
@@ -53,4 +53,6 @@ public interface UserService extends UserDetailsService {
     List<User> getUserByFirstNameLastName(String param);
 
     List<User> getUsersByExpertise(String expertise);
+
+
 }

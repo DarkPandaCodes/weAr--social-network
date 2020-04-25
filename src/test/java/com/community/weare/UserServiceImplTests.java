@@ -111,7 +111,7 @@ public class UserServiceImplTests {
                 .thenReturn(user);
 
         //act
-        User UserToTest = mockUserService.disableEnableUser(1);
+        User UserToTest = mockUserService.disableEnableUser(, 1);
         user.setEnabled(0);
 
         //asser
@@ -127,7 +127,7 @@ public class UserServiceImplTests {
                 .thenReturn(user);
 
         //act
-        mockUserService.disableEnableUser(1);
+        mockUserService.disableEnableUser(, 1);
         //asser
         Mockito.verify(userRepository, Mockito.times(1)).saveAndFlush(user);
     }
@@ -216,7 +216,7 @@ public class UserServiceImplTests {
         User user = createUser();
         user.setUserId(1);
 
-        mockUserService.updateUser(user);
+        mockUserService.updateUser(user, , );
 
         Mockito.verify(userRepository,
                 times(1)).saveAndFlush(user);
@@ -263,7 +263,7 @@ public class UserServiceImplTests {
         ExpertiseProfile expertiseProfile=new ExpertiseProfile();
         expertiseProfile.setId(1);
 
-        mockUserService.updateExpertise(user,expertiseProfile);
+        mockUserService.updateExpertise(user,expertiseProfile, , );
 //        mockUserService.updateExpertise(user,expertiseProfile);
 
         Mockito.verify(userRepository,
@@ -281,7 +281,7 @@ public class UserServiceImplTests {
         user.setExpertiseProfile(expertiseProfile);
 
 
-        mockUserService.updateExpertise(user,expertiseProfile);
+        mockUserService.updateExpertise(user,expertiseProfile, , );
 
         Mockito.verify(expertiseRepository,
                 times(1)).saveAndFlush(expertiseProfile);

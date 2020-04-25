@@ -109,12 +109,13 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User disableEnableUser(int userId) {
+    public User disableEnableUser(String principal, int userId) {
         User user = userRepository.getOne(userId);
-        if (!user.isEnabled()) {
-            user.setEnabled(0);
-        } else {
+        ifNotAdminThrow(principal, user);
+        if (user.isEnabled()==false) {
             user.setEnabled(1);
+        } else {
+            user.setEnabled(0);
         }
         return userRepository.saveAndFlush(user);
     }
@@ -192,6 +193,15 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(new EntityNotFoundException("User not found"));
         if (!(admin.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")) ||
                 user.getUsername().equals(principal))) {
+            throw new InvalidOperationException("User isn't authorised");
+        }
+    }
+
+    @Override
+    public void ifNotAdminThrow(String name, User user) {
+        User admin = userRepository.findByUsername(name)
+                .orElseThrow(new EntityNotFoundException("User not found"));
+        if (!admin.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             throw new InvalidOperationException("User isn't authorised");
         }
     }

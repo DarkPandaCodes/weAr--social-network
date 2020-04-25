@@ -73,15 +73,7 @@ public class ProfileController {
         return modelAndView;
     }
 
-    @GetMapping("/{id}/userImage")
-    public void renderPostImageFormDB(@PathVariable int id, HttpServletResponse response) throws IOException {
-        User user = userService.getUserById(id);
-        if (user.getPersonalProfile().getPicture() != null) {
-            response.setContentType("image/jpeg");
-            InputStream is = new ByteArrayInputStream(Base64.getDecoder().decode(user.getPersonalProfile().getPicture()));
-            IOUtils.copy(is, response.getOutputStream());
-        }
-    }
+
 
     @GetMapping("/{id}/profile/editor")
     public String editFormUserProfile(@PathVariable(name = "id") int id, Model model, Principal principal,
