@@ -5,12 +5,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
+    <script th:src="@{/jquery/__cdnjs.cloudflare.com_ajax_libs_jquery_3.2.1_jquery}"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script th:src="@{/js/bootstrap.js}" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"
           href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" id="bootstrap-css">
-    <script th:src="@{/jquery/__cdnjs.cloudflare.com_ajax_libs_jquery_3.2.1_jquery}"
-            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
     <script th:src="@{/js/bootstrap.min.js}"
             src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 
@@ -82,7 +83,7 @@
                 <!--                </div>-->
                 <div class="ftco-search col-md-12">
                     <div class="row">
-                        <h1 class="mb-2">The Eassiest Way to Hack the Crisis</h1>
+                        <h1 class="mb-2">The Easiest Way to Hack the Crisis</h1>
                         <p class="mb-2">find people that can help you, help others in return</p>
                     </div>
                 </div>
@@ -193,11 +194,18 @@
                                 <!--                                    </div>-->
                                 <!--                                </div>-->
                                 <div class="form-group row">
-                                    <label class="col-4 col-form-label">Location</label>
+                                    <label class="col-4 col-form-label">City</label>
                                     <div class="col-8">
-                                        <input id="location.cityE" name="city" th:field="*{city}"
-                                               placeholder="choose your City" class="form-control here" type="text">
+                                        <select id="selectC" name="select" th:field="*{city}"
+                                                class="custom-select">
+                                            <option option th:each="city: ${cities}"
+                                                    th:value="${city.id}"
+                                                    th:text="${city.city}"
+                                            >Choose...
+                                            </option>
+                                        </select>
                                     </div>
+                                    <label class="col-4 col-form-label">Country</label>
                                     <div class="col-8">
                                         <p id="location.countryE" name="country" type="text">Bulgaria</p>
                                     </div>
@@ -233,10 +241,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <form form action="#"
-                                  th:action="@{'/auth/users/'+${userToEdit.id}+'/profile/expertise'}"
+                                  th:action="@{'/auth/users/'+${userToEdit.getId()}+'/profile/expertise'}"
                                   th:object="${profile}" method="post" class="contact" role="form">
                                 <div class="form-group row">
-                                    <label class="col-4 col-form-label">What is your proffesional category?</label>
+                                    <label class="col-4 col-form-label">What is your professional category?</label>
                                     <div class="col-8">
                                         <div class="col-8">
                                             <select required="required" name="select" th:field="*{category.id}" class="custom-select">
@@ -300,42 +308,7 @@
                                                placeholder="what service can you offer?"
                                                class="form-control here" type="text">
                                     </div>
-                                    <!--                                        //the form doesnt't get the value-->
-                                    <!--                                         <select  name="select" th:field="*{skill1}" class="custom-select">-->
-                                    <!--                                                <option option th:each="skill: ${services}"-->
-                                    <!--                                                        th:value="${skill.skillId}"-->
-                                    <!--                                                        th:text="${skill.skill}"-->
-                                    <!--                                                >Choose...-->
-                                    <!--                                                </option>-->
-                                    <!--                                            </select>-->
-                                    <!--                                        <select  name="select" th:field="*{skill2}" class="custom-select">-->
-                                    <!--                                            <option option th:each="skill: ${services}"-->
-                                    <!--                                                    th:value="${skill.skillId}"-->
-                                    <!--                                                    th:text="${skill.skill}"-->
-                                    <!--                                            >Choose...-->
-                                    <!--                                            </option>-->
-                                    <!--                                        </select>-->
-                                    <!--                                        <select  name="select" th:field="*{skill3}" class="custom-select">-->
-                                    <!--                                            <option option th:each="skill: ${services}"-->
-                                    <!--                                                    th:value="${skill.skillId}"-->
-                                    <!--                                                    th:text="${skill.skill}"-->
-                                    <!--                                            >Choose...-->
-                                    <!--                                            </option>-->
-                                    <!--                                        </select>-->
-                                    <!--                                        <select  name="select" th:field="*{skill4}" class="custom-select">-->
-                                    <!--                                            <option option th:each="skill: ${services}"-->
-                                    <!--                                                    th:value="${skill.skillId}"-->
-                                    <!--                                                    th:text="${skill.skill}"-->
-                                    <!--                                            >Choose...-->
-                                    <!--                                            </option>-->
-                                    <!--                                        </select>-->
-                                    <!--                                        <select  name="select" th:field="*{skill5}" class="custom-select">-->
-                                    <!--                                            <option option th:each="skill: ${services}"-->
-                                    <!--                                                    th:value="${skill.skillId}"-->
-                                    <!--                                                    th:text="${skill.skill}"-->
-                                    <!--                                            >Choose...-->
-                                    <!--                                            </option>-->
-                                    <!--                                        </select>-->
+
                                     <div class="form-group row">
                                         <label for="startTime" class="col-4 col-form-label">Available from</label>
                                         <div class="col-8">

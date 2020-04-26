@@ -70,8 +70,8 @@
 <!-- END nav -->
 
 
-
-<div th:if="${error==null and user!=null}" class="hero-wrap hero-wrap-2" style="background-image: url('../static/images/bg_1.jpg');"
+<div th:if="${error==null and user!=null}" class="hero-wrap hero-wrap-2"
+     style="background-image: url('../static/images/bg_1.jpg');"
      data-stellar-background-ratio="0.5">
     <div class="overlay"></div>
     <div class="container">
@@ -91,8 +91,8 @@
 <div class="hero-wrap hero-wrap-2" th:if="${user==null}" style="background-image: url('../static/images/bg_1.jpg');"
      data-stellar-background-ratio="0.5">
     <div class="overlay"></div>
-    <div class="container" >
-        <div  class="row no-gutters slider-text align-items-end justify-content-start">
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-end justify-content-start">
             <div class="col-md-12 ftco-animate text-center mb-5">
                 <p class="breadcrumbs mb-0"><span class="mr-3"><a th:href="@{/}">Home
 					<i class="ion-ios-arrow-forward"></i> </a></span> <span>Opsss...</span></p>
@@ -210,7 +210,8 @@
                                             <label>Name</label>
                                         </div>
                                         <div class="col-md-6">
-                                            <p th:text="*{personalProfile.firstName+' '+personalProfile.lastName}">Kshiti Ghelani</p>
+                                            <p th:text="*{personalProfile.firstName+' '+personalProfile.lastName}">
+                                                Kshiti Ghelani</p>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -227,7 +228,8 @@
                                             <label>birthday</label>
                                         </div>
                                         <div class="col-md-6">
-                                            <p th:if="${friends or isOwner}" th:text="*{personalProfile.birthYear}">123 456 7890</p>
+                                            <p th:if="${friends or isOwner}" th:text="*{personalProfile.birthYear}">123
+                                                456 7890</p>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -235,7 +237,8 @@
                                             <label>Location</label>
                                         </div>
                                         <div class="col-md-6">
-                                            <p th:text="*{personalProfile.location.city.city}">Web Developer and Designer</p>
+                                            <p th:if="*{personalProfile.location!=null}" th:text="*{personalProfile.location.city.city}">Web Developer and
+                                                Designer</p>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -248,7 +251,8 @@
                                         <div class="col-md-6">
                                             <label>I can do </label>
                                         </div>
-                                        <div class="col-md-6" th:if="*{!expertiseProfile.skills.isEmpty()}" th:each="skill :*{expertiseProfile.skills}">
+                                        <div class="col-md-6" th:if="*{!expertiseProfile.skills.isEmpty()}"
+                                             th:each="skill :*{expertiseProfile.skills}">
                                             <p th:text="${skill.skill}">type of service</p>
                                         </div>
                                         <div class="col-md-6">
@@ -274,6 +278,52 @@
                     Profile</a>
             </div>
         </div>
+    </div>
+</section>
+<section th:if="${error==null and user!=null}" class="ftco-section bg-light">
+    <div class="container" >
+        <div class="row justify-content-center mb-5 pb-3" id="posts">
+            <div class="col-md-7 heading-section text-center ftco-animate" th:if="${posts!=null}">
+                <span class="subheading">Timeline</span>
+                <h2><span>Recent</span> Posts</h2>
+            </div>
+        </div>
+        <div class="row d-flex">
+            <div class="col-md-3 d-flex ftco-animate">
+                <div class="blog-entry align-self-stretch" th:if="${posts!=0}" th:each="post : ${posts}">
+                    <a class="block-20" th:href="@{'/posts/' + ${post.postId}}">
+                        <img th:class="img"
+                             th:src="@{'/posts/' + ${post.postId} + '/postImage'}" th:width="190">
+                    </a>
+                    <div class="text mt-3">
+                        <div class="meta mb-2">
+                            <div><a th:text="${post.date}">August 28, 2019</a></div>
+                            <div>
+                                <a th:text="${post.user.personalProfile.getFirstName()+' '+post.user.personalProfile.getLastName()}">Admin</a>
+                            </div>
+                            <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
+                        </div>
+                        <h3 class="heading"><a th:text="${post.content}" th:maxlength="20">Even the all-powerful
+                            Pointing has no control about the blind
+                            texts</a></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form action="#" th:action="@{'/auth/users/' + ${user.getUserId()} + '/profile/posts'}" th:object="${page}"
+              method="get"
+              class="search-job">
+
+            <label>
+
+                <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}" th:field="*{index}" class="mb-2"/>
+                <input type="hidden" data-th-value="4" th:value="4" th:field="*{size}" class="mb-2"/>
+<!--                <input type="hidden" th:value="1" name="next" class="mb-2"/>-->
+            </label>
+            <input th:if="${posts==null}" class="btn btn-primary" type="submit" value="LOAD RECENT POSTS"/>
+            <input th:if="${posts!=null} and ${hasNext}" class="btn btn-primary" type="submit" value="LOAD MORE RECENT POSTS"/>
+        </form>
     </div>
 </section>
 <section class="ftco-section-parallax">

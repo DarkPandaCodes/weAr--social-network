@@ -8,12 +8,21 @@ import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
 import com.community.weare.Models.dto.UserDtoRequest;
 import com.community.weare.Models.factories.ExpertiseProfileFactory;
+import com.community.weare.Models.factories.FactoryUtils;
 import com.community.weare.Models.factories.UserFactory;
 import com.community.weare.Services.SkillCategoryService;
+import com.community.weare.Services.contents.PostService;
 import com.community.weare.Services.models.SkillService;
+import com.community.weare.Services.users.PersonalInfoService;
 import com.community.weare.Services.users.UserService;
+import com.community.weare.utils.HttpMessages;
+import io.swagger.models.auth.In;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,40 +40,48 @@ import java.io.InputStream;
 import java.security.Principal;
 import java.util.*;
 
-import static com.community.weare.utils.HttpMessages.ERROR_NOT_FOUND_MESSAGE_FORMAT;
+import static com.community.weare.utils.HttpMessages.*;
 
 @Controller
 @RequestMapping("/auth/users")
 public class ProfileController {
     private static final String TYPE = "USER";
-    private static final Object NOT_AUTHORISED = "User is not authorised";
+
     private final UserService userService;
     private final ExpertiseProfileFactory expertiseProfileFactory;
     private final SkillCategoryService skillCategoryService;
-    private SkillService skillService;
-    private UserFactory userFactory;
+    private final SkillService skillService;
+    private final PersonalInfoService personalInfoService;
+    private final UserFactory userFactory;
+    private final PostService postService;
 
     @Autowired
-    public ProfileController(UserService userService, ExpertiseProfileFactory expertiseProfileFactory,
-                             SkillCategoryService skillCategoryService, SkillService skillService, UserFactory userFactory) {
+    public ProfileController(UserService userService, ExpertiseProfileFactory expertiseProfileFactory, SkillCategoryService skillCategoryService, SkillService skillService,
+                             PersonalInfoService personalInfoService, UserFactory userFactory, PostService postService) {
         this.userService = userService;
         this.expertiseProfileFactory = expertiseProfileFactory;
         this.skillCategoryService = skillCategoryService;
         this.skillService = skillService;
+        this.personalInfoService = personalInfoService;
         this.userFactory = userFactory;
+        this.postService = postService;
     }
 
     @GetMapping("/{id}/profile")
-    public ModelAndView showProfilePage(@PathVariable(name = "id") int id, Principal principal) {
+    public ModelAndView showProfilePage(@PathVariable(name = "id") int id,
+                                        Principal principal) {
         ModelAndView modelAndView = new ModelAndView("profile_single");
         try {
             User user = userService.getUserById(id);
-            modelAndView.addObject("userRequest", new UserDtoRequest());
             modelAndView.addObject("userDisable", new User());
             modelAndView.addObject("user", user);
             modelAndView.addObject("friends", user.isFriend(principal.getName()));
             modelAndView.addObject("isOwner", userService.isOwner(principal.getName(), user));
             modelAndView.addObject("isAdmin", userService.isAdmin(principal));
+
+            Page page = new Page();
+            page.setSize(4);
+            modelAndView.addObject("page", page);
 
         } catch (EntityNotFoundException e) {
             modelAndView.setStatus(HttpStatus.NOT_FOUND);
@@ -73,6 +90,35 @@ public class ProfileController {
         return modelAndView;
     }
 
+    @GetMapping("/{id}/profile/posts")
+    public ModelAndView showProfilePosts(@PathVariable(name = "id") int id, Principal principal,
+                                         @ModelAttribute(name = "page") Page page) {
+        ModelAndView modelAndView = new ModelAndView("profile_single");
+        try {
+            User user = userService.getUserById(id);
+            List<Post> postsOfUser = new ArrayList<>();
+            Slice<Post> postSlice = postService.findSliceWithPosts
+                    (page.getIndex(), page.getSize(), "date", user.getUsername());
+
+            if (postSlice.hasContent()) {
+                postsOfUser = postSlice.getContent();
+                page.setSize(postSlice.nextOrLastPageable().getPageSize());
+                page.setIndex(postSlice.nextOrLastPageable().getPageNumber());
+                modelAndView.addObject("posts", postsOfUser);
+            }
+            modelAndView.addObject("hasNext", postSlice.hasNext());
+            modelAndView.addObject("userDisable", new User());
+            modelAndView.addObject("user", user);
+            modelAndView.addObject("friends", user.isFriend(principal.getName()));
+            modelAndView.addObject("isOwner", userService.isOwner(principal.getName(), user));
+            modelAndView.addObject("isAdmin", userService.isAdmin(principal));
+        } catch (EntityNotFoundException e) {
+            modelAndView.setStatus(HttpStatus.NOT_FOUND);
+            return modelAndView.addObject("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
+        }
+
+        return modelAndView;
+    }
 
 
     @GetMapping("/{id}/profile/editor")
@@ -123,7 +169,7 @@ public class ProfileController {
         } catch (InvalidOperationException e) {
             model.addAttribute("error", NOT_AUTHORISED);
         }
-        return "redirect:/auth/users/" + userModel.getId() + "/profile/editor#profile-personal";
+        return "redirect:/auth/users/" + id + "/profile/editor#profile-personal";
     }
 
     @PostMapping("/{id}/profile/settings")
@@ -132,7 +178,6 @@ public class ProfileController {
         try {
             User userToCheck = userService.getUserById(id);
             if (file != null) {
-                System.out.println("snimka" + file.toString());
                 userToCheck.getPersonalProfile().setPicture(Base64.getEncoder().encodeToString(file.getBytes()));
                 userToCheck.getPersonalProfile().setPicturePrivacy(user.getPersonalProfile().isPicturePrivacy());
             }
@@ -200,4 +245,9 @@ public class ProfileController {
         model.addAttribute("categories", expertise);
     }
 
+    @ModelAttribute(name = "cities")
+    public void addCitiesList(Model model) {
+        List<City> cities =personalInfoService.getAllCities() ;
+        model.addAttribute("cities",cities );
+    }
 }

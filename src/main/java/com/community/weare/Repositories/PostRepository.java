@@ -1,6 +1,9 @@
 package com.community.weare.Repositories;
 
 import com.community.weare.Models.Post;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -16,6 +19,8 @@ public interface PostRepository extends JpaRepository<Post, Integer>,
 //    Integer isLiked(int postId, int userId);
 
     List<Post> findAllByUserUsername(Sort sort, String userName);
+
+    Slice<Post> findAllByUserUsername(Pageable pageRequest, String userName);
 }
 
 

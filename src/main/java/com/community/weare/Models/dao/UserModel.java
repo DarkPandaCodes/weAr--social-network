@@ -1,6 +1,7 @@
 package com.community.weare.Models.dao;
 
 import com.community.weare.Constrains.ValidPassword;
+import com.community.weare.Models.City;
 import com.community.weare.Models.Sex;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -8,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,17 +18,18 @@ import java.util.List;
 
 public class UserModel {
     private int id;
-//    @Size(min = 2, message = "The username must have at least 2 symbols!")
+    @Size(min = 2, message = "The username must have at least 2 symbols!")
     private String username;
     private List<String> authorities;
+    @Pattern(regexp = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$",message = "this doesn't look like valid email")
     private String email;
-//    @Size(min = 2, message = "The username must have at least 2 symbols!")
+    @Size(min = 2, message = "The username must have at least 2 symbols!")
     private String firstName;
-//    @Size(min = 2, message = "The username must have at least 2 symbols!")
+    @Size(min = 2, message = "The username must have at least 2 symbols!")
     private String lastNAme;
     private Sex gender;
-//    @Size(min = 2, message = "The username must have at least 2 symbols!")
-    private String city;
+    @Size(min = 2, message = "The username must have at least 2 symbols!")
+    private City city;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate birthYear;
@@ -99,11 +102,11 @@ public class UserModel {
         this.gender = gender;
     }
 
-    public String getCity() {
+    public City getCity() {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(City city) {
         this.city = city;
     }
 

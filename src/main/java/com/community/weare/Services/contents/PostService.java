@@ -2,8 +2,8 @@ package com.community.weare.Services.contents;
 
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
-import com.community.weare.Models.User;
 import com.community.weare.Models.dto.PostDTO;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 
 import java.security.Principal;
@@ -16,6 +16,8 @@ public interface PostService {
     List<Post> findAll(Sort sort);
 
     List<Post> findAllByUser(String userName);
+
+    Slice<Post> findSliceWithPosts(int pageIndex,int pageSize, String sortParam, String username );
 
     List<Post> findPostsByAlgorithm(Sort sort, Principal principal);
 
