@@ -97,13 +97,10 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElseThrow(new EntityNotFoundException("User not found!"));
     }
 
-
-
     @Override
     public Collection<User> getAllUsers() {
         return userRepository.findAll();
     }
-
 
     @Override
     public User disableEnableUser(String principal, int userId) {
@@ -131,13 +128,13 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void updateExpertise(User user,
+    public ExpertiseProfile updateExpertise(User user,
                                 ExpertiseProfile expertiseProfileMerged, String principal, User userToCheck) {
         ifNotProfileOrAdminOwnerThrow(principal, userToCheck);
-        if (Objects.equals(user.getExpertiseProfile().getId(), expertiseProfileMerged.getId())) {
-            expertiseRepository.saveAndFlush(expertiseProfileMerged);
-        }
-        userRepository.saveAndFlush(user);
+        ExpertiseProfile profileDB = expertiseRepository.
+                findById(user.getExpertiseProfile().getId()).orElseThrow(new EntityNotFoundException());
+        expertiseProfileMerged.setId(profileDB.getId());
+        return expertiseRepository.saveAndFlush(expertiseProfileMerged);
     }
 
     @Override

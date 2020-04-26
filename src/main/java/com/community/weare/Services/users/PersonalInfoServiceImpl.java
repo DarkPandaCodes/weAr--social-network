@@ -1,6 +1,5 @@
 package com.community.weare.Services.users;
 
-import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.City;
 import com.community.weare.Models.PersonalProfile;
 import com.community.weare.Models.User;
@@ -27,16 +26,6 @@ public class PersonalInfoServiceImpl implements PersonalInfoService {
     @Override
     public PersonalProfile upgradeProfile(String principal, User user, PersonalProfile personalProfile) {
         userService.ifNotProfileOrAdminOwnerThrow(principal,user);
-
-//        PersonalProfile profileDB = personalInfoRepository.
-//                findById(user.getPersonalProfile().getId()).orElseThrow(new EntityNotFoundException());
-//        personalProfile.setId(profileDB.getId());
-
-        return personalInfoRepository.saveAndFlush(personalProfile);
-    }
-
-    @Override
-    public PersonalProfile createProfile(PersonalProfile personalProfile) {
         return personalInfoRepository.saveAndFlush(personalProfile);
     }
 

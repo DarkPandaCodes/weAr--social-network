@@ -1,6 +1,7 @@
 package com.community.weare;
 
 import com.community.weare.Exceptions.DuplicateEntityException;
+import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
@@ -10,7 +11,6 @@ import com.community.weare.Repositories.ExpertiseRepository;
 import com.community.weare.Repositories.PersonalInfoRepository;
 import com.community.weare.Repositories.UserRepository;
 import com.community.weare.Services.connections.RequestServiceImpl;
-import com.community.weare.Services.users.ExpertiseProfileServiceImpl;
 import com.community.weare.Services.users.PersonalInfoServiceImpl;
 import com.community.weare.Services.users.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
@@ -23,9 +23,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.security.Principal;
+import java.util.*;
 
 import static com.community.weare.Factory.*;
 import static org.mockito.Mockito.times;
@@ -35,8 +34,7 @@ public class UserServiceImplTests {
     @InjectMocks
     UserServiceImpl mockUserService;
 
-    @Mock
-    ExpertiseProfileServiceImpl expertiseProfileService;
+
     @Mock
     PersonalInfoServiceImpl profileService;
     @Mock
@@ -106,15 +104,45 @@ public class UserServiceImplTests {
         //arrange
         User user = createUser();
         user.setUserId(1);
+        Principal principal = () -> "tedi";
+        user = setAuthorities(user);
+        user.setEnabled(1);
+        User UserToTest =createUser();
+        UserToTest.setEnabled(0);
 
+        Mockito.when(userRepository.findByUsername(principal.getName())).thenReturn(Optional.of(user));
         Mockito.when(userRepository.getOne(1))
                 .thenReturn(user);
-
+        Mockito.when(userRepository.saveAndFlush(user))
+                .thenReturn(UserToTest);
         //act
-        User UserToTest = mockUserService.disableEnableUser(, 1);
+        mockUserService.disableEnableUser("tedi", 1);
         user.setEnabled(0);
 
-        //asser
+        //assert
+        Assert.assertEquals(user.isEnabled(), UserToTest.isEnabled());
+    }
+    @Test
+    public void disableUserShould_EnableUser() {
+        //arrange
+        User user = createUser();
+        user.setUserId(1);
+        Principal principal = () -> "tedi";
+        user = setAuthorities(user);
+        user.setEnabled(0);
+        User UserToTest =createUser();
+        UserToTest.setEnabled(1);
+
+        Mockito.when(userRepository.findByUsername(principal.getName())).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.getOne(1))
+                .thenReturn(user);
+        Mockito.when(userRepository.saveAndFlush(user))
+                .thenReturn(UserToTest);
+        //act
+        mockUserService.disableEnableUser("tedi", 1);
+        user.setEnabled(1);
+
+        //assert
         Assert.assertEquals(user.isEnabled(), UserToTest.isEnabled());
     }
 
@@ -122,13 +150,20 @@ public class UserServiceImplTests {
     public void disableUserShould_CallRepository() {
         //arrange
         User user = createUser();
+        Principal principal = () -> "tedi";
+        user = setAuthorities(user);
+        user.setEnabled(1);
+        User UserToTest =createUser();
+        UserToTest.setEnabled(0);
 
-        Mockito.when(userRepository.getOne(Mockito.anyInt()))
+        Mockito.when(userRepository.findByUsername(principal.getName())).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.getOne(1))
                 .thenReturn(user);
 
+
         //act
-        mockUserService.disableEnableUser(, 1);
-        //asser
+        mockUserService.disableEnableUser("tedi", 1);
+        //assert
         Mockito.verify(userRepository, Mockito.times(1)).saveAndFlush(user);
     }
 
@@ -215,8 +250,11 @@ public class UserServiceImplTests {
     public void updateUserShould_CallRepository() {
         User user = createUser();
         user.setUserId(1);
+        Principal principal = () -> "tedi";
 
-        mockUserService.updateUser(user, , );
+        Mockito.when(userRepository.findByUsername(principal.getName())).thenReturn(Optional.of(user));
+
+        mockUserService.updateUser(user,"tedi" ,user );
 
         Mockito.verify(userRepository,
                 times(1)).saveAndFlush(user);
@@ -231,12 +269,7 @@ public class UserServiceImplTests {
         userDTO.setPassword("123");
         userDTO.setEmail("jiji@abv.bg");
         User user=createUser();
-        ExpertiseProfile expertiseProfile=new ExpertiseProfile();
-        PersonalProfile personalProfile=new PersonalProfile();
 
-        Mockito.when(expertiseRepository.saveAndFlush(expertiseProfile))
-                .thenReturn(expertiseProfile);
-        Mockito.when(personalRepo.saveAndFlush(personalProfile)).thenReturn(personalProfile);
 
         mockUserService.registerUser(user,userDTO.getCategory());
 
@@ -248,44 +281,49 @@ public class UserServiceImplTests {
     public void isUserDuplicateShould_ThrowDuplicateExc() {
       User user1=createUser();
 
-        Mockito.when(mockUserService.registerUser(user1,new Category("Marketing")))
-                .thenThrow(new DuplicateEntityException(""));
+        Mockito.when(userRepository.findByUsernameIs("tedi"))
+                .thenReturn(Optional.of(user1));
 
 
         Assertions.assertThrows(DuplicateEntityException.class, () -> {
            mockUserService.registerUser(user1,new Category("Marketing"));
         });
     }
+
     @Test
     public void updateExpertise_CallRepository() {
         User user = createUser();
         user.setUserId(1);
         ExpertiseProfile expertiseProfile=new ExpertiseProfile();
         expertiseProfile.setId(1);
+        user.setExpertiseProfile(expertiseProfile);
+        Principal principal = () -> "tedi";
 
-        mockUserService.updateExpertise(user,expertiseProfile, , );
-//        mockUserService.updateExpertise(user,expertiseProfile);
+        Mockito.when(userRepository.findByUsername(principal.getName())).thenReturn(Optional.of(user));
+        Mockito.when(expertiseRepository.findById(user.getExpertiseProfile().getId()))
+                .thenReturn(Optional.of(expertiseProfile));
+        mockUserService.updateExpertise(user,expertiseProfile,principal.getName() ,user );
 
-        Mockito.verify(userRepository,
-                times(1)).saveAndFlush(user);
-//        Mockito.verify(expertiseRepository,
-//                times(1)).saveAndFlush(expertiseProfile);
+
+        Mockito.verify(expertiseRepository,
+                times(1)).saveAndFlush(expertiseProfile);
     }
 
     @Test
-    public void updateExpertise_CallExpertiseRepository() {
+    public void updateExpertise_ThrowUserNotExist() {
         User user = createUser();
         user.setUserId(1);
         ExpertiseProfile expertiseProfile=new ExpertiseProfile();
         expertiseProfile.setId(1);
         user.setExpertiseProfile(expertiseProfile);
+        Principal principal = () -> "tedi";
 
 
-        mockUserService.updateExpertise(user,expertiseProfile, , );
+        Assert.assertThrows(EntityNotFoundException.class,
+                () -> mockUserService.updateExpertise(user,expertiseProfile,principal.getName(),user));
 
-        Mockito.verify(expertiseRepository,
-                times(1)).saveAndFlush(expertiseProfile);
     }
+
     @Test
     public void addToFriendList_CallRequestRepository(){
         Request request=new Request();
@@ -351,7 +389,7 @@ public class UserServiceImplTests {
     }
 
     @Test
-    public void isProfileOwnerShould_Return() {
+    public void isProfileOwnerShould_ThrowInvalidExc() {
         //arrange
         User user = createUser();
         String principal="Principal";
@@ -361,5 +399,17 @@ public class UserServiceImplTests {
            mockUserService.ifNotProfileOwnerThrow(principal,user);
         });
     }
+    @Test
+    public void ifNotAdminShould_ThrowInvalidExc() {
+        User user1=createUser();
+        String principal="neli";
 
+        Mockito.when(userRepository.findByUsername("neli"))
+                .thenThrow(new EntityNotFoundException());
+
+
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            mockUserService.ifNotAdminThrow(principal,user1);
+        });
+    }
 }

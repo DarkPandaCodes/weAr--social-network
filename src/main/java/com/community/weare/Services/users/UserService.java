@@ -31,7 +31,7 @@ public interface UserService extends UserDetailsService {
 
     void addToFriendList(Request request);
 
-    void updateExpertise(User user, ExpertiseProfile expertiseProfileMerged,String principal, User userToCheck);
+    ExpertiseProfile updateExpertise(User user, ExpertiseProfile expertiseProfileMerged,String principal, User userToCheck);
 
     void ifNotProfileOwnerThrow(String principal, User user);
 

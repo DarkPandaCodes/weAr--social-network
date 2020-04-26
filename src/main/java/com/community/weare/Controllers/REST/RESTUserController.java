@@ -9,11 +9,9 @@ import com.community.weare.Models.PersonalProfile;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dao.UserModel;
 import com.community.weare.Models.dto.ExpertiseProfileDTO;
-import com.community.weare.Models.dto.PersonalProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
 import com.community.weare.Models.factories.ExpertiseProfileFactory;
 import com.community.weare.Models.factories.PersonalProfileFactory;
-import com.community.weare.Services.users.ExpertiseProfileService;
 import com.community.weare.Services.users.PersonalInfoService;
 import com.community.weare.Services.users.UserService;
 import com.community.weare.Models.factories.UserFactory;
@@ -27,7 +25,6 @@ import javax.validation.Valid;
 
 import java.security.Principal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.community.weare.utils.HttpMessages.ERROR_NOT_FOUND_MESSAGE_FORMAT;
 import static com.community.weare.utils.HttpMessages.NOT_AUTHORISED;
@@ -38,17 +35,15 @@ public class RESTUserController {
     private static final String TYPE = "USER";
     private final UserService userService;
     private final PersonalInfoService personalInfoService;
-    private final ExpertiseProfileService expertiseProfileService;
     private final ExpertiseProfileFactory expertiseProfileFactory;
     private final PersonalProfileFactory personalProfileFactory;
     private final UserFactory mapperHelper;
 
     @Autowired
-    public RESTUserController(UserService userService, PersonalInfoService personalInfoService, ExpertiseProfileService expertiseProfileService,
+    public RESTUserController(UserService userService, PersonalInfoService personalInfoService,
                               ExpertiseProfileFactory expertiseProfileFactory, PersonalProfileFactory personalProfileFactory, UserFactory mapperHelper) {
         this.userService = userService;
         this.personalInfoService = personalInfoService;
-        this.expertiseProfileService = expertiseProfileService;
         this.expertiseProfileFactory = expertiseProfileFactory;
         this.personalProfileFactory = personalProfileFactory;
         this.mapperHelper = mapperHelper;
@@ -94,8 +89,8 @@ public class RESTUserController {
         try {
             User user = userService.getUserById(id);
             ExpertiseProfile expertiseProfile = expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
-           ExpertiseProfile expertiseProfileDb = expertiseProfileFactory.mergeExpertProfile(expertiseProfile,user.getExpertiseProfile());
-            return expertiseProfileService.upgradeProfile(user, expertiseProfileDb,principal.getName());
+            ExpertiseProfile expertiseProfileDb = expertiseProfileFactory.mergeExpertProfile(expertiseProfile, user.getExpertiseProfile());
+            return userService.updateExpertise(user, expertiseProfileDb, principal.getName(), user);
         } catch (InvalidOperationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, NOT_AUTHORISED);
         } catch (ValidationEntityException e) {
@@ -107,7 +102,7 @@ public class RESTUserController {
     }
 
     @GetMapping("/{id}")
-    public UserModel getUserById(@PathVariable(name = "id") int id,String principal) {
+    public UserModel getUserById(@PathVariable(name = "id") int id, String principal) {
         try {
             User user = userService.getUserById(id);
             userService.ifNotProfileOrAdminOwnerThrow(principal, user);

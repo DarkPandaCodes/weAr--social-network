@@ -17,12 +17,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserModel  {
+public class UserModel {
     private int id;
     @Size(min = 2, message = "The username must have at least 2 symbols!")
     private String username;
     private List<String> authorities;
-    @Pattern(regexp = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$",message = "this doesn't look like valid email")
+    @Pattern(regexp = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$", message = "this doesn't look like valid email")
     private String email;
     @Size(min = 2, message = "The first name must have at least 3 symbols!")
     private String firstName;
@@ -35,9 +35,9 @@ public class UserModel  {
     private LocalDate birthYear;
     @Size(max = 250, message = "Personal review must have be max 250 symbols!")
     private String personalReview;
-//    private String picture;
+    //    private String picture;
     private String expertise;
-    private List<String>skills = new ArrayList<>();
+    private List<String> skills = new ArrayList<>();
 
 
     public UserModel() {
@@ -123,14 +123,6 @@ public class UserModel  {
         this.personalReview = personalReview;
     }
 
-//    public String getPicture() {
-//        return picture;
-//    }
-//
-//    public void setPicture(String picture) {
-//        this.picture = picture;
-//    }
-
     public String getExpertise() {
         return expertise;
     }
@@ -146,8 +138,8 @@ public class UserModel  {
     public void setSkills(List<String> skills) {
         this.skills = skills;
     }
-    public void setSkill(String skill) {
 
+    public void setSkill(String skill) {
         this.skills.add(skill);
     }
 
