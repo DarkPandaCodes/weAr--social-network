@@ -38,6 +38,7 @@ public class RESTCommentController {
 
     @GetMapping
     public List<Comment> findAll(Sort sort) {
+        //TODO only public
         return commentService.findAll(sort);
     }
 
@@ -60,9 +61,9 @@ public class RESTCommentController {
     }
 
     @PostMapping("/create")
-    public Comment save(@RequestBody CommentDTO commentDTO) {
+    public Comment save(@RequestBody CommentDTO commentDTO, Principal principal) {
         Comment newComment = commentFactory.createCommentFromDTO(commentDTO);
-        return commentService.save(newComment);
+        return commentService.save(newComment, principal);
     }
 
     @PutMapping("/like")

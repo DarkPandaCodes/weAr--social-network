@@ -2,6 +2,8 @@ package com.community.weare.Services.contents;
 
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
+import com.community.weare.Exceptions.InvalidOperationException;
+import com.community.weare.Models.Category;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
@@ -18,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,7 +75,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Slice<Post> findSliceWithPosts(int startIndex, int pageSize, String sortParam, String username) {
-        Pageable page=PageRequest.of(startIndex, pageSize,Sort.by(sortParam).descending());
+        Pageable page = PageRequest.of(startIndex, pageSize, Sort.by(sortParam).descending());
         Slice<Post> slicedResult = postRepository.findAllByUserUsername(page, username);
         return slicedResult;
     }
@@ -81,6 +85,18 @@ public class PostServiceImpl implements PostService {
     public List<Post> findPostsByAlgorithm(Sort sort, Principal principal) {
         List<Post> allPost = postRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
         return applyAlgorithm(principal, allPost);
+    }
+
+    @Override
+    public List<Post> findPostsPersonalFeed(Sort sort, Principal principal) {
+        User user = userService.getUserByUserName(principal.getName());
+        List<Post> friendsPosts = filterPostsByFriends
+                (findPostsByAlgorithm(sort, principal), user);
+
+        Category usersCategory = user.getExpertiseProfile().getCategory();
+        List<Post> postsFromMyCategory = filterPostsByCategory
+                (findPostsByAlgorithm(sort, principal), usersCategory.getName());
+        return mergeTwoLists(friendsPosts, postsFromMyCategory);
     }
 
     @Override
@@ -104,6 +120,19 @@ public class PostServiceImpl implements PostService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<Post> filterPostsByFriends(List<Post> posts, User user) {
+        return posts.stream()
+                .filter(p -> p.getUser().getFriendList().contains(user))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Post> mergeTwoLists(List<Post> list1, List<Post> list2) {
+        Set<Post> set = new LinkedHashSet<>(list1);
+        set.addAll(list2);
+        return new ArrayList<>(set);
+    }
 
     @Override
     public Post getOne(int postId) {
@@ -119,13 +148,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post save(Post post) {
+    public Post save(Post post, Principal principal) {
+        if (principal == null) {
+            throw new InvalidOperationException("User isn't authorised");
+        }
         return postRepository.save(post);
     }
 
     @Override
     @Transactional
     public void likePost(int postId, Principal principal) {
+        if (principal == null) {
+            throw new InvalidOperationException("User isn't authorised");
+        }
         User user = userService.getUserByUserName(principal.getName());
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
@@ -143,6 +178,9 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void dislikePost(int postId, Principal principal) {
+        if (principal == null) {
+            throw new InvalidOperationException("User isn't authorised");
+        }
         User user = userService.getUserByUserName(principal.getName());
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
@@ -244,7 +282,7 @@ public class PostServiceImpl implements PostService {
             numberOfPostsForMonth = 0;
 
             currentPost.setRank(timeEffect + likesEffect + commentsEffect + friendsEffect + multiPostsEffect);
-            save(currentPost);
+            save(currentPost, principal);
         }
         return postRepository.findAll(Sort.by(Sort.Direction.ASC, "rank"));
     }

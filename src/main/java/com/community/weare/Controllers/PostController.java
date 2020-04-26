@@ -59,13 +59,15 @@ public class PostController {
 
     @GetMapping("")
     public String showFeed(Model model, Sort sort, Principal principal) {
-        model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
+        if (principal == null) {
+            return "redirect:/";
+        }
+        //TODO Auth
+        model.addAttribute("posts", postService.findPostsPersonalFeed(sort, principal));
         model.addAttribute("postDTO2", new PostDTO2());
         model.addAttribute("postDTO", new PostDTO());
         model.addAttribute("category", new Category("Marketing"));
-        if (principal != null) {
-            model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
-        }
+        model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
         return "allPosts";
     }
 
@@ -84,16 +86,16 @@ public class PostController {
         if (postDTO2.getPostId() != 0) {
             if (principal == null) {
                 model.addAttribute("error", "User isn't authorised");
-                return "allPosts";
+                return "redirect:/";
             }
-            model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
+            model.addAttribute("posts", postService.findPostsPersonalFeed(sort, principal));
             boolean isPostLiked = postService.getOne(postDTO2.getPostId()).isLiked(principal.getName());
             User user = userService.getUserByUserName(principal.getName());
 
             if (isPostLiked) {
                 try {
                     postService.dislikePost(postDTO2.getPostId(), principal);
-                } catch (EntityNotFoundException e) {
+                } catch (DuplicateEntityException | EntityNotFoundException | InvalidOperationException e) {
                     model.addAttribute("error", e.getMessage());
                     model.addAttribute("UserPrincipal",
                             userService.getUserByUserName(principal.getName()));
@@ -102,7 +104,7 @@ public class PostController {
             } else {
                 try {
                     postService.likePost(postDTO2.getPostId(), principal);
-                } catch (DuplicateEntityException | EntityNotFoundException e) {
+                } catch (DuplicateEntityException | EntityNotFoundException | InvalidOperationException e) {
                     model.addAttribute("error", e.getMessage());
                     model.addAttribute("UserPrincipal",
                             userService.getUserByUserName(principal.getName()));
@@ -117,10 +119,10 @@ public class PostController {
                 //TODO replace postDTO with postDTO2 - make new field String isPublic (All, Public, Private)
                 boolean isPublic = Boolean.parseBoolean(postDTO.getContent());
                 List<Post> filteredPosts = postService.filterPostsByPublicity
-                        (postService.findPostsByAlgorithm(sort, principal), isPublic);
+                        (postService.findPostsPersonalFeed(sort, principal), isPublic);
                 model.addAttribute("posts", filteredPosts);
             } else {
-                model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
+                model.addAttribute("posts", postService.findPostsPersonalFeed(sort, principal));
             }
         }
 
@@ -128,10 +130,10 @@ public class PostController {
         if (category.getName() != null) {
             if (!category.getName().equals("All")) {
                 List<Post> filteredPosts = postService.filterPostsByCategory
-                        (postService.findPostsByAlgorithm(sort, principal), category.getName());
+                        (postService.findPostsPersonalFeed(sort, principal), category.getName());
                 model.addAttribute("posts", filteredPosts);
             } else {
-                model.addAttribute("posts", postService.findPostsByAlgorithm(sort, principal));
+                model.addAttribute("posts", postService.findPostsPersonalFeed(sort, principal));
             }
         }
         if (principal != null) {
@@ -142,6 +144,7 @@ public class PostController {
 
     @GetMapping("/{id}")
     public String showPost(Model model, @PathVariable(name = "id") int postId, Principal principal) {
+        //TODO auth or friend
         Post post01 = postService.getOne(postId);
         model.addAttribute("post", post01);
         model.addAttribute("comment", new CommentDTO());
@@ -164,11 +167,12 @@ public class PostController {
                                            @PathVariable(name = "id") int postId, Principal principal, Model model) {
         if (commentDTO.getContent() != null) {
             Comment newComment = commentFactory.createCommnetFromInput(commentDTO, postId, principal);
-            commentService.save(newComment);
+            commentService.save(newComment,principal);
             model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
             return "redirect:/posts/" + postId + "#leaveComment";
         }
 
+        //All posts of user
         if (user.getId() != 0) {
             List<Post> postsOfUser = postService.findAllByUser
                     (userService.getUserById(user.getId()).getUsername());
@@ -182,7 +186,8 @@ public class PostController {
     }
 
     @GetMapping("/newPost")
-    public String newPostData(Model model) {
+    public String newPostData(Model model, Principal principal) {
+        //TODO Auth
         PostDTO post = new PostDTO();
         model.addAttribute("post", post);
         return "newPost";
@@ -210,8 +215,9 @@ public class PostController {
         newPost.setPicture(Base64.getEncoder().encodeToString(file.getBytes()));
 
         try {
-            postService.save(newPost);
-        } catch (IllegalArgumentException | DuplicateEntityException e) {
+            postService.save(newPost, principal);
+        } catch (IllegalArgumentException | DuplicateEntityException | InvalidOperationException |
+                EntityNotFoundException e) {
             model.addAttribute("error", e.getMessage());
             return "newPost";
         }

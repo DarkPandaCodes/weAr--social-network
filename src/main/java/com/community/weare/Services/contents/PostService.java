@@ -2,6 +2,7 @@ package com.community.weare.Services.contents;
 
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
+import com.community.weare.Models.User;
 import com.community.weare.Models.dto.PostDTO;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
@@ -21,17 +22,23 @@ public interface PostService {
 
     List<Post> findPostsByAlgorithm(Sort sort, Principal principal);
 
+    List<Post> findPostsPersonalFeed(Sort sort, Principal principal);
+
     List<Post> filterPostsByPublicity(List<Post> posts, boolean isPublic);
 
     List<Post> filterPostsByCategory(List<Post> posts, String categoryName);
 
     List<Post> filterPostsByUsername(List<Post> posts, String userName);
 
+    List<Post> filterPostsByFriends(List<Post> posts, User user);
+
+    List<Post> mergeTwoLists(List<Post> list1, List<Post> list2);
+
     Post getOne(int postId);
 
     boolean existsById(int postId);
 
-    Post save(Post post);
+    Post save(Post post, Principal principal);
 
     void likePost(int postId, Principal principal);
 

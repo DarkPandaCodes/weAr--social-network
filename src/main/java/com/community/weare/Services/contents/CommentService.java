@@ -20,7 +20,7 @@ public interface CommentService {
 
     Comment getOne(int commentId);
 
-    Comment save(Comment comment);
+    Comment save(Comment comment, Principal principal);
 
     void likeComment(int commentId, Principal principal);
 

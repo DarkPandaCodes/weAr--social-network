@@ -35,7 +35,8 @@ public class RESTPostController {
 
     @GetMapping("/")
     public List<Post> findAll(Sort sort, Principal principal) {
-        return postService.findPostsByAlgorithm(sort, principal);
+        return postService.filterPostsByPublicity
+                (postService.findPostsByAlgorithm(sort, principal), true);
     }
 
     @GetMapping("/showComments")
@@ -47,7 +48,12 @@ public class RESTPostController {
     public Post save(@RequestBody PostDTO postDTO, Principal principal) {
         Post newPost = postFactory.createPostFromDTO(postDTO);
         newPost.setUser(userService.getUserByUserName(principal.getName()));
-        return postService.save(newPost);
+        try {
+            postService.save(newPost, principal);
+        } catch (DuplicateEntityException | EntityNotFoundException | InvalidOperationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return newPost;
     }
 
     @PostMapping("/like")
@@ -64,13 +70,13 @@ public class RESTPostController {
         if (isPostLiked) {
             try {
                 postService.dislikePost(postId, principal);
-            } catch (DuplicateEntityException | EntityNotFoundException e) {
+            } catch (DuplicateEntityException | EntityNotFoundException | InvalidOperationException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
             }
         } else {
             try {
                 postService.likePost(postId, principal);
-            } catch (DuplicateEntityException | EntityNotFoundException e) {
+            } catch (DuplicateEntityException | EntityNotFoundException | InvalidOperationException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
             }
         }
