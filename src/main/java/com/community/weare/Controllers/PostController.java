@@ -21,6 +21,7 @@ import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -103,7 +104,8 @@ public class PostController {
                     postService.likePost(postDTO2.getPostId(), principal);
                 } catch (DuplicateEntityException | EntityNotFoundException e) {
                     model.addAttribute("error", e.getMessage());
-                    model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+                    model.addAttribute("UserPrincipal",
+                            userService.getUserByUserName(principal.getName()));
                     return "allPosts";
                 }
             }
@@ -196,6 +198,7 @@ public class PostController {
         }
     }
 
+    @Transactional
     @PostMapping("/newPost")
     public String newPost(Model model, @ModelAttribute("post") PostDTO post, BindingResult errors,
                           @RequestParam("imagefile") MultipartFile file, Principal principal) throws IOException {

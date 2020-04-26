@@ -33,7 +33,7 @@ public class User implements UserDetails {
     private String email;
 
 
-    @ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER)
+    @ManyToMany(targetEntity = Role.class, fetch = FetchType.LAZY)
     @JsonBackReference
     @JoinTable(
             name = "authorities",
