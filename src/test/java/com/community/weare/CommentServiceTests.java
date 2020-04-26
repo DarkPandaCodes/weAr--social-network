@@ -357,7 +357,7 @@ public class CommentServiceTests {
         //arrange
         Comment comment1 = FactoryPostComment.createComment();
 
-        Mockito.when(commentRepository.existsById(comment1.getCommentId())).thenReturn(false);
+        Mockito.when(postRepository.existsById(comment1.getPost().getPostId())).thenReturn(false);
         //Act, Assert
         Assert.assertThrows(EntityNotFoundException.class,
                 () -> mockCommentService.deleteCommentByPostPostId(comment1.getCommentId()));

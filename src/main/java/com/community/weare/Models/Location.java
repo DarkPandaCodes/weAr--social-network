@@ -12,7 +12,7 @@ public class Location {
 
 
     @ManyToOne
-    @JoinColumn(name = "city_id", unique = true)
+    @JoinColumn(name = "city_id")
     private City city;
 
     public Location() {

@@ -131,9 +131,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public int deleteCommentByPostPostId(int postId) {
-        if (!commentRepository.existsById(postId)) {
+        if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException(String.format
-                    ("Comment with id %d does not exists", postId));
+                    ("Post with id %d does not exists", postId));
         }
         return commentRepository.deleteCommentByPostPostId(postId);
     }
