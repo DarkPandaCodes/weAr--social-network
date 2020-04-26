@@ -24,17 +24,16 @@ public class UserModel  {
     private List<String> authorities;
     @Pattern(regexp = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$",message = "this doesn't look like valid email")
     private String email;
-    @Size(min = 2, message = "The username must have at least 2 symbols!")
+    @Size(min = 2, message = "The first name must have at least 3 symbols!")
     private String firstName;
-    @Size(min = 2, message = "The username must have at least 2 symbols!")
+    @Size(min = 2, message = "The last name must have at least 3 symbols!")
     private String lastNAme;
     private Sex gender;
-    @Size(min = 2, message = "The username must have at least 2 symbols!")
     private City city;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate birthYear;
-
+    @Size(max = 250, message = "Personal review must have be max 250 symbols!")
     private String personalReview;
 //    private String picture;
     private String expertise;

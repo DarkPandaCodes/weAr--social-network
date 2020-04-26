@@ -98,10 +98,12 @@
     <div class="row">
         <div class="col-md-3 pt-5 ">
             <div class="list-group " id="list-tab" role="tablist">
+                <a class="list-group-item list-group-item-action " id="list-front-list" data-toggle="list"
+                   th:href="@{'/auth/users/' + ${userToEdit.getId()} + '/profile'}" role="tab" aria-controls="home">Profile</a>
                 <a class="list-group-item list-group-item-action " id="list-home-list" data-toggle="list"
-                   href="#profile-personal" role="tab" aria-controls="home">Personal Information</a>
+                   href="#profile-personal" role="tab" aria-controls="home">Edit personal Information</a>
                 <a class="list-group-item list-group-item-action active" id="list-profile-list" data-toggle="list"
-                   href="#profile-expertise" role="tab" aria-controls="profile">Professional information</a>
+                   href="#profile-expertise" role="tab" aria-controls="profile">Edit professional information</a>
                 <a class="list-group-item list-group-item-action" id="list-messages-list" data-toggle="list"
                    href="#profile-services" role="tab" aria-controls="messages">What services can you offer?</a>
                 <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list"
@@ -119,6 +121,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
+                            <i th:if="${error != null}" th:text="${error}" style="color: red"></i>
                             <form form action="#"
                                   th:action="@{'/auth/users/'+${userToEdit.getId()}+'/profile/personal'}"
                                   th:object="${userToEdit}" method="post" class="contact" role="form" enctype="multipart/form-data">
@@ -136,6 +139,7 @@
 
                                         <input id="nameE" name="name" th:field="*{firstName}"
                                                placeholder="First Name" class="form-control here" type="text">
+                                        <label class="error" th:errors="*{firstName}"></label>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -143,6 +147,7 @@
                                     <div class="col-8">
                                         <input id="lastnameE" name="lastname" th:field="*{lastNAme}"
                                                placeholder="Last Name" class="form-control here" type="text">
+                                        <label class="error" th:errors="*{lastNAme}"></label>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -151,6 +156,7 @@
                                         <input id="birthDayE" th:type="datetime-local" th:field="*{birthYear}"
                                                placeholder="YYYY-MM-DD" class="form-control here"
                                                required="required">
+                                        <label class="error" th:errors="*{birthYear}"></label>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -171,13 +177,7 @@
                                     <div class="col-8">
                                         <input id="emailE" name="email" th:field="*{email}" placeholder="Email"
                                                class="form-control here" required="required" type="text">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="websiteE" class="col-4 col-form-label">Website</label>
-                                    <div class="col-8">
-                                        <input id="websiteE" name="website" placeholder="website"
-                                               class="form-control here" type="text">
+                                        <label class="error" th:errors="*{email}"></label>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -186,6 +186,7 @@
                                             <textarea id="publicinfoE" th:field="*{personalReview}" name="publicinfo"
                                                       cols="40" rows="4" class="form-control"></textarea>
                                     </div>
+                                    <label class="error" th:errors="*{personalReview}"></label>
                                 </div>
                                 <!--                                <div class="form-group row">-->
                                 <!--                                    <label for="newpass" class="col-4 col-form-label">New Password</label>-->
@@ -357,12 +358,12 @@
                                 <div class="form-group row">
                                     <label class="col-4 col-form-label">Power Up your profile. Upload Profile picture!</label>
                                         <div class="profile-img col-4 col-form-label">
-                                            <img th:if="${user.getPersonalProfile().getPicture()!=null}"  th:src="@{'/auth/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
+                                            <img  th:if="${user.getPersonalProfile().getPicture()!=null}"  th:src="@{'/auth/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="control-label file btn-light ">
                                                 Change Photo
-                                                <input  id="imagefile" name="imagefile" type="file" class="file">
+                                                <input required="required" id="imagefile" name="imagefile" type="file" class="file">
                                             </div>
                                         </div>
                                     </div>

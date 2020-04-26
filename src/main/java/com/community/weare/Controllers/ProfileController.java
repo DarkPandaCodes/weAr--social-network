@@ -9,6 +9,7 @@ import com.community.weare.Models.dto.UserDTO;
 import com.community.weare.Models.dto.UserDtoRequest;
 import com.community.weare.Models.factories.ExpertiseProfileFactory;
 import com.community.weare.Models.factories.FactoryUtils;
+import com.community.weare.Models.factories.PersonalProfileFactory;
 import com.community.weare.Models.factories.UserFactory;
 import com.community.weare.Services.SkillCategoryService;
 import com.community.weare.Services.contents.PostService;
@@ -52,17 +53,19 @@ public class ProfileController {
     private final SkillCategoryService skillCategoryService;
     private final SkillService skillService;
     private final PersonalInfoService personalInfoService;
+    private final PersonalProfileFactory personalProfileFactory;
     private final UserFactory userFactory;
     private final PostService postService;
 
     @Autowired
-    public ProfileController(UserService userService, ExpertiseProfileFactory expertiseProfileFactory, SkillCategoryService skillCategoryService, SkillService skillService,
-                             PersonalInfoService personalInfoService, UserFactory userFactory, PostService postService) {
+    public ProfileController(UserService userService, ExpertiseProfileFactory expertiseProfileFactory, SkillCategoryService skillCategoryService, SkillService skillService, PersonalInfoService personalInfoService,
+                             PersonalProfileFactory personalProfileFactory, UserFactory userFactory, PostService postService) {
         this.userService = userService;
         this.expertiseProfileFactory = expertiseProfileFactory;
         this.skillCategoryService = skillCategoryService;
         this.skillService = skillService;
         this.personalInfoService = personalInfoService;
+        this.personalProfileFactory = personalProfileFactory;
         this.userFactory = userFactory;
         this.postService = postService;
     }
@@ -75,7 +78,7 @@ public class ProfileController {
             User user = userService.getUserById(id);
             modelAndView.addObject("userDisable", new User());
             modelAndView.addObject("user", user);
-            modelAndView.addObject("userRequest",new UserDtoRequest() );
+            modelAndView.addObject("userRequest", new UserDtoRequest());
             modelAndView.addObject("friends", user.isFriend(principal.getName()));
             modelAndView.addObject("isOwner", userService.isOwner(principal.getName(), user));
             modelAndView.addObject("isAdmin", userService.isAdmin(principal));
@@ -109,7 +112,7 @@ public class ProfileController {
             }
             modelAndView.addObject("hasNext", postSlice.hasNext());
             modelAndView.addObject("userDisable", new User());
-            modelAndView.addObject("userRequest",new UserDtoRequest() );
+            modelAndView.addObject("userRequest", new UserDtoRequest());
             modelAndView.addObject("user", user);
             modelAndView.addObject("friends", user.isFriend(principal.getName()));
             modelAndView.addObject("isOwner", userService.isOwner(principal.getName(), user));
@@ -155,17 +158,18 @@ public class ProfileController {
 
     @PostMapping("/{id}/profile/personal")
     public String editUserProfile(@PathVariable(name = "id") int id,
-                                  @ModelAttribute UserModel userModel, BindingResult bindingResult, Principal principal, Model model)  {
+                                  @ModelAttribute @Valid UserModel userModel, BindingResult bindingResult, Principal principal, Model model) {
+        User userToCheck = userService.getUserById(userModel.getId());
+        model.addAttribute("userToEdit", userModel);
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("error",bindingResult.getFieldError().getDefaultMessage());
             return "user-profile-edit";
         }
         try {
-            User userToCheck = userService.getUserById(userModel.getId());
-            model.addAttribute("userToEdit", userModel);
-            User userToSave = userFactory.mergeUserAndModel(userToCheck, userModel);
-            userService.updateUser(userToSave, principal.getName(), userToCheck);
 
+            User userToSave = userFactory.mergeUserAndModel(userToCheck, userModel);
+            personalInfoService.upgradeProfile(principal.getName(), userToCheck, userToSave.getPersonalProfile());
         } catch (EntityNotFoundException e) {
             model.addAttribute("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
         } catch (InvalidOperationException e) {
@@ -214,7 +218,6 @@ public class ProfileController {
                 ExpertiseProfile expertiseProfileNew =
                         expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
 
-                //TODO test when skill is duplicated, throw exception
                 ExpertiseProfile expertiseProfileMerged =
                         expertiseProfileFactory.mergeExpertProfile(expertiseProfileNew,
                                 userToCheck.getExpertiseProfile());
@@ -249,7 +252,7 @@ public class ProfileController {
 
     @ModelAttribute(name = "cities")
     public void addCitiesList(Model model) {
-        List<City> cities =personalInfoService.getAllCities() ;
-        model.addAttribute("cities",cities );
+        List<City> cities = personalInfoService.getAllCities();
+        model.addAttribute("cities", cities);
     }
 }
