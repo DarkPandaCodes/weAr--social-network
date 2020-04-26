@@ -73,8 +73,7 @@ public class UserFactory {
             ) {
                 userModel.setSkill(skillRepository.getOne(skill.getSkillId()).getSkill());
             }
-            userModel.setStartTime(expertiseProfile.getStartTime());
-            userModel.setEndTime(expertiseProfile.getEndTime());
+
         }
 
 
@@ -113,6 +112,7 @@ public class UserFactory {
                 userToCheck.getPersonalProfile().getFirstName()));
         user.getPersonalProfile().setLastName
                 (getNotNull(userModel.getLastNAme(), userToCheck.getPersonalProfile().getLastName()));
+
         return user;
     }
 }

@@ -11,12 +11,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserModel {
+public class UserModel  {
     private int id;
     @Size(min = 2, message = "The username must have at least 2 symbols!")
     private String username;
@@ -38,10 +39,7 @@ public class UserModel {
 //    private String picture;
     private String expertise;
     private List<String>skills = new ArrayList<>();
-    @DateTimeFormat(iso = DateTimeFormat.ISO.NONE,pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime startTime;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.NONE,pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime endTime;
+
 
     public UserModel() {
     }
@@ -154,19 +152,4 @@ public class UserModel {
         this.skills.add(skill);
     }
 
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public LocalDateTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
 }

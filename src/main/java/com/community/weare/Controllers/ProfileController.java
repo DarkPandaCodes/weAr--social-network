@@ -75,6 +75,7 @@ public class ProfileController {
             User user = userService.getUserById(id);
             modelAndView.addObject("userDisable", new User());
             modelAndView.addObject("user", user);
+            modelAndView.addObject("userRequest",new UserDtoRequest() );
             modelAndView.addObject("friends", user.isFriend(principal.getName()));
             modelAndView.addObject("isOwner", userService.isOwner(principal.getName(), user));
             modelAndView.addObject("isAdmin", userService.isAdmin(principal));
@@ -108,6 +109,7 @@ public class ProfileController {
             }
             modelAndView.addObject("hasNext", postSlice.hasNext());
             modelAndView.addObject("userDisable", new User());
+            modelAndView.addObject("userRequest",new UserDtoRequest() );
             modelAndView.addObject("user", user);
             modelAndView.addObject("friends", user.isFriend(principal.getName()));
             modelAndView.addObject("isOwner", userService.isOwner(principal.getName(), user));
@@ -153,7 +155,7 @@ public class ProfileController {
 
     @PostMapping("/{id}/profile/personal")
     public String editUserProfile(@PathVariable(name = "id") int id,
-                                  @ModelAttribute UserModel userModel, BindingResult bindingResult, Principal principal, Model model) throws IOException {
+                                  @ModelAttribute UserModel userModel, BindingResult bindingResult, Principal principal, Model model)  {
 
         if (bindingResult.hasErrors()) {
             return "user-profile-edit";
@@ -192,7 +194,7 @@ public class ProfileController {
     }
 
     @Transactional
-    @RequestMapping("/{id}/profile/expertise")
+    @PostMapping("/{id}/profile/expertise")
     public String editUserExpertiseProfile(@PathVariable(name = "id") int id,
                                            @ModelAttribute(name = "profileDTO") ExpertiseProfileDTO expertiseProfileDTO,
                                            BindingResult bindingResult,

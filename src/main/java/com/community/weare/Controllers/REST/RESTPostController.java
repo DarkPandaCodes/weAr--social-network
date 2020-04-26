@@ -10,7 +10,6 @@ import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Models.factories.PostFactory;
 import com.community.weare.Services.contents.PostService;
 import com.community.weare.Services.users.UserService;
-import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;

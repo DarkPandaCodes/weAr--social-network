@@ -44,11 +44,11 @@ public class ExpertiseProfileFactory {
         profileDTO.setSkills();
 
         for (String skillValue : profileDTO.getSkills()) {
-            if (!skillValue.isEmpty()) {
+            if (skillValue!=null&&!skillValue.isEmpty()) {
                 Skill skill = new Skill();
                 skill.setSkill(skillValue);
                 skill.setCategory(skillCategory);
-                skill=skillService.createIfNotExist(skill);
+                skill = skillService.createIfNotExist(skill);
                 skillList.add(skill);
             }
         }
@@ -60,11 +60,10 @@ public class ExpertiseProfileFactory {
     }
 
     public ExpertiseProfile mergeExpertProfile(ExpertiseProfile newProfile, ExpertiseProfile oldProfile) {
-
-            oldProfile.setSkills(newProfile.getSkills());
-            oldProfile.setCategory(newProfile.getCategory());
-            oldProfile.setStartTime(getNotNull(newProfile.getStartTime(), oldProfile.getStartTime()));
-            oldProfile.setEndTime(getNotNull(newProfile.getEndTime(), oldProfile.getEndTime()));
+        oldProfile.setSkills(newProfile.getSkills());
+        oldProfile.setCategory(newProfile.getCategory());
+        oldProfile.setStartTime(getNotNull(newProfile.getStartTime(), oldProfile.getStartTime()));
+        oldProfile.setEndTime(getNotNull(newProfile.getEndTime(), oldProfile.getEndTime()));
 
         return oldProfile;
     }

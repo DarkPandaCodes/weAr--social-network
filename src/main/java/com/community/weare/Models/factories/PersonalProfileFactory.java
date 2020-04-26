@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
+import static com.community.weare.Models.factories.FactoryUtils.getNotNull;
+
 @Component
 public class PersonalProfileFactory {
     private final LocationRepository locationRepository;
@@ -24,22 +26,38 @@ public class PersonalProfileFactory {
     }
 
 
-
-
     public Location createLocation(City city) {
-        Location location=new Location();
+        Location location = new Location();
         location.setCity(city);
         locationRepository.saveAndFlush(location);
         return location;
     }
 
-    public PersonalProfile covertDTOtoPersonalProfile(PersonalProfileDTO personalProfileDTO){
-        PersonalProfile personalProfile=modelMapper.map(personalProfileDTO,PersonalProfile.class);
+    public PersonalProfile covertDTOtoPersonalProfile(PersonalProfileDTO personalProfileDTO) {
+        PersonalProfile personalProfile = modelMapper.map(personalProfileDTO, PersonalProfile.class);
         personalProfile.setBirthYear(personalProfileDTO.getBirthday());
-        Location location= createLocation(new City());
-        Sex sex=Sex.valueOf(personalProfileDTO.getSex().toUpperCase());
-        personalProfile.setSex(sex);
+        Location location = new Location();
+        location.setCity(personalProfileDTO.getCity());
         personalProfile.setLocation(location);
+        Sex sex = Sex.valueOf(personalProfileDTO.getSex().toUpperCase());
+        personalProfile.setSex(sex);
         return personalProfile;
+    }
+
+    public PersonalProfile mergePersonalProfiles(PersonalProfile personalProfileNew, PersonalProfile personalProfileOld) {
+        if (personalProfileOld.getLocation() != null) {
+            personalProfileOld.getLocation().setCity(getNotNull(personalProfileNew.getLocation().getCity(),
+                    personalProfileOld.getLocation().getCity()));
+        } else if (personalProfileNew.getLocation().getCity() != null) {
+            Location location = createLocation(personalProfileNew.getLocation().getCity());
+            personalProfileOld.setLocation(location);
+        }
+        personalProfileOld.setPicturePrivacy(personalProfileNew.isPicturePrivacy());
+        personalProfileOld.setFirstName(getNotNull(personalProfileNew.getFirstName(), personalProfileOld.getFirstName()));
+        personalProfileOld.setBirthYear(getNotNull(personalProfileNew.getBirthYear(), personalProfileOld.getBirthYear()));
+        personalProfileOld.setLastName(getNotNull(personalProfileNew.getLastName(), personalProfileOld.getLastName()));
+        personalProfileOld.setPersonalReview(getNotNull(personalProfileNew.getPersonalReview(), personalProfileOld.getPersonalReview()));
+        personalProfileOld.setSex(getNotNull(personalProfileNew.getSex(), personalProfileOld.getSex()));
+        return personalProfileOld;
     }
 }
