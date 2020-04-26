@@ -10,6 +10,7 @@ import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Models.factories.PostFactory;
 import com.community.weare.Services.contents.PostService;
 import com.community.weare.Services.users.UserService;
+import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -51,14 +52,15 @@ public class RESTPostController {
     }
 
     @PostMapping("/like")
-    public void likeAPost(@RequestParam int postId, Principal principal) {
+    public Post likeAPost(@RequestParam int postId, Principal principal) {
         User user;
         try {
             user = userService.getUserByUserName(principal.getName());
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        boolean isPostLiked = postService.getOne(postId).isLiked(user.getUsername());
+        Post postToLike = postService.getOne(postId);
+        boolean isPostLiked = postToLike.isLiked(user.getUsername());
 
         if (isPostLiked) {
             try {
@@ -73,6 +75,7 @@ public class RESTPostController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
             }
         }
+        return postToLike;
     }
 
     @PutMapping("/edit")

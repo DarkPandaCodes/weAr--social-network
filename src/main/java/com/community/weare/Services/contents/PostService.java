@@ -44,4 +44,6 @@ public interface PostService {
     void deletePost(int postId, Principal principal);
 
     List<Comment> showComments(int postId);
+
+    Post updateRank(Principal principal, Post post);
 }
