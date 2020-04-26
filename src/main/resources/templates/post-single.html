@@ -113,7 +113,7 @@
                             <img src="/images/person_1.jpg" alt="Image" width="190">
                         </div>
                         <div class="img-fluid mb-4" th:if="${post.getUser().getPersonalProfile().getPicture()!=null}">
-                            <img th:src="@{'/auth/users/' + ${post.getUser().getUserId()} + '/userImage'}" alt="Image"
+                            <img th:src="@{'/users/' + ${post.getUser().getUserId()} + '/userImage'}" alt="Image"
                                  width="190">
                         </div>
 
@@ -141,10 +141,11 @@
                                 </div>
                                 <div class="vcard bio"
                                      th:if="${comment.user.getPersonalProfile().getPicture()!=null}">
-                                    <img th:src="@{'/auth/users/' + ${comment.user.getUserId()} + '/userImage'}"
+                                    <img th:src="@{'/users/' + ${comment.user.getUserId()} + '/userImage'}"
                                          alt="Image">
                                 </div>
                             </div>
+
                             <div class="comment-body">
                                 <h3 th:text="${comment.user.username}"></h3>
                                 <div class="meta" th:text="${comment.date}"></div>

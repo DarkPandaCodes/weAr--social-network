@@ -98,7 +98,7 @@
                             <!--                            <div class="img" style="background-image:-moz-image-rect(" th:src="@{'/posts/' + ${post.postId} + '/postImage'}" ")-->
                             <!--                            <div class="img" style="background-image: url(images/person_1.jpg);"></div>-->
                             <div class="img"><img th:class="img"
-                                                  th:src="@{'/posts/' + ${post.postId} + '/postImage'}" th:width="190">
+                                                  th:src="@{'/posts/' + ${post.postId} + '/postImage'}" th:width="200">
                             </div>
                             <!--                                                  th:href="@{'/posts/' + ${post.postId} + '/postImage'}"></div>-->
 
@@ -381,9 +381,6 @@
                 console.log(d.likes.length) //check
                 $("#like-count" + d.postId).text("Likes: " + d.likes.length)
                 $("#rank-val" + d.postId).text("Rank: " + d.rank)
-                // $(".rank-val" + d.postId).text("Rank: " + d.rank)
-                // th:if="${post.isLiked(UserPrincipal.getUsername()) == true}">You already liked
-
             }
         })
     })
