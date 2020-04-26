@@ -1,5 +1,6 @@
 package com.community.weare.Models.dto;
 
+import com.community.weare.Models.City;
 import com.community.weare.Models.Location;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -12,7 +13,7 @@ public class PersonalProfileDTO {
 
     private String firstName;
     private String lastName;
-    private String city;
+    private City city;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate birthday;
     private String sex;
@@ -38,11 +39,11 @@ public class PersonalProfileDTO {
         this.lastName = lastName;
     }
 
-    public String getCity() {
+    public City getCity() {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(City city) {
         this.city = city;
     }
 

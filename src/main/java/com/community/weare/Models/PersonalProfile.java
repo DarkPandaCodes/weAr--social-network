@@ -1,5 +1,6 @@
 package com.community.weare.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -36,6 +37,7 @@ public class PersonalProfile {
     @DateTimeFormat(pattern = "YY-MM-DD-HH")
     private LocalDateTime memberSince;
 
+    @JsonBackReference
     @Lob
     private String picture;
 

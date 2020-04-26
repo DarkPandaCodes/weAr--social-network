@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PersonalInfoService {
 
-    PersonalProfile upgradeProfile(User user, PersonalProfile personalProfile);
+    PersonalProfile upgradeProfile(String principal, User user, PersonalProfile personalProfile);
     PersonalProfile createProfile(PersonalProfile personalProfile);
 
     List<City> getAllCities();

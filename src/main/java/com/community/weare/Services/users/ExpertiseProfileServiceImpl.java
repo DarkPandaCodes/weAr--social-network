@@ -1,28 +1,29 @@
 package com.community.weare.Services.users;
 
+import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.ExpertiseProfile;
-import com.community.weare.Models.PersonalProfile;
 import com.community.weare.Models.User;
 import com.community.weare.Repositories.ExpertiseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
-
 @Service
 public class ExpertiseProfileServiceImpl implements ExpertiseProfileService {
-    ExpertiseRepository expertiseRepository;
+    private final ExpertiseRepository expertiseRepository;
+    private final UserService userService;
 
     @Autowired
-    public ExpertiseProfileServiceImpl(ExpertiseRepository expertiseRepository) {
+    public ExpertiseProfileServiceImpl(ExpertiseRepository expertiseRepository, UserService userService) {
         this.expertiseRepository = expertiseRepository;
+        this.userService = userService;
     }
 
     @Override
-    public ExpertiseProfile upgradeProfile(User user, ExpertiseProfile expertiseProfile) {
+    public ExpertiseProfile upgradeProfile(User user, ExpertiseProfile expertiseProfile, String principal) {
+        userService.ifNotProfileOrAdminOwnerThrow(principal,user);
         ExpertiseProfile profileDB = expertiseRepository.
-                findById(user.getExpertiseProfile().getId()).orElseThrow(EntityNotFoundException::new);
+                findById(user.getExpertiseProfile().getId()).orElseThrow(new EntityNotFoundException());
         expertiseProfile.setId(profileDB.getId());
         return expertiseRepository.saveAndFlush(expertiseProfile);
     }
