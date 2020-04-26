@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class UserDTO {
 
-    @Pattern(regexp = "\\s*",message = "username requires no whitespaces")
+    @Pattern(regexp = "^[a-zA-Z]*$",message = "username requires no whitespaces, only character")
     private String username;
 
 
