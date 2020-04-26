@@ -9,6 +9,9 @@ import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Repositories.PostRepository;
 import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +66,13 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<Post> findAllByUser(String userName) {
         return postRepository.findAllByUserUsername(Sort.by(Sort.Direction.DESC, "date"), userName);
+    }
+
+    @Override
+    public Slice<Post> findSliceWithPosts(int startIndex, int pageSize, String sortParam, String username) {
+        Pageable page=PageRequest.of(startIndex, pageSize,Sort.by(sortParam).descending());
+        Slice<Post> slicedResult = postRepository.findAllByUserUsername(page, username);
+        return slicedResult;
     }
 
     @Override

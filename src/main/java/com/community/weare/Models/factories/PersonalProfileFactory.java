@@ -23,17 +23,11 @@ public class PersonalProfileFactory {
         this.modelMapper = modelMapper;
     }
 
-    public LocalDate createBirthYear(LocalDate birthYear) {
-        return null;
-    }
 
 
-    public Location createLocation(String cityName) {
+
+    public Location createLocation(City city) {
         Location location=new Location();
-        City city=new City();
-        city.setCity(cityName);
-        //TODO check if exist if not create
-        cityRepository.saveAndFlush(city);
         location.setCity(city);
         locationRepository.saveAndFlush(location);
         return location;
@@ -42,7 +36,7 @@ public class PersonalProfileFactory {
     public PersonalProfile covertDTOtoPersonalProfile(PersonalProfileDTO personalProfileDTO){
         PersonalProfile personalProfile=modelMapper.map(personalProfileDTO,PersonalProfile.class);
         personalProfile.setBirthYear(personalProfileDTO.getBirthday());
-        Location location= createLocation(personalProfileDTO.getCity());
+        Location location= createLocation(new City());
         Sex sex=Sex.valueOf(personalProfileDTO.getSex().toUpperCase());
         personalProfile.setSex(sex);
         personalProfile.setLocation(location);

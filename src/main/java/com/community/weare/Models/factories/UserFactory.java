@@ -65,7 +65,7 @@ public class UserFactory {
         userModel.setGender(personalProfile.getSex());
 
         if (personalProfile.getLocation() != null) {
-            userModel.setCity(personalProfile.getLocation().getCity().getCity());
+            userModel.setCity(personalProfile.getLocation().getCity());
         }
         if (expertiseProfile.getCategory() != null) {
             userModel.setExpertise(expertiseProfile.getCategory().getName());
@@ -81,35 +81,6 @@ public class UserFactory {
         return userModel;
     }
 
-//    @Transactional
-//    public User convertModelToUser(UserModel userModel) {
-//        User user = userRepository.getOne(userModel.getId());
-//        user.setEmail(userModel.getEmail());
-//        user.getPersonalProfile().setBirthYear(userModel.getBirthYear());
-//        Location location = personalProfileFactory.createLocation(userModel.getCity());
-//        user.getPersonalProfile().setLocation(location);
-//        user.getPersonalProfile().setSex(userModel.getGender());
-//        user.getPersonalProfile().setPersonalReview(userModel.getPersonalReview());
-//        user.getPersonalProfile().setFirstName(userModel.getFirstName());
-//        user.getPersonalProfile().setLastName(userModel.getLastNAme());
-//
-//
-//        return user;
-//
-//    }
-
-//    public UserModel mergeUserModels(UserModel model, UserModel userModel) {
-//        model.setEmail(getNotNull(model.getEmail(), userModel.getEmail()));
-//        model.setGender(getNotNull(model.getGender(), userModel.getGender()));
-//        model.setFirstName(getNotNull(model.getFirstName(), userModel.getFirstName()));
-//        model.setLastNAme(getNotNull(model.getLastNAme(), userModel.getLastNAme()));
-//        model.setBirthYear(getNotNull(model.getBirthYear(), userModel.getBirthYear()));
-//        model.setCity(getNotNull(model.getCity(), userModel.getCity()));
-//        model.setExpertise(getNotNull(model.getCity(), userModel.getCity()));
-//        model.setSkills(getNotNull(model.getSkills(), userModel.getSkills()));
-//        return model;
-//
-//    }
 
     @Transactional
     public UserDtoRequest convertUserToRequestDto(User user) {
@@ -125,22 +96,23 @@ public class UserFactory {
         User user = userRepository.getOne(userToCheck.getUserId());
         user.setEmail(getNotNull(userModel.getEmail(), userToCheck.getEmail()));
         user.getPersonalProfile().setBirthYear(getNotNull(userModel.getBirthYear(), userToCheck.getPersonalProfile().getBirthYear()));
-        Location location = personalProfileFactory.
-                createLocation(getNotNull(userModel.getCity(),
-                        userToCheck.getPersonalProfile().getLocation().getCity().getCity()));
 
-        user.getPersonalProfile().setLocation(location);
+        if (user.getPersonalProfile().getLocation() == null) {
+            Location location = personalProfileFactory.
+                    createLocation(userModel.getCity());
+            user.getPersonalProfile().setLocation(location);
+            user.getPersonalProfile().getLocation().setCity(userModel.getCity());
+        } else {
+            user.getPersonalProfile().getLocation().setCity(userModel.getCity());
+        }
 
         user.getPersonalProfile().setSex(getNotNull(userModel.getGender(), userToCheck.getPersonalProfile().getSex()));
-
         user.getPersonalProfile().setPersonalReview(getNotNull(userModel.getPersonalReview()
                 , userToCheck.getPersonalProfile().getPersonalReview()));
-
         user.getPersonalProfile().setFirstName(getNotNull(userModel.getFirstName(),
                 userToCheck.getPersonalProfile().getFirstName()));
-
         user.getPersonalProfile().setLastName
-                (getNotNull(userModel.getLastNAme(),userToCheck.getPersonalProfile().getLastName()));
+                (getNotNull(userModel.getLastNAme(), userToCheck.getPersonalProfile().getLastName()));
         return user;
     }
 }
