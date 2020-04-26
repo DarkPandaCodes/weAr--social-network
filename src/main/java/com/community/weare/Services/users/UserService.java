@@ -43,7 +43,7 @@ public interface UserService extends UserDetailsService {
 
     boolean isAdmin(Principal principal);
 
-    public List<User> getPublicUsersByCriteria( String name,String expertise);
+    List<User> getPublicUsersByCriteria( String name,String expertise);
 
     List<User> findByAuthorities(String role);
 
