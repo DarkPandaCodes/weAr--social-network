@@ -100,10 +100,20 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<Post> findPostsByAuthority(Sort sort, Principal principal) {
+        if (principal == null) {
+            return filterPostsByPublicity(findPostsByAlgorithm(sort, principal), true);
+        }
+        return findPostsPersonalFeed(sort, principal);
+    }
+
+    @Override
     public List<Post> filterPostsByPublicity(List<Post> posts, boolean isPublic) {
-        return posts.stream()
+        List<Post> list = posts.stream()
                 .filter(p -> p.isPublic() == isPublic)
                 .collect(Collectors.toList());
+
+        return list;
     }
 
     @Override
@@ -282,7 +292,7 @@ public class PostServiceImpl implements PostService {
             numberOfPostsForMonth = 0;
 
             currentPost.setRank(timeEffect + likesEffect + commentsEffect + friendsEffect + multiPostsEffect);
-            save(currentPost, principal);
+            postRepository.save(currentPost);
         }
         return postRepository.findAll(Sort.by(Sort.Direction.ASC, "rank"));
     }

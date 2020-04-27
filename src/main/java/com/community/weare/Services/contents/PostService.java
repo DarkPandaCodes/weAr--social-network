@@ -24,6 +24,8 @@ public interface PostService {
 
     List<Post> findPostsPersonalFeed(Sort sort, Principal principal);
 
+    List<Post> findPostsByAuthority(Sort sort, Principal principal);
+
     List<Post> filterPostsByPublicity(List<Post> posts, boolean isPublic);
 
     List<Post> filterPostsByCategory(List<Post> posts, String categoryName);

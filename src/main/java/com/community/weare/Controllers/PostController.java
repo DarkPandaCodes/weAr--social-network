@@ -59,15 +59,14 @@ public class PostController {
 
     @GetMapping("")
     public String showFeed(Model model, Sort sort, Principal principal) {
-        if (principal == null) {
-            return "redirect:/";
-        }
-        //TODO Auth
-        model.addAttribute("posts", postService.findPostsPersonalFeed(sort, principal));
         model.addAttribute("postDTO2", new PostDTO2());
         model.addAttribute("postDTO", new PostDTO());
         model.addAttribute("category", new Category("Marketing"));
-        model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+        model.addAttribute("posts", postService.findPostsByAuthority(sort, principal));
+        if (principal != null) {
+            model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+        }
+        //TODO Page Public posts? - seen from unAuthorized and easy for filter for the users?
         return "allPosts";
     }
 
@@ -119,10 +118,10 @@ public class PostController {
                 //TODO replace postDTO with postDTO2 - make new field String isPublic (All, Public, Private)
                 boolean isPublic = Boolean.parseBoolean(postDTO.getContent());
                 List<Post> filteredPosts = postService.filterPostsByPublicity
-                        (postService.findPostsPersonalFeed(sort, principal), isPublic);
+                        (postService.findPostsByAuthority(sort, principal), isPublic);
                 model.addAttribute("posts", filteredPosts);
             } else {
-                model.addAttribute("posts", postService.findPostsPersonalFeed(sort, principal));
+                model.addAttribute("posts", postService.findPostsByAuthority(sort, principal));
             }
         }
 
@@ -130,10 +129,10 @@ public class PostController {
         if (category.getName() != null) {
             if (!category.getName().equals("All")) {
                 List<Post> filteredPosts = postService.filterPostsByCategory
-                        (postService.findPostsPersonalFeed(sort, principal), category.getName());
+                        (postService.findPostsByAuthority(sort, principal), category.getName());
                 model.addAttribute("posts", filteredPosts);
             } else {
-                model.addAttribute("posts", postService.findPostsPersonalFeed(sort, principal));
+                model.addAttribute("posts", postService.findPostsByAuthority(sort, principal));
             }
         }
         if (principal != null) {
@@ -167,7 +166,7 @@ public class PostController {
                                            @PathVariable(name = "id") int postId, Principal principal, Model model) {
         if (commentDTO.getContent() != null) {
             Comment newComment = commentFactory.createCommnetFromInput(commentDTO, postId, principal);
-            commentService.save(newComment,principal);
+            commentService.save(newComment, principal);
             model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
             return "redirect:/posts/" + postId + "#leaveComment";
         }

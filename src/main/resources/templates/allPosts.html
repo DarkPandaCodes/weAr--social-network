@@ -57,7 +57,7 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
                 <li class="nav-item"><a href="browsejobs.html" class="nav-link">Browse Jobs</a></li>
-                <li class="nav-item active"><a th:href="@{/posts}" class="nav-link">Posts</a></li>
+                <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Posts</a></li>
                 <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
                 <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
                 <li class="nav-item cta mr-md-1"><a th:href="@{/posts/newPost}" class="nav-link"
@@ -157,9 +157,9 @@
             <!--            *******************FILTER*****************************-->
             <div class="col-lg-4 sidebar">
 
-                <div class="sidebar-box bg-white p-4 ftco-animate">
+                <div class="sidebar-box bg-white p-4 ftco-animate" sec:authorize="isAuthenticated()">
                     <h3 class="heading-sidebar">Browse post's visibility</h3>
-                    <form action="#" class="browse-form" th:object="${postDTO}" method="post">
+                    <form action="#" class="browse-form" th:object="${postDTO}" sec:authorize="isAuthenticated()" method="post">
                         <div class="form-group">
                             <br/>
                             <label for="StringListId"></label>
