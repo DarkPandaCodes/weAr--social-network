@@ -77,7 +77,6 @@ public class PostController {
 
     @PostMapping("")
     public String likeDislikeFilterPost(@ModelAttribute("postDTO2") PostDTO2 postDTO2,
-                                        @ModelAttribute("postDTO") PostDTO postDTO,
                                         @ModelAttribute("category") Category category,
                                         @ModelAttribute("allCategories") List<Category> allCategories,
                                         @ModelAttribute("UserPrincipal") User userPrincipal,
@@ -113,12 +112,12 @@ public class PostController {
         }
 
         //filter isPublic
-        if (postDTO.getContent() != null) {
-            if (!postDTO.getContent().equals("all")) {
-                //TODO replace postDTO with postDTO2 - make new field String isPublic (All, Public, Private)
-                boolean isPublic = Boolean.parseBoolean(postDTO.getContent());
-                List<Post> filteredPosts = postService.filterPostsByPublicity
-                        (postService.findPostsByAuthority(sort, principal), isPublic);
+        if (postDTO2.getPublicity() != null) {
+            if (!postDTO2.getPublicity().equals("all")) {
+                boolean isPublic = Boolean.parseBoolean(postDTO2.getPublicity());
+                List<Post> filteredPosts =
+                        postService.filterPostsByPublicity
+                                (postService.findPostsByAlgorithm(sort, principal), isPublic);
                 model.addAttribute("posts", filteredPosts);
             } else {
                 model.addAttribute("posts", postService.findPostsByAuthority(sort, principal));
@@ -128,8 +127,10 @@ public class PostController {
         //filter Category
         if (category.getName() != null) {
             if (!category.getName().equals("All")) {
-                List<Post> filteredPosts = postService.filterPostsByCategory
-                        (postService.findPostsByAuthority(sort, principal), category.getName());
+                List<Post> filteredPosts =
+                        postService.filterPostsByPublicity
+                                (postService.filterPostsByCategory
+                                        (postService.findPostsByAlgorithm(sort, principal), category.getName()), true);
                 model.addAttribute("posts", filteredPosts);
             } else {
                 model.addAttribute("posts", postService.findPostsByAuthority(sort, principal));
@@ -173,8 +174,10 @@ public class PostController {
 
         //All posts of user
         if (user.getId() != 0) {
-            List<Post> postsOfUser = postService.findAllByUser
-                    (userService.getUserById(user.getId()).getUsername());
+            List<Post> postsOfUser =
+                    postService.filterPostsByPublicity
+                            (postService.findAllByUser
+                                    (userService.getUserById(user.getId()).getUsername()), true);
             model.addAttribute("posts", postsOfUser);
             if (principal != null) {
                 model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));

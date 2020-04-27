@@ -158,25 +158,25 @@
             <div class="col-lg-4 sidebar">
 
                 <div class="sidebar-box bg-white p-4 ftco-animate" sec:authorize="isAuthenticated()">
-                    <h3 class="heading-sidebar">Browse post's visibility</h3>
-                    <form action="#" class="browse-form" th:object="${postDTO}" sec:authorize="isAuthenticated()" method="post">
+                    <h3 class="heading-sidebar">Browse public posts</h3>
+                    <form action="#" class="browse-form" th:object="${postDTO2}" sec:authorize="isAuthenticated()" method="post">
                         <div class="form-group">
                             <br/>
                             <label for="StringListId"></label>
-                            <select id="StringListId" th:field="*{content}">
-                                <option value="all" selected="selected">All posts</option>
-                                <option value="true">Public posts</option>
-                                <option value="false">Private posts</option>
+                            <select id="StringListId" th:field="*{publicity}">
+<!--                                <option value="all" selected="selected">All posts</option>-->
+                                <option value="true" selected="selected">All public posts</option>
+<!--                                <option value="false">Private posts</option>-->
                             </select>
                         </div>
-                        <input type="submit" value="Filter" class="btn py-3 px-4 btn-primary">
+                        <input type="submit" value="Browse" class="btn py-3 px-4 btn-primary">
                     </form>
                 </div>
 
 
                 <!--            *******************FILTER*****************************-->
                 <div class="sidebar-box bg-white p-4 ftco-animate">
-                    <h3 class="heading-sidebar">Browse post's category</h3>
+                    <h3 class="heading-sidebar">Explore category</h3>
                     <form action="#" class="browse-form" th:object="${category}" method="post">
                         <div class="form-group">
                             <br/>
@@ -188,7 +188,7 @@
                                 </option>
                             </select>
                         </div>
-                        <input type="submit" value="Filter" class="btn py-3 px-4 btn-primary">
+                        <input type="submit" value="Browse" class="btn py-3 px-4 btn-primary">
                     </form>
                 </div>
 

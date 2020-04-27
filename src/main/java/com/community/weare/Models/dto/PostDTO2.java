@@ -3,6 +3,7 @@ package com.community.weare.Models.dto;
 public class PostDTO2 {
     private int postId;
     private boolean isDeletedConfirmed;
+    private String publicity;
 
     public PostDTO2() {
     }
@@ -21,5 +22,13 @@ public class PostDTO2 {
 
     public void setDeletedConfirmed(boolean deletedConfirmed) {
         isDeletedConfirmed = deletedConfirmed;
+    }
+
+    public String getPublicity() {
+        return publicity;
+    }
+
+    public void setPublicity(String publicity) {
+        this.publicity = publicity;
     }
 }
