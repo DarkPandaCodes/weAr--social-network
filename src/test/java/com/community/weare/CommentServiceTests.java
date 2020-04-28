@@ -165,9 +165,10 @@ public class CommentServiceTests {
         Post post = FactoryPostComment.createPost();
         comment.setPost(post);
         post.getComments().add(comment);
+        Principal principal = () -> "tedi";
 
         //act
-        mockCommentService.save(comment);
+        mockCommentService.save(comment,principal);
         //assert
         Mockito.verify(commentRepository, Mockito.times(1)).save(comment);
         Mockito.verify(postRepository, Mockito.times(1)).save(post);
