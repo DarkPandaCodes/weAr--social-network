@@ -6,6 +6,7 @@ import com.community.weare.Models.dto.UserDtoRequest;
 import com.community.weare.Services.connections.RequestService;
 import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
+import java.util.*;
 
 import static com.community.weare.utils.HttpMessages.ERROR_NOT_FOUND_MESSAGE_FORMAT;
 import static com.community.weare.utils.HttpMessages.NOT_AUTHORISED;
@@ -38,6 +40,7 @@ public class ConnectionController {
 
         try {
             User userReceiver = userService.getUserById(userToConnect.getId());
+            model.addAttribute("user", userReceiver);
             User userSender = userService.getUserByUserName(principal.getName());
 
             if (!userReceiver.isFriend(userSender.getUsername()) &&
@@ -57,14 +60,31 @@ public class ConnectionController {
     }
 
     @GetMapping("/{id}/request")
-    public String getUserRequests(@PathVariable(name = "id") int id, Model model, Principal principal) {
+    public String getUserRequests(@PathVariable(name = "id") int id, Model model, Principal principal,
+                                  @ModelAttribute(name = "page") Page page) {
 
         try {
             User user = userService.getUserById(id);
-            model.addAttribute("requests", requestService.getAllRequestsForUser(user, principal.getName()));
+           List<Request> requestList = new ArrayList<>();
+            Slice<Request> requestSlice = requestService.findSliceWithRequest
+                    (page.getIndex(), page.getSize(), "timeStamp",principal.getName(), user);
+
+            if (requestSlice.hasContent()) {
+                requestList = requestSlice.getContent();
+                page.setSize(requestSlice.nextOrLastPageable().getPageSize());
+                page.setIndex(requestSlice.nextOrLastPageable().getPageNumber());
+                model.addAttribute("requests", requestList);
+            }
+            model.addAttribute("user", user);
             model.addAttribute("requestN", new Request());
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, "Request"));
+            model.addAttribute("hasNext", requestSlice.hasNext());
+
+            if (requestList.isEmpty()) {
+                model.addAttribute("error", "There are no requests");
+            }
+
+        } catch (InvalidOperationException e) {
+            model.addAttribute("error", NOT_AUTHORISED);
         }
         return "request-list";
     }
@@ -75,9 +95,10 @@ public class ConnectionController {
         Request approvedRequest = new Request();
         try {
             if (request.isApproved()) {
-                approvedRequest = requestService.approveRequest(request.getId(),request.getReceiver(),principal.getName());
+                approvedRequest = requestService.approveRequest(request.getId(), request.getReceiver(), principal.getName());
                 userService.addToFriendList(approvedRequest);
-                model.addAttribute("requests", requestService.getAllRequestsForUser(approvedRequest.getReceiver(),principal.getName()));
+                model.addAttribute("user", request.getReceiver());
+                model.addAttribute("requests", requestService.getAllRequestsForUser(approvedRequest.getReceiver(), principal.getName()));
             }
         } catch (InvalidOperationException e) {
             model.addAttribute("error", NOT_AUTHORISED);

@@ -5,7 +5,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @Entity
 @Table(name = "requests")
@@ -75,11 +78,20 @@ public class Request {
         this.seen = seen;
     }
 
-    public LocalDateTime getTimeStamp() {
-        return timeStamp;
+    public String getTimeStamp() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return formatter.format(timeStamp);
     }
 
     public void setTimeStamp(LocalDateTime timeStamp) {
         this.timeStamp = timeStamp;
+    }
+
+    @Override
+    public String toString() {
+        return "Request{" +
+                "id=" + id +
+                ", timeStamp=" + timeStamp +
+                '}';
     }
 }

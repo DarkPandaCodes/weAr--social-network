@@ -27,7 +27,6 @@ public class SkillServiceImpl implements SkillService {
 
     @Override
     public List<Skill> findAll(Sort sort) {
-
         return skillRepository.findAll(Sort.by(Sort.Direction.ASC, "skill"));
     }
 
@@ -78,12 +77,12 @@ public class SkillServiceImpl implements SkillService {
     @Override
     public Skill createIfNotExist(Skill skill) {
         boolean exists = skillRepository.findSkillBySkill(skill.getSkill()).isPresent();
-        Skill skillDB=new Skill();
+        Skill skillDB = new Skill();
 
         if (exists == true) {
-            skillDB=skillRepository.findSkillBySkill(skill.getSkill()).get();
+            skillDB = skillRepository.findSkillBySkill(skill.getSkill()).get();
         } else {
-            skillDB=skillRepository.saveAndFlush(skill);
+            skillDB = skillRepository.saveAndFlush(skill);
         }
         return skillDB;
 

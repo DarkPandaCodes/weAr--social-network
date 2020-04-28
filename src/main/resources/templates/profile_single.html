@@ -101,24 +101,6 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-lg-12 p-5">
-        <div class="profile-work">
-
-            <a href="">Website Link</a><br/>
-            <a href="">Bootsnipp Profile</a><br/>
-            <a href="">Bootply Profile</a>
-            <!--                        <h6> Available </h6>-->
-            <!--                        <h5 th:text="*{expertiseProfile.calculateAvailability()}"> 1 h </h5>-->
-            <!--                        <div class="col-8">-->
-            <!--                            <h6 th:type="datetime-local" th:text="*{expertiseProfile.startTime}"></h6>-->
-            <!--                        </div>-->
-            <!--                        <div class="col-8">-->
-            <!--                            <h6 th:type="datetime-local" th:text="*{expertiseProfile.endTime}"></h6>-->
-            <!--                        </div>-->
-        </div>
-    </div>
-</div>
 <section th:if="${error==null and user!=null}">
     <div class=" container d-flex bd-highlight team justify-content-center p-5 bg-white">
         <div class="row">
@@ -135,9 +117,18 @@
                     <input type="submit" th:value="${friends} ? 'disconnect': 'connect'"/>
                 </form>
                 <p th:if="${isOwner}">
-                    <a th:if="${isOwner}" th:href="@{'/auth/connection/'+${user.getUserId()}+'/request'}">
-                        <button class="btn btn-primary">View my Requests</button>
-                    </a>
+                <form action="#" th:action="@{'/auth/connection/'+${user.getUserId()}+'/request'}" th:object="${page}"
+                      method="get"
+                      class="search-job">
+
+                    <label>
+
+                        <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}" th:field="*{index}" class="mb-2"/>
+                        <input type="hidden" data-th-value="4" th:value="4" th:field="*{size}" class="mb-2"/>
+
+                    </label>
+                    <input  class="btn btn-primary" type="submit" value="View my Requests"/>
+                </form>
                 </p>
                 <form th:if="${isAdmin}" sec:authorize="isAuthenticated()" action="#" th:action="@{/admin/status}"
                       th:object="${userDisable}" method="post">
@@ -151,6 +142,7 @@
                 </form>
             </div>
             <div class="col-8 ">
+                <div class="team p-4 bg-white">
                 <form method="post" th:object="${user}">
                     <div class="row">
                         <div class="col-md-4">
@@ -165,13 +157,10 @@
                             </div>
                         </div>
                         <div class="col-lg-12">
-                            <div class="profile-head">
-                                <h5 th:text="*{personalProfile.firstName+' '+personalProfile.lastName}">
-                                    Kshiti Ghelani
-                                </h5>
-                                <h6 th:text=" ${user.getExpertiseProfile().getCategory().name}">
-                                </h6>
-                                <p class="proile-rating">RANKINGS : <span>8/10</span></p>
+                            <div class="text pl-md-4">
+                                <h1 class="mr-3 text-black" th:text="*{personalProfile.firstName+' '+personalProfile.lastName}" th:type="text"></h1>
+                                <p> <span th:text=" ${user.getExpertiseProfile().getCategory().name}" >Professional</span></p>
+                                <p th:if="${user.getPersonalProfile().memberSince!=null}" class="proile-rating">Member since : <span th:text=" ${user.getPersonalProfile().getMemberSince()}">8/10</span></p>
 
                                 <ul class="nav nav-tabs" id="myTabContent" role="tablist">
                                     <li class="nav-item">
@@ -180,8 +169,8 @@
                                     </li>
 
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="list" href="#profile" role="tab"
-                                           aria-controls="profile" aria-selected="false">Professional Information</a>
+                                        <a class="nav-link" data-toggle="list" href="#posts" role="tab"
+                                           aria-controls="profile" aria-selected="false">Latest activity</a>
                                     </li>
                                 </ul>
                                 <script>    $('#myTabContent a').on('click', function (e) {
@@ -242,18 +231,13 @@
                                         </div>
                                     </div>
                                     <div class="row">
+
                                         <div class="col-md-6">
-                                            <label>Experience</label>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <p>Expert</p>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label>I can do </label>
+                                            <h2>I can do </h2>
                                         </div>
                                         <div class="col-md-6" th:if="*{!expertiseProfile.skills.isEmpty()}"
                                              th:each="skill :*{expertiseProfile.skills}">
-                                            <p th:text="${skill.skill}">type of service</p>
+                                            <h6 th:text="${skill.skill}">type of service</h6>
                                         </div>
                                         <div class="col-md-6">
                                             <label>Availability</label>
@@ -270,6 +254,7 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
                     </div>
                 </form>
             </div>

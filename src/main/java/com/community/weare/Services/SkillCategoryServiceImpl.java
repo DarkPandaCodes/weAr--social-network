@@ -18,13 +18,10 @@ public class SkillCategoryServiceImpl implements SkillCategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-
-
     @Override
     public List<Category> getAll() {
         return categoryRepository.findAll();
     }
-
 
     @Transactional
     @Override

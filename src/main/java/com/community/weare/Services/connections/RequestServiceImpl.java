@@ -6,6 +6,10 @@ import com.community.weare.Models.User;
 import com.community.weare.Repositories.RequestRepository;
 import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,6 +73,13 @@ public class RequestServiceImpl implements RequestService {
     public Collection<Request> getAllRequestsForUser(User receiver,String principal) {
       userService.ifNotProfileOwnerThrow(principal, receiver);
         return requestRepository.findRequestsByReceiverIsAndApprovedIsFalse(receiver);
+    }
+
+    @Override
+    public Slice<Request> findSliceWithRequest(int index, int size, String param, String principal,User receiver) {
+        userService.ifNotProfileOwnerThrow(principal, receiver);
+        Pageable page = PageRequest.of(index, size, Sort.by(param).descending());
+        return requestRepository.findRequestsByReceiverIsAndApprovedIsFalse(page,receiver);
     }
 
     @Override

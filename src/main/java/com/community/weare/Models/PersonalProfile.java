@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "personal_profile")
@@ -111,8 +112,12 @@ public class PersonalProfile {
         this.picturePrivacy = picturePrivacy;
     }
 
-    public LocalDateTime getMemberSince() {
-        return memberSince;
+    public String getMemberSince() {
+        if (memberSince != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            return formatter.format(memberSince);
+        }
+        return "no information";
     }
 
     public void setMemberSince(LocalDateTime memberSince) {
