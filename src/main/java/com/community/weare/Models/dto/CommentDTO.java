@@ -2,6 +2,7 @@ package com.community.weare.Models.dto;
 
 public class CommentDTO {
 
+    private int commentId;
     private int postId;
     private int userId;
     private String content;
@@ -46,5 +47,13 @@ public class CommentDTO {
 
     public void setDeletedConfirmed(boolean deletedConfirmed) {
         isDeletedConfirmed = deletedConfirmed;
+    }
+
+    public int getCommentId() {
+        return commentId;
+    }
+
+    public void setCommentId(int commentId) {
+        this.commentId = commentId;
     }
 }

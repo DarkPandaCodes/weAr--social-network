@@ -5,10 +5,12 @@ import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
+import com.community.weare.Models.User;
 import com.community.weare.Models.dto.CommentDTO;
 import com.community.weare.Models.factories.CommentFactory;
 import com.community.weare.Services.contents.CommentService;
 import com.community.weare.Services.contents.PostService;
+import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -25,13 +27,16 @@ public class RESTCommentController {
     private CommentService commentService;
     private PostService postService;
     private CommentFactory commentFactory;
+    private UserService userService;
 
     @Autowired
     public RESTCommentController(CommentService commentService, PostService postService,
-                                 CommentFactory commentFactory) {
+                                 CommentFactory commentFactory,
+                                 UserService userService) {
         this.commentService = commentService;
         this.postService = postService;
         this.commentFactory = commentFactory;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -64,19 +69,35 @@ public class RESTCommentController {
         return commentService.save(newComment, principal);
     }
 
-    @PutMapping("/auth/likesUp")
-    public void likeComment(@RequestParam int commentId, Principal principal) {
-        //TODO Fix it when the method userService.checkIfUserExist is fixed
+    @PostMapping("/auth/likesUp")
+    public Comment likeComment(@RequestParam int commentId, Principal principal) {
+        User user;
         try {
-            commentService.likeComment(commentId, principal);
-        } catch (DuplicateEntityException | EntityNotFoundException | InvalidOperationException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            user = userService.getUserByUserName(principal.getName());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
+        Comment commentToLike = commentService.getOne(commentId);
+        boolean isCommentLiked = commentToLike.isLiked(user.getUsername());
+
+        if (isCommentLiked) {
+            try {
+                commentService.dislikeComment(commentId, principal);
+            } catch (DuplicateEntityException | EntityNotFoundException | InvalidOperationException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            }
+        } else {
+            try {
+                commentService.likeComment(commentId, principal);
+            } catch (DuplicateEntityException | EntityNotFoundException | InvalidOperationException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            }
+        }
+        return commentToLike;
     }
 
-    @PutMapping("/auth/dislikesDown")
+    @PostMapping("/auth/dislikesUp")
     public void dislikeComment(@RequestParam int commentId, Principal principal) {
-        //TODO Fix it when the method userService.checkIfUserExist is fixed
         try {
             commentService.dislikeComment(commentId, principal);
         } catch (DuplicateEntityException | EntityNotFoundException | InvalidOperationException e) {

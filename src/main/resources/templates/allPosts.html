@@ -130,6 +130,8 @@
                                     </div>
                                     <!--                                    <a href="#" id="like-btn"> <i class="fas fa-heart"></i> </a>-->
                                     <input class="fa-heart" type="submit" value="Like/Dislike"/>
+
+<!--                                    <i onclick="myFunction(this)" class="fa fa-thumbs-up"></i>-->
                                 </form>
                             </div>
                         </div>
@@ -334,33 +336,6 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
 <script src="/js/google-map.js"></script>
 <script src="/js/main.js"></script>
-<!--${post.getPostId()}-->
-<!--th:class="like-form + ${post.getPostId()}"-->
-
-<!--<script>-->
-<!--    $(data).parent().submit(function (event) {-->
-<!--        console.log("this is a like log:)") //check-->
-<!--        event.preventDefault()-->
-
-<!--        var id = $(this).val();-->
-<!--        var idArray = id.split('_');-->
-<!--        var postId= idArray[1];-->
-<!--        var currentPost = $(".like-form_"+postId).html();-->
-
-<!--        var data = $(".like-form_"+postId).html(currentPost+1);-->
-
-<!--        // var data = $(this).serialize()-->
-<!--        console.log(data) //check-->
-<!--        $.ajax({-->
-<!--            type: "POST",-->
-<!--            url: "/api/post/like",-->
-<!--            data: data,-->
-<!--            success: function (d) {-->
-<!--                console.log("success")-->
-<!--            }-->
-<!--        })-->
-<!--    })-->
-<!--</script>-->
 
 <script>
     $(".like-form").submit(function (event) {
@@ -386,23 +361,12 @@
     })
 </script>
 
+<script>
+    function myFunction(x) {
+        x.classList.toggle("fa-thumbs-down");
+    }
+</script>
 
-<!--<script>-->
-<!--    $(".like-form").parent().submit(function (event) {-->
-<!--        console.log("this is a like log:)") //check-->
-<!--        event.preventDefault()-->
-<!--        var data = $(this).serialize()-->
-<!--        console.log(data) //check-->
-<!--        $.ajax({-->
-<!--            type: "POST",-->
-<!--            url: "/api/post/like",-->
-<!--            data: data,-->
-<!--            success: function (d) {-->
-<!--                console.log("success")-->
-<!--            }-->
-<!--        })-->
-<!--    })-->
-<!--</script>-->
 
 </body>
 </html>

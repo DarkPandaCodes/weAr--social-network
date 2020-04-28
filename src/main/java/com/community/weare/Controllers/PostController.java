@@ -149,6 +149,7 @@ public class PostController {
         model.addAttribute("post", post01);
         model.addAttribute("comment", new CommentDTO());
         model.addAttribute("User", new UserDtoRequest());
+        model.addAttribute("commentDTOlike", new CommentDTO());
         //TODO refactor this into service, and not in the HTML?
         if (principal != null) {
             model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
