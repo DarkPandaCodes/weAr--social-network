@@ -27,13 +27,13 @@ public class CommentController {
         this.userService = userService;
     }
 
-    @GetMapping("/edit/{id}")
+    @GetMapping("/editor/{id}")
     public String editCommentData(Model model, Principal principal, @PathVariable(name = "id") int commentId) {
         model.addAttribute("commentDTO", new CommentDTO());
         return "commentEdit";
     }
 
-    @PostMapping("/edit/{id}")
+    @PostMapping("/editor/{id}")
     public String editComment(Model model, Principal principal, @PathVariable(name = "id") int commentId,
                               @ModelAttribute("commentDTO") CommentDTO commentDTO) {
         Comment commentToEdit = commentService.getOne(commentId);
@@ -50,7 +50,7 @@ public class CommentController {
         return "redirect:/posts/" + commentToEdit.getPost().getPostId() + "#leaveComment";
     }
 
-    @GetMapping("/delete/{id}")
+    @GetMapping("/manager/{id}")
     public String deleteCommentData(Model model, Principal principal, @PathVariable(name = "id") int commentId) {
         Comment commentToDelete = commentService.getOne(commentId);
         model.addAttribute("comment", commentToDelete);
@@ -58,7 +58,7 @@ public class CommentController {
         return "commentDelete";
     }
 
-    @PostMapping("/delete/{id}")
+    @PostMapping("/manager/{id}")
     public String deleteComment(Model model, Principal principal, @PathVariable(name = "id") int commentId,
                                 @ModelAttribute("commentDTO") CommentDTO commentDTO,
                                 @ModelAttribute("comment") Comment comment) {

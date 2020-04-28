@@ -45,7 +45,7 @@
                 <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Posts</a></li>
                 <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
                 <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-                <li class="nav-item cta mr-md-1"><a th:href="@{/posts/newPost}" class="nav-link"
+                <li class="nav-item cta mr-md-1"><a th:href="@{/posts/auth/newPost}" class="nav-link"
                                                     sec:authorize="isAuthenticated()">New post</a></li>
                 <li class="nav-item cta cta-colored"><a href="job-post.html" class="nav-link">Want a Job</a></li>
 
@@ -80,7 +80,7 @@
                         <div class="comment-form-wrap pt-5" sec:authorize="isAuthenticated()">
 
                             <h3 class="mb-5">Create new post</h3>
-                            <form action="#" class="p-5 bg-light" th:action="@{/posts/newPost}" th:object="${post}"
+                            <form action="#" class="p-5 bg-light" th:action="@{/posts/auth/newPost}" th:object="${post}"
                                   method="post"
                                   enctype="multipart/form-data">
                                 <div class="form-group">

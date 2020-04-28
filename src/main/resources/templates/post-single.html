@@ -48,7 +48,7 @@
                 <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Posts</a></li>
                 <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
                 <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-                <li class="nav-item cta mr-md-1"><a th:href="@{/posts/newPost}" class="nav-link"
+                <li class="nav-item cta mr-md-1"><a th:href="@{/posts/auth/newPost}" class="nav-link"
                                                     sec:authorize="isAuthenticated()">New post</a></li>
                 <li class="nav-item cta cta-colored"><a href="job-post.html" class="nav-link">Want a Job</a></li>
 
@@ -110,7 +110,7 @@
                     <div class="bio mr-5">
                         <!--                        <img src="/images/person_1.jpg" alt="Image placeholder" class="img-fluid mb-4">-->
                         <div class="img-fluid mb-4" th:if="${post.getUser().getPersonalProfile().getPicture()==null}">
-                            <img src="/images/person_1.jpg" alt="Image" width="190">
+                            <img src="/images/blank-profile-picture.jpg" alt="Image" width="190">
                         </div>
                         <div class="img-fluid mb-4" th:if="${post.getUser().getPersonalProfile().getPicture()!=null}">
                             <img th:src="@{'/users/' + ${post.getUser().getUserId()} + '/userImage'}" alt="Image"
@@ -137,7 +137,7 @@
                                 <!--                                <img src="/images/person_1.jpg" alt="Image placeholder">-->
                                 <div class="vcard bio"
                                      th:if="${comment.getUser().getPersonalProfile().getPicture()==null}">
-                                    <img src="/images/person_1.jpg" alt="Image">
+                                    <img src="/images/blank-profile-picture.jpg" alt="Image">
                                 </div>
                                 <div class="vcard bio"
                                      th:if="${comment.user.getPersonalProfile().getPicture()!=null}">
@@ -155,12 +155,12 @@
                                     <!--                                    <a href="#" class="reply">Reply</a>-->
                                     <!--                                    <a href="#" class="reply">Like</a>-->
                                     <!--                                    <a href="#" class="ion-md-heart-dislike">Dislike</a><br>-->
-                                    <a th:href="@{'/comments/edit/' + ${comment.commentId}}"
+                                    <a th:href="@{'/comments/editor/' + ${comment.commentId}}"
                                        sec:authorize="isAuthenticated()"
                                        th:if="${(comment.canEdit(UserPrincipal.getUsername()) || isAdmin) == true}"
                                        class="reply">Edit comment</a><br>
 
-                                    <a th:href="@{'/comments/delete/' + ${comment.commentId}}"
+                                    <a th:href="@{'/comments/manager/' + ${comment.commentId}}"
                                        sec:authorize="isAuthenticated()"
                                        th:if="${(comment.canEdit(UserPrincipal.getUsername()) || isAdmin) == true}"
                                        class="reply">Delete comment</a>
@@ -210,100 +210,100 @@
                     </form>
                     <br>
                     <!--                ***********************************Edit post********************************-->
-                    <a th:href="@{'/posts/edit/' + ${post.postId}}" sec:authorize="isAuthenticated()"
+                    <a th:href="@{'/posts/auth/editor/' + ${post.postId}}" sec:authorize="isAuthenticated()"
                        th:if="${(post.canEdit(UserPrincipal.getUsername()) || isAdmin) == true}"
                        class="btn py-3 px-4 btn-primary">Edit post</a>
 
                     <br>
                     <br>
                     <!--                ***********************************Delete post********************************-->
-                    <a th:href="@{'/posts/delete/' + ${post.postId}}" sec:authorize="isAuthenticated()"
+                    <a th:href="@{'/posts/auth/manager/' + ${post.postId}}" sec:authorize="isAuthenticated()"
                        th:if="${(post.canEdit(UserPrincipal.getUsername()) || isAdmin) == true}"
                        class="btn py-3 px-4 btn-primary">Delete post</a>
                 </div>
                 <br>
                 <br>
 
-                <div class="sidebar-box">
-                    <form action="#" class="search-form">
-                        <div class="form-group">
-                            <span class="icon icon-search"></span>
-                            <input type="text" class="form-control" placeholder="Type a keyword and hit enter">
-                        </div>
-                    </form>
-                </div>
-                <div class="sidebar-box ftco-animate">
-                    <div class="categories">
-                        <h3 class="heading-3">Jobs</h3>
-                        <li><a href="#">Graphic Designer <span>(12)</span></a></li>
-                        <li><a href="#">Visual Assistant <span>(22)</span></a></li>
-                        <li><a href="#">Programing <span>(37)</span></a></li>
-                        <li><a href="#">Office Admin <span>(42)</span></a></li>
-                        <li><a href="#">Web Designer <span>(14)</span></a></li>
-                        <li><a href="#">Language <span>(140)</span></a></li>
-                    </div>
-                </div>
+<!--                <div class="sidebar-box">-->
+<!--                    <form action="#" class="search-form">-->
+<!--                        <div class="form-group">-->
+<!--                            <span class="icon icon-search"></span>-->
+<!--                            <input type="text" class="form-control" placeholder="Type a keyword and hit enter">-->
+<!--                        </div>-->
+<!--                    </form>-->
+<!--                </div>-->
+<!--                <div class="sidebar-box ftco-animate">-->
+<!--                    <div class="categories">-->
+<!--                        <h3 class="heading-3">Jobs</h3>-->
+<!--                        <li><a href="#">Graphic Designer <span>(12)</span></a></li>-->
+<!--                        <li><a href="#">Visual Assistant <span>(22)</span></a></li>-->
+<!--                        <li><a href="#">Programing <span>(37)</span></a></li>-->
+<!--                        <li><a href="#">Office Admin <span>(42)</span></a></li>-->
+<!--                        <li><a href="#">Web Designer <span>(14)</span></a></li>-->
+<!--                        <li><a href="#">Language <span>(140)</span></a></li>-->
+<!--                    </div>-->
+<!--                </div>-->
 
-                <div class="sidebar-box ftco-animate">
-                    <h3 class="heading-3">Recent Blog</h3>
-                    <div class="block-21 mb-4 d-flex">
-                        <a class="blog-img mr-4" style="background-image: url(images/image_1.jpg);"></a>
-                        <div class="text">
-                            <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the
-                                blind texts</a></h3>
-                            <div class="meta">
-                                <div><a href="#"><span class="icon-calendar"></span> July 12, 2018</a></div>
-                                <div><a href="#"><span class="icon-person"></span> Admin</a></div>
-                                <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="block-21 mb-4 d-flex">
-                        <a class="blog-img mr-4" style="background-image: url(images/image_2.jpg);"></a>
-                        <div class="text">
-                            <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the
-                                blind texts</a></h3>
-                            <div class="meta">
-                                <div><a href="#"><span class="icon-calendar"></span> July 12, 2018</a></div>
-                                <div><a href="#"><span class="icon-person"></span> Admin</a></div>
-                                <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="block-21 mb-4 d-flex">
-                        <a class="blog-img mr-4" style="background-image: url(images/image_3.jpg);"></a>
-                        <div class="text">
-                            <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the
-                                blind texts</a></h3>
-                            <div class="meta">
-                                <div><a href="#"><span class="icon-calendar"></span> July 12, 2018</a></div>
-                                <div><a href="#"><span class="icon-person"></span> Admin</a></div>
-                                <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<!--                <div class="sidebar-box ftco-animate">-->
+<!--                    <h3 class="heading-3">Recent Blog</h3>-->
+<!--                    <div class="block-21 mb-4 d-flex">-->
+<!--                        <a class="blog-img mr-4" style="background-image: url(images/image_1.jpg);"></a>-->
+<!--                        <div class="text">-->
+<!--                            <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the-->
+<!--                                blind texts</a></h3>-->
+<!--                            <div class="meta">-->
+<!--                                <div><a href="#"><span class="icon-calendar"></span> July 12, 2018</a></div>-->
+<!--                                <div><a href="#"><span class="icon-person"></span> Admin</a></div>-->
+<!--                                <div><a href="#"><span class="icon-chat"></span> 19</a></div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="block-21 mb-4 d-flex">-->
+<!--                        <a class="blog-img mr-4" style="background-image: url(images/image_2.jpg);"></a>-->
+<!--                        <div class="text">-->
+<!--                            <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the-->
+<!--                                blind texts</a></h3>-->
+<!--                            <div class="meta">-->
+<!--                                <div><a href="#"><span class="icon-calendar"></span> July 12, 2018</a></div>-->
+<!--                                <div><a href="#"><span class="icon-person"></span> Admin</a></div>-->
+<!--                                <div><a href="#"><span class="icon-chat"></span> 19</a></div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="block-21 mb-4 d-flex">-->
+<!--                        <a class="blog-img mr-4" style="background-image: url(images/image_3.jpg);"></a>-->
+<!--                        <div class="text">-->
+<!--                            <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the-->
+<!--                                blind texts</a></h3>-->
+<!--                            <div class="meta">-->
+<!--                                <div><a href="#"><span class="icon-calendar"></span> July 12, 2018</a></div>-->
+<!--                                <div><a href="#"><span class="icon-person"></span> Admin</a></div>-->
+<!--                                <div><a href="#"><span class="icon-chat"></span> 19</a></div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
 
-                <div class="sidebar-box ftco-animate">
-                    <h3 class="heading-3">Tag Cloud</h3>
-                    <div class="tagcloud">
-                        <a href="#" class="tag-cloud-link">dish</a>
-                        <a href="#" class="tag-cloud-link">menu</a>
-                        <a href="#" class="tag-cloud-link">food</a>
-                        <a href="#" class="tag-cloud-link">sweet</a>
-                        <a href="#" class="tag-cloud-link">tasty</a>
-                        <a href="#" class="tag-cloud-link">delicious</a>
-                        <a href="#" class="tag-cloud-link">desserts</a>
-                        <a href="#" class="tag-cloud-link">drinks</a>
-                    </div>
-                </div>
+<!--                <div class="sidebar-box ftco-animate">-->
+<!--                    <h3 class="heading-3">Tag Cloud</h3>-->
+<!--                    <div class="tagcloud">-->
+<!--                        <a href="#" class="tag-cloud-link">dish</a>-->
+<!--                        <a href="#" class="tag-cloud-link">menu</a>-->
+<!--                        <a href="#" class="tag-cloud-link">food</a>-->
+<!--                        <a href="#" class="tag-cloud-link">sweet</a>-->
+<!--                        <a href="#" class="tag-cloud-link">tasty</a>-->
+<!--                        <a href="#" class="tag-cloud-link">delicious</a>-->
+<!--                        <a href="#" class="tag-cloud-link">desserts</a>-->
+<!--                        <a href="#" class="tag-cloud-link">drinks</a>-->
+<!--                    </div>-->
+<!--                </div>-->
 
-                <div class="sidebar-box ftco-animate">
-                    <h3 class="heading-3">Paragraph</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus itaque, autem
-                        necessitatibus voluptate quod mollitia delectus aut, sunt placeat nam vero culpa
-                        sapiente consectetur similique, inventore eos fugit cupiditate numquam!</p>
-                </div>
+<!--                <div class="sidebar-box ftco-animate">-->
+<!--                    <h3 class="heading-3">Paragraph</h3>-->
+<!--                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus itaque, autem-->
+<!--                        necessitatibus voluptate quod mollitia delectus aut, sunt placeat nam vero culpa-->
+<!--                        sapiente consectetur similique, inventore eos fugit cupiditate numquam!</p>-->
+<!--                </div>-->
             </div>
 
         </div>

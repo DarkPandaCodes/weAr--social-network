@@ -5,12 +5,10 @@ import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
-import com.community.weare.Models.User;
 import com.community.weare.Models.dto.CommentDTO;
 import com.community.weare.Models.factories.CommentFactory;
 import com.community.weare.Services.contents.CommentService;
 import com.community.weare.Services.contents.PostService;
-import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -51,7 +49,7 @@ public class RESTCommentController {
         return commentService.findAllCommentsOfPost(post, sort);
     }
 
-    @GetMapping("/getOne")
+    @GetMapping("/single")
     public Comment getOne(@RequestParam int commentId) {
         if (commentService.getOne(commentId) == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format
@@ -60,13 +58,13 @@ public class RESTCommentController {
         return commentService.getOne(commentId);
     }
 
-    @PostMapping("/create")
+    @PostMapping("/auth/creator")
     public Comment save(@RequestBody CommentDTO commentDTO, Principal principal) {
         Comment newComment = commentFactory.createCommentFromDTO(commentDTO);
         return commentService.save(newComment, principal);
     }
 
-    @PutMapping("/like")
+    @PutMapping("/auth/likesUp")
     public void likeComment(@RequestParam int commentId, Principal principal) {
         //TODO Fix it when the method userService.checkIfUserExist is fixed
         try {
@@ -76,7 +74,7 @@ public class RESTCommentController {
         }
     }
 
-    @PutMapping("/dislike")
+    @PutMapping("/auth/dislikesDown")
     public void dislikeComment(@RequestParam int commentId, Principal principal) {
         //TODO Fix it when the method userService.checkIfUserExist is fixed
         try {
@@ -86,7 +84,7 @@ public class RESTCommentController {
         }
     }
 
-    @PutMapping("/edit")
+    @PutMapping("/auth/editor")
     public void editComment(Principal principal, @RequestParam int commentId, String content) {
         try {
             commentService.editComment(commentId, content, principal);
@@ -95,7 +93,7 @@ public class RESTCommentController {
         }
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/auth/manager")
     public void deleteComment(Principal principal, @RequestParam int commentId) {
         try {
             commentService.deleteComment(commentId, principal);

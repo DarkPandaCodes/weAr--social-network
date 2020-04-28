@@ -39,12 +39,12 @@ public class RESTPostController {
                 (postService.findPostsByAlgorithm(sort, principal), true);
     }
 
-    @GetMapping("/showComments")
+    @GetMapping("/Comments")
     public List<Comment> showComments(@RequestParam int postId) {
         return postService.showComments(postId);
     }
 
-    @PostMapping("/create")
+    @PostMapping("/auth/creator")
     public Post save(@RequestBody PostDTO postDTO, Principal principal) {
         Post newPost = postFactory.createPostFromDTO(postDTO);
         newPost.setUser(userService.getUserByUserName(principal.getName()));
@@ -56,7 +56,7 @@ public class RESTPostController {
         return newPost;
     }
 
-    @PostMapping("/like")
+    @PostMapping("/auth/likesUp")
     public Post likeAPost(@RequestParam int postId, Principal principal) {
         User user;
         try {
@@ -83,7 +83,7 @@ public class RESTPostController {
         return postToLike;
     }
 
-    @PutMapping("/edit")
+    @PutMapping("/auth/editor")
     public void editPost(Principal principal, @RequestParam int postId, @RequestBody PostDTO postDTO) {
         try {
             postService.editPost(postId, postDTO, principal);
@@ -92,7 +92,7 @@ public class RESTPostController {
         }
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/auth/manager")
     public void deletePost(Principal principal, @RequestParam int postId) {
         try {
             postService.deletePost(postId, principal);

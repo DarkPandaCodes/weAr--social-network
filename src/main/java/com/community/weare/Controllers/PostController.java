@@ -182,12 +182,12 @@ public class PostController {
             if (principal != null) {
                 model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
             }
-            return "allPosts";
+            return "redirect:/posts/";
         }
         return "redirect:/posts/" + postId;
     }
 
-    @GetMapping("/newPost")
+    @GetMapping("/auth/newPost")
     public String newPostData(Model model, Principal principal) {
         //TODO Auth
         PostDTO post = new PostDTO();
@@ -206,7 +206,7 @@ public class PostController {
     }
 
     @Transactional
-    @PostMapping("/newPost")
+    @PostMapping("/auth/newPost")
     public String newPost(Model model, @ModelAttribute("post") PostDTO post, BindingResult errors,
                           @RequestParam("imagefile") MultipartFile file, Principal principal) throws IOException {
         if (errors.hasErrors()) {
@@ -226,18 +226,14 @@ public class PostController {
         return "newPost";
     }
 
-    @GetMapping("/edit/{id}")
+    @GetMapping("/auth/editor/{id}")
     public String editPostData(Model model, @PathVariable(name = "id") int postId, Principal principal) {
-        //Bug! - It is solved now... If you remove boolean principalAdmin the Authority Admin will not work. Admin won't be able to edit posts
-//        boolean principalAdmin = userService.getUserByUserName
-//                (principal.getName()).getAuthorities().stream()
-//                .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
         model.addAttribute("post", postService.getOne(postId));
         model.addAttribute("postDTO", new PostDTO());
         return "postEdit";
     }
 
-    @PostMapping("/edit/{id}")
+    @PostMapping("/auth/editor/{id}")
     public String editPost(Model model, @PathVariable(name = "id") int postId,
                            @ModelAttribute("post") Post postToEdit,
                            @ModelAttribute("postDTO") PostDTO postDTO, Principal principal,
@@ -255,14 +251,14 @@ public class PostController {
         return "redirect:/posts/" + postId;
     }
 
-    @GetMapping("/delete/{id}")
+    @GetMapping("/auth/manager/{id}")
     public String deletePostData(Model model, Principal principal, @PathVariable(name = "id") int postId) {
         model.addAttribute("post", postService.getOne(postId));
         model.addAttribute("postDTO2", new PostDTO2());
         return "postDelete";
     }
 
-    @PostMapping("/delete/{id}")
+    @PostMapping("/auth/manager/{id}")
     public String deletePost(Model model, Principal principal, @PathVariable(name = "id") int postId,
                              @ModelAttribute("postDTO2") PostDTO2 postDTO2,
                              @ModelAttribute("post") Post postToDelete) {
