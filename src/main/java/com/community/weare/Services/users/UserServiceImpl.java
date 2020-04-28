@@ -26,18 +26,14 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private static final String TYPE = "USER";
     private final UserRepository userRepository;
-    private final RequestService requestService;
-    private final ExpertiseProfileFactory expertiseProfileFactory;
     private final UserFactory mapperHelper;
     private final ExpertiseRepository expertiseRepository;
     private final PersonalInfoRepository personalInfoRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RequestService requestService, ExpertiseProfileFactory expertiseProfileFactory,
-                           UserFactory mapperHelper, ExpertiseRepository expertiseRepository, PersonalInfoRepository personalInfoRepository) {
+    public UserServiceImpl(UserRepository userRepository, UserFactory mapperHelper,
+                           ExpertiseRepository expertiseRepository, PersonalInfoRepository personalInfoRepository) {
         this.userRepository = userRepository;
-        this.requestService = requestService;
-        this.expertiseProfileFactory = expertiseProfileFactory;
         this.mapperHelper = mapperHelper;
         this.expertiseRepository = expertiseRepository;
         this.personalInfoRepository = personalInfoRepository;
@@ -45,7 +41,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new);
+        return userRepository.findByUsername(username).orElseThrow(new EntityNotFoundException());
     }
 
     @Transactional
@@ -99,6 +95,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Collection<User> getAllUsers() {
+
         return userRepository.findAll();
     }
 
@@ -146,9 +143,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void addToFriendList(Request request) {
-        if (request.isApproved()) {
-            Request approvedRequest = requestService.getById(request.getId());
+    public void addToFriendList(Request approvedRequest) {
+        if (approvedRequest.isApproved()) {
+//            Request approvedRequest = requestService.getById(request.getId());
             User receiver = userRepository.getOne(approvedRequest.getReceiver().getUserId());
             receiver.addToFriendList(approvedRequest.getSender());
             userRepository.saveAndFlush(receiver);
@@ -161,9 +158,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void removeFromFriendsList(Request request) {
-        Request requestToDelete = requestService.getById(request.getId());
-        User receiver = userRepository.getOne(requestToDelete.getReceiver().getUserId());
-        User sender = userRepository.getOne(requestToDelete.getSender().getUserId());
+//        Request requestToDelete = requestService.getById(request.getId());
+        User receiver = userRepository.getOne(request.getReceiver().getUserId());
+        User sender = userRepository.getOne(request.getSender().getUserId());
         receiver.removeFromFriendList(sender);
         sender.removeFromFriendList(receiver);
         userRepository.saveAndFlush(receiver);

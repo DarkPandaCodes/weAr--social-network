@@ -101,7 +101,7 @@ public class RESTUserController {
 
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/auth/{id}")
     public UserModel getUserById(@PathVariable(name = "id") int id, String principal) {
         try {
             User user = userService.getUserById(id);

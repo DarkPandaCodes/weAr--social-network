@@ -4,6 +4,7 @@ import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Models.Request;
 import com.community.weare.Models.User;
 import com.community.weare.Repositories.RequestRepository;
+import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +17,12 @@ import java.util.Set;
 @Service
 public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
+    private final UserService userService;
 
     @Autowired
-    public RequestServiceImpl(RequestRepository requestRepository) {
+    public RequestServiceImpl(RequestRepository requestRepository, UserService userService) {
         this.requestRepository = requestRepository;
+        this.userService = userService;
     }
 
     @Transactional
@@ -33,7 +36,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
-    public Request approveRequest(int id) {
+    public Request approveRequest(int id,User user,String principal) {
+        userService.ifNotProfileOwnerThrow(principal,user);
         Request requestApproved = requestRepository.getOne(id);
         requestApproved.setApproved(true);
         requestRepository.saveAndFlush(requestApproved);
@@ -43,7 +47,7 @@ public class RequestServiceImpl implements RequestService {
     @Transactional
     @Override
     public void deleteRequest(Request request) {
-        requestRepository.delete(request);
+      requestRepository.delete(request);
     }
 
     @Override
@@ -62,7 +66,8 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public Collection<Request> getAllRequestsForUser(User receiver) {
+    public Collection<Request> getAllRequestsForUser(User receiver,String principal) {
+      userService.ifNotProfileOwnerThrow(principal, receiver);
         return requestRepository.findRequestsByReceiverIsAndApprovedIsFalse(receiver);
     }
 

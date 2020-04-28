@@ -24,19 +24,10 @@ import java.util.Collection;
 public class AdminController {
     private static final String TYPE = "USER";
     private final UserService userService;
-    private final ExpertiseProfileFactory expertiseProfileFactory;
-    private final SkillCategoryService skillCategoryService;
-    private SkillService skillService;
-    private UserFactory userFactory;
 
     @Autowired
-    public AdminController(UserService userService, ExpertiseProfileFactory expertiseProfileFactory,
-                           SkillCategoryService skillCategoryService, SkillService skillService, UserFactory userFactory) {
+    public AdminController(UserService userService) {
         this.userService = userService;
-        this.expertiseProfileFactory = expertiseProfileFactory;
-        this.skillCategoryService = skillCategoryService;
-        this.skillService = skillService;
-        this.userFactory = userFactory;
     }
 
     @GetMapping("")
@@ -49,12 +40,9 @@ public class AdminController {
         try {
             User user = userService.getUserByUserName(principal.getName());
             model.addAttribute("user", user);
-            Collection<User> usersAll = userService.getAllUsers();
-            model.addAttribute("users", usersAll);
-            model.addAttribute("isAdmin", userService.isAdmin(principal));
-
+            model.addAttribute("users", userService.getAllUsers());
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            model.addAttribute("error", e.getMessage());
         }
         return "admin_users";
     }
@@ -64,7 +52,6 @@ public class AdminController {
         ModelAndView modelAndView = new ModelAndView("admin_users");
         try {
             userService.disableEnableUser(principal.getName(), user.getUserId());
-
         } catch (EntityNotFoundException e) {
             modelAndView.addObject("error", "User not found");
             modelAndView.setStatus(HttpStatus.NOT_FOUND);

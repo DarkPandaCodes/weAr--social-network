@@ -4,17 +4,16 @@ import com.community.weare.Models.Request;
 import com.community.weare.Models.User;
 
 import java.util.Collection;
-import java.util.List;
 
 public interface RequestService {
 
     Request createRequest(User sender, User receiver);
 
-    Request approveRequest(int id);
+    Request approveRequest(int id,User user,String principal);
 
     Collection<Request> getAllRequestsForUserUnSeen(User receiver);
 
-    Collection<Request> getAllRequestsForUser(User receiver);
+    Collection<Request> getAllRequestsForUser(User receiver,String principal);
 
     Collection<Request> getAllRequestsForUserSeen(User receiver);
 

@@ -16,6 +16,9 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 
+import static com.community.weare.utils.HttpMessages.ERROR_NOT_FOUND_MESSAGE_FORMAT;
+import static com.community.weare.utils.HttpMessages.NOT_AUTHORISED;
+
 @Controller
 @RequestMapping("/auth/connection")
 public class ConnectionController {
@@ -31,7 +34,7 @@ public class ConnectionController {
 
     @Transactional
     @PostMapping("/request")
-    public String sendRequest(@ModelAttribute("userRequest") UserDtoRequest userToConnect, Principal principal) {
+    public String sendRequest(@ModelAttribute("userRequest") UserDtoRequest userToConnect, Principal principal, Model model) {
 
         try {
             User userReceiver = userService.getUserById(userToConnect.getId());
@@ -39,16 +42,16 @@ public class ConnectionController {
 
             if (!userReceiver.isFriend(userSender.getUsername()) &&
                     requestService.getByUsers(userReceiver, userSender) == null) {
+
                 requestService.createRequest(userSender, userReceiver);
 
             } else if (userReceiver.isFriend(userSender.getUsername())) {
-                //TODO add confirmation
                 Request request = requestService.getByUsersApproved(userReceiver, userSender);
                 userService.removeFromFriendsList(request);
                 requestService.deleteRequest(request);
             }
-            } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, "Request"));
         }
         return "redirect:/auth/users/" + userToConnect.getId() + "/profile";
     }
@@ -58,29 +61,28 @@ public class ConnectionController {
 
         try {
             User user = userService.getUserById(id);
-            userService.ifNotProfileOwnerThrow(principal.getName(), user);
-            model.addAttribute("requests", requestService.getAllRequestsForUser(user));
+            model.addAttribute("requests", requestService.getAllRequestsForUser(user, principal.getName()));
             model.addAttribute("requestN", new Request());
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            model.addAttribute("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, "Request"));
         }
         return "request-list";
     }
 
     @Transactional
     @PostMapping("/request/approve")
-    public String getUserRequests(@ModelAttribute Request request, Principal principal,Model model) {
-        Request approvedRequest=new Request();
+    public String approveRequests(@ModelAttribute Request request, Principal principal, Model model) {
+        Request approvedRequest = new Request();
         try {
             if (request.isApproved()) {
-               approvedRequest=requestService.approveRequest(request.getId());
+                approvedRequest = requestService.approveRequest(request.getId(),request.getReceiver(),principal.getName());
                 userService.addToFriendList(approvedRequest);
-                model.addAttribute("requests", requestService.getAllRequestsForUser(approvedRequest.getReceiver()));
+                model.addAttribute("requests", requestService.getAllRequestsForUser(approvedRequest.getReceiver(),principal.getName()));
             }
         } catch (InvalidOperationException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+            model.addAttribute("error", NOT_AUTHORISED);
         }
-        return "redirect:/auth/connection/ " + approvedRequest.getReceiver().getUserId()  + "/request";
+        return "redirect:/auth/connection/ " + approvedRequest.getReceiver().getUserId() + "/request";
     }
 
 }
