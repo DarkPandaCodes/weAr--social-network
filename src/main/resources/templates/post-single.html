@@ -121,6 +121,8 @@
                     <div class="desc">
                         <h3 th:text="${post.getUser().getPersonalProfile().getFirstName() +' '+
                         post.getUser().getPersonalProfile().getLastName()}"></h3>
+                        <a th:href="@{'/auth/users/' + ${post.user.getUserId()} + '/profile'}"
+                           class="btn btn-primary">See profile</a>
                         <p th:text="${post.getUser().getPersonalProfile().getPersonalReview()}">text</p>
                     </div>
                 </div>

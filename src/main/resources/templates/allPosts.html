@@ -79,6 +79,8 @@
                 <p class="breadcrumbs mb-0"><span class="mr-3"><a th:href="@{/}">Home
 					<i class="ion-ios-arrow-forward"></i></a></span> <span>Posts</span></p>
                 <h1 class="mb-3 bread">Explore all posts</h1>
+                <h5 class="breadcrumbs mb-0" th:if="${usersCount != null}" th:text="'There are ' + ${usersCount} + ' users in the system'"></h5>
+                <h5 class="breadcrumbs mb-0" th:if="${postsCount != null}" th:text="'and ' + ${postsCount} + ' posts'"></h5>
             </div>
         </div>
     </div>

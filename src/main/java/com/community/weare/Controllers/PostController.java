@@ -60,6 +60,8 @@ public class PostController {
     @GetMapping("")
     public String showFeed(Model model, Sort sort, Principal principal) {
         model.addAttribute("postDTO2", new PostDTO2());
+        model.addAttribute("usersCount", userService.getAllUsers().size());
+        model.addAttribute("postsCount", postService.findAll().size());
         model.addAttribute("postDTO", new PostDTO());
         model.addAttribute("category", new Category("Marketing"));
         model.addAttribute("posts", postService.findPostsByAuthority(sort, principal));
