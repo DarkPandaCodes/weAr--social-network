@@ -18,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.ConstraintViolationException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -186,6 +185,7 @@ public class PostServiceImpl implements PostService {
         postToLike.getLikes().add(user);
         double currentRank = postToLike.getRank();
         postToLike.setRank(currentRank + ALGORITHM_EFFECT_LIKES);
+        postToLike.setLiked(true);
         postRepository.save(postToLike);
     }
 
@@ -206,12 +206,13 @@ public class PostServiceImpl implements PostService {
         postToDislike.getLikes().remove(user);
         double currentRank = postToDislike.getRank();
         postToDislike.setRank(currentRank - ALGORITHM_EFFECT_LIKES);
+        postToDislike.setLiked(false);
         postRepository.save(postToDislike);
     }
 
     @Override
     public boolean isLiked(int postId, Principal principal) {
-        return postRepository.getOne(postId).isLiked(principal.getName());
+        return postRepository.getOne(postId).isLiked2(principal.getName());
     }
 
     @Override

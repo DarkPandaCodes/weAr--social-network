@@ -79,8 +79,10 @@
                 <p class="breadcrumbs mb-0"><span class="mr-3"><a th:href="@{/}">Home
 					<i class="ion-ios-arrow-forward"></i></a></span> <span>Posts</span></p>
                 <h1 class="mb-3 bread">Explore all posts</h1>
-                <h5 class="breadcrumbs mb-0" th:if="${usersCount != null}" th:text="'There are ' + ${usersCount} + ' users in the system'"></h5>
-                <h5 class="breadcrumbs mb-0" th:if="${postsCount != null}" th:text="'and ' + ${postsCount} + ' posts'"></h5>
+                <h5 class="breadcrumbs mb-0" th:if="${usersCount != null}"
+                    th:text="'There are ' + ${usersCount} + ' users in the system'"></h5>
+                <h5 class="breadcrumbs mb-0" th:if="${postsCount != null}"
+                    th:text="'and ' + ${postsCount} + ' posts'"></h5>
             </div>
         </div>
     </div>
@@ -121,8 +123,8 @@
                                 <span class="position" th:text="'Comments: ' + ${post.comments.size()}"></span>
                                 <span class="position" th:id="rank-val + ${post.getPostId()}"
                                       th:text="'Rank: ' + ${post.getRank()}"></span><br>
-                                <span class="position" sec:authorize="isAuthenticated()"
-                                      th:if="${post.isLiked(UserPrincipal.getUsername()) == true}">You already liked</span><br>
+                                <!--                                <span class="position" sec:authorize="isAuthenticated()"-->
+                                <!--                                      th:if="${post.isLiked(UserPrincipal.getUsername()) == true}">You already liked</span><br>-->
                                 <form th:class="like-form" th:id="${post.getPostId()}" th:object="${postDTO2}"
                                       method="post"
                                       sec:authorize="isAuthenticated()" enctype="multipart/form-data">
@@ -130,10 +132,9 @@
                                         <input name="postId" type="hidden" data-th-value="${post.getPostId()}"
                                                th:value="${post.getPostId()}" class="mb-2" th:field="*{postId}"/>
                                     </div>
-                                    <!--                                    <a href="#" id="like-btn"> <i class="fas fa-heart"></i> </a>-->
-                                    <input class="fa-heart" type="submit" value="Like/Dislike"/>
+                                    <input class="fa-heart" type="submit" th:id="submit-val + ${post.getPostId()}"
+                                           th:value="${post.liked ? 'Dislike':'Like'}"/>
 
-<!--                                    <i onclick="myFunction(this)" class="fa fa-thumbs-up"></i>-->
                                 </form>
                             </div>
                         </div>
@@ -163,14 +164,15 @@
 
                 <div class="sidebar-box bg-white p-4 ftco-animate" sec:authorize="isAuthenticated()">
                     <h3 class="heading-sidebar">Browse public posts</h3>
-                    <form action="#" class="browse-form" th:object="${postDTO2}" sec:authorize="isAuthenticated()" method="post">
+                    <form action="#" class="browse-form" th:object="${postDTO2}" sec:authorize="isAuthenticated()"
+                          method="post">
                         <div class="form-group">
                             <br/>
                             <label for="StringListId"></label>
                             <select id="StringListId" th:field="*{publicity}">
-<!--                                <option value="all" selected="selected">All posts</option>-->
+                                <!--                                <option value="all" selected="selected">All posts</option>-->
                                 <option value="true" selected="selected">All public posts</option>
-<!--                                <option value="false">Private posts</option>-->
+                                <!--                                <option value="false">Private posts</option>-->
                             </select>
                         </div>
                         <input type="submit" value="Browse" class="btn py-3 px-4 btn-primary">
@@ -358,6 +360,11 @@
                 console.log(d.likes.length) //check
                 $("#like-count" + d.postId).text("Likes: " + d.likes.length)
                 $("#rank-val" + d.postId).text("Rank: " + d.rank)
+                if (d.liked === true)
+                    $("#submit-val" + d.postId).val("Dislike")
+                else
+                    $("#submit-val" + d.postId).val("Like")
+                console.log(d.liked) //check
             }
         })
     })

@@ -3,6 +3,7 @@ package com.community.weare.Models;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,6 +42,23 @@ public class Comment {
 
     @Column(name = "date_time")
     private String date;
+
+    @Column(name = "is_liked")
+    @NotNull
+    private boolean isLiked = false;
+
+    public boolean isLiked() {
+        return isLiked;
+    }
+
+    public void setLiked(boolean liked) {
+        isLiked = liked;
+    }
+
+    public boolean isLiked2(String userName) {
+        return likes.stream()
+                .anyMatch(u -> u.getUsername().equals(userName));
+    }
 
     public Comment() {
         Date date = new Date();
@@ -94,11 +112,6 @@ public class Comment {
 
     public void setDate(String date) {
         this.date = date;
-    }
-
-    public boolean isLiked(String userName) {
-        return likes.stream()
-                .anyMatch(u -> u.getUsername().equals(userName));
     }
 
     public boolean canEdit(String userName) {

@@ -100,6 +100,7 @@ public class CommentServiceImpl implements CommentService {
             throw new DuplicateEntityException("You already liked this");
         }
         comment.getLikes().add(user);
+        comment.setLiked(true);
         commentRepository.save(comment);
     }
 
@@ -119,6 +120,7 @@ public class CommentServiceImpl implements CommentService {
             throw new EntityNotFoundException("Before dislike you must like");
         }
         comment.getLikes().remove(user);
+        comment.setLiked(false);
         commentRepository.save(comment);
     }
 

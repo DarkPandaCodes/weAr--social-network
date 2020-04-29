@@ -181,8 +181,8 @@
                                 <p th:text="${comment.content}"></p>
                                 <span class="position" th:id="like-count + ${comment.getCommentId()}"
                                       th:text="'Likes: ' + ${comment.likes.size()}"></span><br>
-                                <span class="position" sec:authorize="isAuthenticated()"
-                                      th:if="${comment.isLiked(UserPrincipal.getUsername()) == true}">You already liked</span>
+<!--                                <span class="position" sec:authorize="isAuthenticated()"-->
+<!--                                      th:if="${comment.isLiked(UserPrincipal.getUsername()) == true}">You already liked</span>-->
 
                                 <form th:class="like-form" th:id="${comment.getCommentId()}" th:object="${commentDTOlike}"
                                       method="post"
@@ -191,7 +191,8 @@
                                         <input name="postId" type="hidden" data-th-value="${comment.getCommentId()}"
                                                th:value="${comment.getCommentId()}" class="mb-2" th:field="*{commentId}"/>
                                     </div>
-                                    <input class="reply" type="submit" value="Like/Dislike"/>
+                                    <input class="fa-heart" type="submit" th:id="submit-val + ${comment.getCommentId()}"
+                                           th:value="${comment.isLiked() ? 'Dislike':'Like'}"/>
                                 </form>
 
                                 <p>
@@ -436,6 +437,11 @@
                 console.log(d) //check
                 console.log(d.likes.length) //check
                 $("#like-count" + d.commentId).text("Likes: " + d.likes.length)
+                if (d.liked === true)
+                    $("#submit-val" + d.commentId).val("Dislike")
+                else
+                    $("#submit-val" + d.commentId).val("Like")
+                console.log(d.liked) //check
             }
         })
     })

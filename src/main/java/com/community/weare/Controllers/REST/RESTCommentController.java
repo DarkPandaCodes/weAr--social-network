@@ -78,7 +78,7 @@ public class RESTCommentController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
         Comment commentToLike = commentService.getOne(commentId);
-        boolean isCommentLiked = commentToLike.isLiked(user.getUsername());
+        boolean isCommentLiked = commentToLike.isLiked2(user.getUsername());
 
         if (isCommentLiked) {
             try {

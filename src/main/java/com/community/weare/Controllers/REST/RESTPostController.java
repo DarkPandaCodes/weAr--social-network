@@ -65,7 +65,7 @@ public class RESTPostController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
         Post postToLike = postService.getOne(postId);
-        boolean isPostLiked = postToLike.isLiked(user.getUsername());
+        boolean isPostLiked = postToLike.isLiked2(user.getUsername());
 
         if (isPostLiked) {
             try {

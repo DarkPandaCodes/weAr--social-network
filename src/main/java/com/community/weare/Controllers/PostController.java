@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,7 +89,7 @@ public class PostController {
                 return "redirect:/";
             }
             model.addAttribute("posts", postService.findPostsPersonalFeed(sort, principal));
-            boolean isPostLiked = postService.getOne(postDTO2.getPostId()).isLiked(principal.getName());
+            boolean isPostLiked = postService.getOne(postDTO2.getPostId()).isLiked2(principal.getName());
 
             if (isPostLiked) {
                 try {
@@ -216,19 +215,19 @@ public class PostController {
     }
 
     @GetMapping("/{id}/postImage")
-    public String renderPostImageFormDB(@PathVariable int id, HttpServletResponse response) throws IOException {
+    public void renderPostImageFormDB(@PathVariable int id, HttpServletResponse response) throws IOException {
         Post post;
-        try {
+//        try {
             post = postService.getOne(id);
-        } catch (EntityNotFoundException e) {
-            return "redirect:/";
-        }
+//        } catch (EntityNotFoundException e) {
+//            return "redirect:/";
+//        }
         if (post.getPicture() != null) {
             response.setContentType("image/jpeg");
             InputStream is = new ByteArrayInputStream(Base64.getDecoder().decode(post.getPicture()));
             IOUtils.copy(is, response.getOutputStream());
         }
-        return String.valueOf(post.getPostId());
+//        return String.valueOf(post.getPostId());
     }
 
     @Transactional
