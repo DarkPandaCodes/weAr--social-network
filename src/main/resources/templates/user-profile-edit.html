@@ -153,7 +153,7 @@
                                 <div class="form-group row">
                                     <label for="birthDayE" class="col-4 col-form-label">birthday</label>
                                     <div class="col-8">
-                                        <input id="birthDayE" th:type="datetime-local" th:field="*{birthYear}"
+                                        <input id="birthDayE" th:type="text" th:field="*{birthYear}"
                                                placeholder="YYYY-MM-DD" class="form-control here"
                                                required="required">
                                         <label class="error" th:errors="*{birthYear}"></label>
@@ -311,19 +311,10 @@
                                     </div>
 
                                     <div class="form-group row">
-                                        <label for="startTime" class="col-4 col-form-label">Available from</label>
+                                        <label for="startTime" class="col-4 col-form-label">Set your weekly availability</label>
                                         <div class="col-8">
-                                            <input id="startTime" th:type="datetime-local" th:field="*{startTime}"
-                                                   placeholder="YYYY-MM-DD-HH" class="form-control here"
-                                                   >
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="endTime" class="col-4 col-form-label">Available to</label>
-                                        <div class="col-8">
-                                            <input id="endTime" th:type="datetime-local" th:field="*{endTime}"
-                                                   placeholder="YYYY-MM-DD-HH" class="form-control here"
-                                                   >
+                                            <input id="startTime" th:type="number" th:field="*{availability}"
+                                                   placeholder="3.00" class="form-control here">
                                         </div>
                                     </div>
                                     <div class="form-group row">

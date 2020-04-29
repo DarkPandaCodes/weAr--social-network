@@ -31,6 +31,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
@@ -88,8 +89,9 @@ public class ProfileController {
             modelAndView.addObject("page", page);
 
         } catch (EntityNotFoundException e) {
-            modelAndView.setStatus(HttpStatus.NOT_FOUND);
-            return modelAndView.addObject("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
+//            modelAndView.setStatus(HttpStatus.NOT_FOUND);
+//            return modelAndView.addObject("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         return modelAndView;
     }

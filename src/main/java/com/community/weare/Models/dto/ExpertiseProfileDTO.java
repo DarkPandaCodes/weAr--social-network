@@ -4,6 +4,7 @@ import com.community.weare.Models.Category;
 import com.community.weare.Models.Skill;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,10 +24,9 @@ public class ExpertiseProfileDTO {
 
     private Category category;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH")
-    private LocalDateTime startTime;
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH")
-    private LocalDateTime endTime;
+    @Positive
+    private double availability;
+
 
     public ExpertiseProfileDTO() {
     }
@@ -96,28 +96,19 @@ public class ExpertiseProfileDTO {
         this.category = category;
     }
 
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
-
-    public LocalDateTime getEndTime() {
-        return endTime;
-    }
-
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public double getAvailability() {
+        return availability;
+    }
+
+    public void setAvailability(double availability) {
+        this.availability = availability;
     }
 }
