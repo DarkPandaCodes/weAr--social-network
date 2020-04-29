@@ -30,16 +30,24 @@ public class CommentController {
     @GetMapping("/editor/{id}")
     public String editCommentData(Model model, Principal principal, @PathVariable(name = "id") int commentId) {
         model.addAttribute("commentDTO", new CommentDTO());
+        try {
+            commentService.getOne(commentId);
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("error", e.getMessage());
+            return "commentEdit";
+        }
         return "commentEdit";
     }
 
     @PostMapping("/editor/{id}")
     public String editComment(Model model, Principal principal, @PathVariable(name = "id") int commentId,
                               @ModelAttribute("commentDTO") CommentDTO commentDTO) {
+
         Comment commentToEdit = commentService.getOne(commentId);
         try {
             commentService.editComment(commentId, commentDTO.getContent(), principal);
-        } catch (IllegalArgumentException | DuplicateEntityException | InvalidOperationException e) {
+        } catch (IllegalArgumentException | DuplicateEntityException | InvalidOperationException |
+                EntityNotFoundException | IllegalStateException e) {
             model.addAttribute("error", e.getMessage());
             return "commentEdit";
         }
@@ -52,7 +60,14 @@ public class CommentController {
 
     @GetMapping("/manager/{id}")
     public String deleteCommentData(Model model, Principal principal, @PathVariable(name = "id") int commentId) {
-        Comment commentToDelete = commentService.getOne(commentId);
+        Comment commentToDelete;
+        try {
+            commentToDelete = commentService.getOne(commentId);
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("error", e.getMessage());
+            return "commentDelete";
+        }
+
         model.addAttribute("comment", commentToDelete);
         model.addAttribute("commentDTO", new CommentDTO());
         return "commentDelete";
