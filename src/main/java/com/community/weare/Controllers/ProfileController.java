@@ -83,22 +83,19 @@ public class ProfileController {
             modelAndView.addObject("friends", user.isFriend(principal.getName()));
             modelAndView.addObject("isOwner", userService.isOwner(principal.getName(), user));
             modelAndView.addObject("isAdmin", userService.isAdmin(principal));
-
-            Page page = new Page();
-            page.setSize(4);
-            modelAndView.addObject("page", page);
-
+            modelAndView.addObject("pagePost", new Page());
+            modelAndView.addObject("pageRequest", new Page());
         } catch (EntityNotFoundException e) {
-//            modelAndView.setStatus(HttpStatus.NOT_FOUND);
-//            return modelAndView.addObject("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            modelAndView.setStatus(HttpStatus.NOT_FOUND);
+            return modelAndView.addObject("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
         }
         return modelAndView;
     }
 
     @GetMapping("/{id}/profile/posts")
     public ModelAndView showProfilePosts(@PathVariable(name = "id") int id, Principal principal,
-                                         @ModelAttribute(name = "page") Page page) {
+                                         @ModelAttribute(name = "pagePost") Page page,
+                                         @ModelAttribute(name = "pageRequest") Page pageRequest) {
         ModelAndView modelAndView = new ModelAndView("profile_single");
         try {
             User user = userService.getUserById(id);
@@ -165,7 +162,7 @@ public class ProfileController {
         model.addAttribute("userToEdit", userModel);
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("error",bindingResult.getFieldError().getDefaultMessage());
+            model.addAttribute("error", bindingResult.getFieldError().getDefaultMessage());
             return "user-profile-edit";
         }
         try {

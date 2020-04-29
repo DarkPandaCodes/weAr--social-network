@@ -4,13 +4,15 @@ package com.community.weare.Services.users;
 import com.community.weare.Exceptions.*;
 import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
-import com.community.weare.Models.factories.ExpertiseProfileFactory;
 import com.community.weare.Repositories.ExpertiseRepository;
 import com.community.weare.Repositories.PersonalInfoRepository;
 import com.community.weare.Repositories.UserRepository;
 import com.community.weare.Models.factories.UserFactory;
-import com.community.weare.Services.connections.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -80,7 +81,6 @@ public class UserServiceImpl implements UserService {
         } else {
             return userRepository.getByFirstName(param[0]);
         }
-
     }
 
     @Override
@@ -95,8 +95,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Collection<User> getAllUsers() {
-
         return userRepository.findAll();
+    }
+
+    @Override
+    public Slice<User> findSliceWithUsers(int index, int size, String param, String name, User user) {
+        if (size == 0 && index == 0) {
+            throw new EntityNotFoundException();
+        }
+        Pageable page = PageRequest.of(index, size, Sort.by(param).descending());
+        return userRepository.findAllBy(page);
     }
 
     @Override
@@ -126,7 +134,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public ExpertiseProfile updateExpertise(User user,
-                                ExpertiseProfile expertiseProfileMerged, String principal, User userToCheck) {
+                                            ExpertiseProfile expertiseProfileMerged, String principal, User userToCheck) {
         ifNotProfileOrAdminOwnerThrow(principal, userToCheck);
         ExpertiseProfile profileDB = expertiseRepository.
                 findById(user.getExpertiseProfile().getId()).orElseThrow(new EntityNotFoundException());
@@ -212,18 +220,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getPublicUsersByCriteria(String name, String expertise) {
-        if (name != null && expertise == null) {
+        if ((name != null && expertise.isEmpty())) {
             return getUserByFirstNameLastName(name).
-                    stream().filter(user -> user.getPersonalProfile().isPicturePrivacy()).
+                    stream().filter(user -> user.getPersonalProfile().isPicturePrivacy() == true).
                     collect(Collectors.toList());
-        } else if (name == null && expertise != null) {
+        } else if (name.isEmpty() && expertise != null) {
             return getUsersByExpertise(expertise).
-                    stream().filter(user -> user.getPersonalProfile().isPicturePrivacy()).
+                    stream().filter(user -> user.getPersonalProfile().isPicturePrivacy() == true).
                     collect(Collectors.toList());
         } else {
             List<User> users = getUserByFirstNameLastName(name).
-                    stream().filter(user -> user.getPersonalProfile().isPicturePrivacy()).
+                    stream().filter(user -> user.getPersonalProfile().isPicturePrivacy() == true).
                     collect(Collectors.toList());
+            return users.stream().
+                    filter(u -> u.getExpertiseProfile()
+                            .getCategory().getName().equals(expertise)).
+                    collect(Collectors.toList());
+        }
+    }
+
+    @Override
+    public List<User> getAllUsersByCriteria(String name, String expertise) {
+        if (name != null && expertise.isEmpty()) {
+            return getUserByFirstNameLastName(name);
+        } else if (name.isEmpty() && expertise != null) {
+            return getUsersByExpertise(expertise);
+        } else {
+            List<User> users = getUserByFirstNameLastName(name);
             return users.stream().
                     filter(u -> u.getExpertiseProfile()
                             .getCategory().getName().equals(expertise)).

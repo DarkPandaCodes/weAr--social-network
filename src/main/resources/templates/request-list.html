@@ -157,17 +157,17 @@
                             </form>
                         </div>
                     </div>
-                    <form action="#" th:action="@{'/auth/connection/'+${user.getUserId()}+'/request'}" th:object="${page}"
+                    <form action="#" th:action="@{'/auth/connection/'+${user.getUserId()}+'/request'}" th:object="${pageRequest}"
                           method="get"
                           class="search-job">
 
                         <label>
 
-                            <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}" th:field="*{index}" class="mb-2"/>
+                            <input type="hidden" data-th-value="${pageRequest.getIndex()}" th:value="${pageRequest.getIndex()}" th:field="*{index}" class="mb-2"/>
                             <input type="hidden" data-th-value="4" th:value="4" th:field="*{size}" class="mb-2"/>
 
                         </label>
-                        <input  th:if="${requests!=null} and ${hasNext}" class="btn btn-primary" type="submit" value="Load next requsts"/>
+                        <input  th:if="${requests!=null} and ${hasNext}" class="btn btn-primary" type="submit" value="Load next requests"/>
                     </form>
                 </div>
             </div>

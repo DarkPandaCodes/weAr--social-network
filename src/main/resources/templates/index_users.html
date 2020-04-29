@@ -39,29 +39,30 @@
             <span class="oi oi-menu"></span> Menu
         </button>
 
+
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
-                <li class="nav-item"><a sec:authorize="isAuthenticated()" th:href="@{'/auth/auth'}" class="nav-link">GO
-                    TO personal zone</a></li>
-                <li class="nav-item"><a sec:authorize="isAuthenticated()" th:if="${user!=null}"
-                                        th:href="@{'/auth/users/' + ${user.userId} + '/profile'}" class="nav-link">PERSONAL
-                    PROFILE</a></li>
-                <li class="nav-item"><a sec:authorize="!isAuthenticated()" th:href="@{/register}" class="nav-link">REGISTER</a>
+                <li class="nav-item cta mr-md-1"><a sec:authorize="!isAuthenticated()" th:href="@{/register}" class="nav-link">REGISTER</a>
                 </li>
-                <li class="nav-item"><a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="nav-link">SIGN
+                <li class="nav-item cta cta cta-colored"><a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="nav-link">SIGN
                     IN</a></li>
+
+                <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
+                <li class="nav-item"><a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{'/admin'}" class="nav-link">GO
+                    TO admin zone</a></li>
+                <!--                <li class="nav-item"><a sec:authorize="!isAuthenticated()" th:href="@{'/auth'}" class="nav-link">GO-->
+                <!--                    TO personal zone</a></li>-->
+                <li class="nav-item"><a sec:authorize="isAuthenticated()"
+                                        th:href="@{'/auth/users/' + ${user.userId} + '/profile'}" class="nav-link">Personal
+                    Profile</a></li>
+                <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Latest Posts</a></li>
+
+                <li class="nav-item cta cta-colored"><a th:href="@{/posts/auth/newPost}" sec:authorize="isAuthenticated()" class="nav-link">Add New post</a></li>
                 <li class="nav-item"><a sec:authorize="isAuthenticated()" th:href="@{/logout}"
                                         class="nav-link">LOGOUT</a></li>
-                <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Posts</a></li>
-                <li class="nav-item"><a sec:authorize="isAuthenticated()" th:href="@{/posts}" class="nav-link">My
-                    profile</a></li>
-                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-                <li class="nav-item cta mr-md-1"><a th:href="@{/posts/auth/newPost}" class="nav-link">New post</a></li>
 
                 <!--				<li sec:authorize="isAuthenticated()" class="nav-item cta mr-md-1"><a th:href="@{'/auth/users/'+${user.userId}+'/profile'}" class="nav-link">Your Profile</a></li>-->
 
-                <li class="nav-item cta cta-colored"><a href="job-post.html" class="nav-link">Want a Job</a></li>
 
             </ul>
         </div>
@@ -151,64 +152,6 @@
         </div>
     </div>
 </div>
-<!--<section class="ftco-section ftco-no-pt ftco-no-pb">-->
-<!--    <div class="container">-->
-<!--        <div class="row">-->
-<!--            <div class="col-md-12">-->
-<!--                <div class="category-wrap">-->
-<!--                    <div class="row no-gutters">-->
-<!--                        <div class="col-md-2">-->
-<!--                            <div class="top-category text-center no-border-left">-->
-<!--                                <h3><a href="#">Website &amp; Software</a></h3>-->
-<!--                                <span class="icon flaticon-contact"></span>-->
-<!--                                <p><span class="number">143</span> <span>Open position</span></p>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="col-md-2">-->
-<!--                            <div class="top-category text-center active">-->
-<!--                                <h3><a href="#">Education &amp; Training</a></h3>-->
-<!--                                <span class="icon flaticon-mortarboard"></span>-->
-<!--                                <p><span class="number">143</span> <span>Open position</span></p>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="col-md-2">-->
-<!--                            <div class="top-category text-center">-->
-<!--                                <h3><a href="#">Graphic &amp; UI/UX Design</a></h3>-->
-<!--                                <span class="icon flaticon-idea"></span>-->
-<!--                                <p><span class="number">143</span> <span>Open position</span></p>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="col-md-2">-->
-<!--                            <div class="top-category text-center">-->
-<!--                                <h3><a href="#">Accounting &amp; Finance</a></h3>-->
-<!--                                <span class="icon flaticon-accounting"></span>-->
-<!--                                <p><span class="number">143</span> <span>Open position</span></p>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="col-md-2">-->
-<!--                            <div class="top-category text-center">-->
-<!--                                <h3><a href="#">Restaurant &amp; Food</a></h3>-->
-<!--                                <span class="icon flaticon-dish"></span>-->
-<!--                                <p><span class="number">143</span> <span>Open position</span></p>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="col-md-2">-->
-<!--                            <div class="top-category text-center">-->
-<!--                                <h3><a href="#">Health &amp; Hospital</a></h3>-->
-<!--                                <span class="icon flaticon-stethoscope"></span>-->
-<!--                                <p><span class="number">143</span> <span>Open position</span></p>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</section>-->
-
-
-
-
 
 <section class="ftco-section ftco-candidates ftco-candidates-2 bg-light">
     <div class="container">
@@ -217,7 +160,8 @@
                 <div class="row">
                     <div class="col-md-12" th:if="${users!=0}" th:each="user : ${users}">
                         <div class="team d-md-flex p-4 bg-white">
-                            <div class="img" style="background-image: url(images/person_5.jpg);"></div>
+                            <img  class="img1" th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" >
+
                             <div class="text pl-md-4">
                                 <span class="location mb-0" th:if="${user.getPersonalProfile().getLocation()!=null}"
                                       th:text="${user.getPersonalProfile().getLocation().getCity().city}">Western City, UK</span>
@@ -229,7 +173,9 @@
                                 <p th:text="${user.getPersonalProfile().personalReview}" class="mb-2">Far far away,
                                     behind the word mountains, far from the countries Vokalia and Consonantia, there
                                     live the blind texts.</p>
-                                <span class="seen">Last Activity 4 months ago</span>
+                                <p th:if="${user.getPersonalProfile().memberSince!=null}" class="proile-rating">
+                                    Member since : <span  class="seen" th:text=" ${user.getPersonalProfile().getMemberSince()}">8/10</span>
+                                </p>
                                 <p><a th:href="@{'/auth/users/' + ${user.getUserId()} + '/profile'}"
                                       class="btn btn-primary">See Profile</a></p>
                             </div>

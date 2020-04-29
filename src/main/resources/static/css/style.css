@@ -8759,16 +8759,13 @@ h1, h2, h3, h4, h5,
     -ms-border-radius: 50%;
     border-radius: 50%; }
 .team .img {
-  width: 250px;
-  height: 300px;
+  height: max-content;
+  width: max-content;
   margin: 0 auto;
   margin-bottom: 80px;
   position: relative;
   overflow: visible;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  -ms-border-radius: 50%;
-  border-radius: 50%; }
+   }
   .team h2 {
     font-size: 20px;
     font-weight: 500;

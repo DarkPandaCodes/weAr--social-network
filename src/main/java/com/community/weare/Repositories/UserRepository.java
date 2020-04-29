@@ -1,7 +1,8 @@
 package com.community.weare.Repositories;
 
-import com.community.weare.Models.Role;
 import com.community.weare.Models.User;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,4 +32,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "SELECT u,p from User as u join u.personalProfile " +
             "as p where p.firstName like :firstName")
     List<User> getByFirstName(@Param("firstName") String firstName);
+
+    Slice<User>findAllBy(Pageable page);
 }

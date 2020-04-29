@@ -75,6 +75,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Slice<Post> findSliceWithPosts(int startIndex, int pageSize, String sortParam, String username) {
+        if (pageSize==0&&startIndex==0){
+            throw new EntityNotFoundException();
+        }
         Pageable page = PageRequest.of(startIndex, pageSize, Sort.by(sortParam).descending());
         Slice<Post> slicedResult = postRepository.findAllByUserUsername(page, username);
         return slicedResult;

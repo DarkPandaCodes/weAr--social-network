@@ -105,6 +105,7 @@
     <div class=" container d-flex bd-highlight team justify-content-center p-5 bg-white">
         <form class="row">
             <div class="col-2">
+
                 <form th:if="${!isOwner}" sec:authorize="isAuthenticated()" action="#"
                       th:action="@{/auth/connection/request}"
                       th:object="${userRequest}" method="post">
@@ -116,21 +117,6 @@
                     </label>
                     <input type="submit" th:value="${friends} ? 'disconnect': 'connect'"/>
                 </form>
-                <p th:if="${isOwner}">
-                <form action="#" th:action="@{'/auth/connection/'+${user.getUserId()}+'/request'}" th:object="${page}"
-                      method="get"
-                      class="search-job">
-
-                    <label>
-
-                        <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}"
-                               th:field="*{index}" class="mb-2"/>
-                        <input type="hidden" data-th-value="4" th:value="4" th:field="*{size}" class="mb-2"/>
-
-                    </label>
-                    <input class="btn btn-primary" type="submit" value="View my Requests"/>
-                </form>
-                </p>
                 <form th:if="${isAdmin}" sec:authorize="isAuthenticated()" action="#" th:action="@{/admin/status}"
                       th:object="${userDisable}" method="post">
                     <label>
@@ -142,6 +128,20 @@
                     <input class="btn btn-primary" type="submit" th:value="${user.isEnabled() ? 'disable':'enable'}"/>
                 </form>
             </div>
+            <div th:if="${isOwner}" class=" p-3">
+                <form action="#" th:action="@{'/auth/connection/'+${user.getUserId()}+'/request'}" th:object="${pageRequest}"
+                      method="get"
+                      class="search-job">
+
+                    <label>
+
+                        <input type="hidden" data-th-value="${pageRequest.getIndex()}" th:value="${pageRequest.getIndex()}" th:field="*{index}" class="mb-2"/>
+                        <input type="hidden" data-th-value="4" th:value="4" th:field="*{size}" class="mb-2"/>
+
+                    </label>
+                    <input  class="btn btn-primary" type="submit" value="View my Requests"/>
+                </form>
+            </div>
             <div class="col-8 ">
                 <div class="team p-4 bg-white">
                     <div method="post" th:object="${user}">
@@ -151,7 +151,7 @@
                                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52y5aInsxSm31CvHOFHWujqUx_wWTS9iM6s7BAm21oEN_RiGoog"
                                          alt=""/>
                                 </div>
-                                <div class="img" th:class="img" th:if="${user.getPersonalProfile().getPicture()!=null}">
+                                <div class="img" th:class="img" th:height="300" th:if="${user.getPersonalProfile().getPicture()!=null}">
 
                                     <img th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
 
@@ -305,13 +305,13 @@
             </div>
         </div>
 
-        <form action="#" th:action="@{'/auth/users/' + ${user.getUserId()} + '/profile/posts'}" th:object="${page}"
+        <form action="#" th:action="@{'/auth/users/' + ${user.getUserId()} + '/profile/posts'}" th:object="${pagePost}"
               method="get"
               class="search-job">
 
             <label>
 
-                <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}"
+                <input type="hidden" data-th-value="${pagePost.getIndex()}" th:value="${pagePost.getIndex()}"
                        th:field="*{index}" class="mb-2"/>
                 <input type="hidden" data-th-value="4" th:value="4" th:field="*{size}" class="mb-2"/>
                 <!--                <input type="hidden" th:value="1" name="next" class="mb-2"/>-->
