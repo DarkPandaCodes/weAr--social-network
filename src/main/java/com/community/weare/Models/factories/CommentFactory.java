@@ -6,8 +6,6 @@ import com.community.weare.Services.contents.PostService;
 import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.security.Principal;
 
@@ -30,7 +28,7 @@ public class CommentFactory {
         return newComment;
     }
 
-    public Comment createCommnetFromInput(@ModelAttribute("comment") CommentDTO commentDTO, @PathVariable(name = "id") int postId, Principal principal) {
+    public Comment createCommentFromInput(CommentDTO commentDTO, int postId, Principal principal) {
         Comment newComment = new Comment();
         newComment.setContent(commentDTO.getContent());
         newComment.setPost(postService.getOne(postId));

@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.ConstraintViolationException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -162,6 +163,9 @@ public class PostServiceImpl implements PostService {
         if (principal == null) {
             throw new InvalidOperationException("User isn't authorised");
         }
+        if (post.getContent().length() > 1000) {
+            throw new InvalidOperationException("Content size must be up to 1000 symbols");
+        }
         return postRepository.save(post);
     }
 
@@ -215,6 +219,9 @@ public class PostServiceImpl implements PostService {
     public void editPost(int postId, PostDTO postDTO, Principal principal) {
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
+        }
+        if (postDTO.getContent().length() > 1000) {
+            throw new InvalidOperationException("Content size must be up to 1000 symbols");
         }
         Post postToEdit = postRepository.getOne(postId);
         userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), postToEdit.getUser());

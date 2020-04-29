@@ -75,6 +75,9 @@ public class CommentServiceImpl implements CommentService {
         if (principal == null) {
             throw new InvalidOperationException("User isn't authorised");
         }
+        if (comment.getContent().length() > 1000) {
+            throw new InvalidOperationException("Content size must be up to 1000 symbols");
+        }
         Post post = comment.getPost();
         post.getComments().add(comment);
         postRepository.save(post);
@@ -127,6 +130,9 @@ public class CommentServiceImpl implements CommentService {
         if (!commentRepository.existsById(commentId)) {
             throw new EntityNotFoundException(String.format
                     ("Comment with id %d does not exists", commentId));
+        }
+        if (content.length() > 1000) {
+            throw new InvalidOperationException("Content size must be up to 1000 symbols");
         }
         Comment comment = commentRepository.getOne(commentId);
         userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), comment.getUser());

@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,7 +91,6 @@ public class PostController {
             }
             model.addAttribute("posts", postService.findPostsPersonalFeed(sort, principal));
             boolean isPostLiked = postService.getOne(postDTO2.getPostId()).isLiked(principal.getName());
-            User user = userService.getUserByUserName(principal.getName());
 
             if (isPostLiked) {
                 try {
@@ -147,7 +147,13 @@ public class PostController {
     @GetMapping("/{id}")
     public String showPost(Model model, @PathVariable(name = "id") int postId, Principal principal) {
         //TODO auth or friend
-        Post post01 = postService.getOne(postId);
+        Post post01;
+        try {
+            post01 = postService.getOne(postId);
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("error", e.getMessage());
+            return "post-single";
+        }
         model.addAttribute("post", post01);
         model.addAttribute("comment", new CommentDTO());
         model.addAttribute("User", new UserDtoRequest());
@@ -169,8 +175,19 @@ public class PostController {
                                            @ModelAttribute("UserPrincipal") User userPrincipal,
                                            @PathVariable(name = "id") int postId, Principal principal, Model model) {
         if (commentDTO.getContent() != null) {
-            Comment newComment = commentFactory.createCommnetFromInput(commentDTO, postId, principal);
-            commentService.save(newComment, principal);
+            Comment newComment = commentFactory.createCommentFromInput(commentDTO, postId, principal);
+            try {
+                commentService.save(newComment, principal);
+            } catch (InvalidOperationException e) {
+                model.addAttribute("error", e.getMessage());
+                model.addAttribute("post", postService.getOne(postId));
+                model.addAttribute("commentDTOlike", new CommentDTO());
+                model.addAttribute("comment", new CommentDTO());
+                model.addAttribute("User", new UserDtoRequest());
+                model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+                model.addAttribute("isAdmin", userService.isAdmin(principal));
+                return "post-single";
+            }
             model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
             return "redirect:/posts/" + postId + "#leaveComment";
         }
@@ -199,13 +216,19 @@ public class PostController {
     }
 
     @GetMapping("/{id}/postImage")
-    public void renderPostImageFormDB(@PathVariable int id, HttpServletResponse response) throws IOException {
-        Post post = postService.getOne(id);
+    public String renderPostImageFormDB(@PathVariable int id, HttpServletResponse response) throws IOException {
+        Post post;
+        try {
+            post = postService.getOne(id);
+        } catch (EntityNotFoundException e) {
+            return "redirect:/";
+        }
         if (post.getPicture() != null) {
             response.setContentType("image/jpeg");
             InputStream is = new ByteArrayInputStream(Base64.getDecoder().decode(post.getPicture()));
             IOUtils.copy(is, response.getOutputStream());
         }
+        return String.valueOf(post.getPostId());
     }
 
     @Transactional
@@ -231,7 +254,14 @@ public class PostController {
 
     @GetMapping("/auth/editor/{id}")
     public String editPostData(Model model, @PathVariable(name = "id") int postId, Principal principal) {
-        model.addAttribute("post", postService.getOne(postId));
+        Post post;
+        try {
+            post = postService.getOne(postId);
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("error", e.getMessage());
+            return "postEdit";
+        }
+        model.addAttribute("post", post);
         model.addAttribute("postDTO", new PostDTO());
         return "postEdit";
     }
@@ -256,7 +286,14 @@ public class PostController {
 
     @GetMapping("/auth/manager/{id}")
     public String deletePostData(Model model, Principal principal, @PathVariable(name = "id") int postId) {
-        model.addAttribute("post", postService.getOne(postId));
+        Post post;
+        try {
+            post = postService.getOne(postId);
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("error", e.getMessage());
+            return "postDelete";
+        }
+        model.addAttribute("post", post);
         model.addAttribute("postDTO2", new PostDTO2());
         return "postDelete";
     }

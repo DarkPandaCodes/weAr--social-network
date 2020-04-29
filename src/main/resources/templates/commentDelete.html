@@ -55,7 +55,7 @@
 </nav>
 <!-- END nav -->
 
-<div class="hero-wrap hero-wrap-2" style="background-image: url('../static/images/bg_1.jpg');"
+<div class="hero-wrap hero-wrap-2" th:if="${error==null}" style="background-image: url('../static/images/bg_1.jpg');"
      data-stellar-background-ratio="0.5">
     <div class="overlay"></div>
     <div class="container">
@@ -70,7 +70,21 @@
     </div>
 </div>
 
-<section class="ftco-section ftco-degree-bg">
+<div class="hero-wrap hero-wrap-2" th:if="${error!=null}" style="background-image: url('../static/images/bg_1.jpg');"
+     data-stellar-background-ratio="0.5">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-end justify-content-start">
+            <div class="col-md-12 ftco-animate text-center mb-5">
+                <p class="breadcrumbs mb-0"><span class="mr-3"><a th:href="@{/}">Home
+					<i class="ion-ios-arrow-forward"></i> </a></span> <span>Opsss...</span></p>
+                <h1 class="mb-3 bread" th:text="${error}">error</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section th:if="${error==null}" class="ftco-section ftco-degree-bg">
     <div class="container">
         <div class="row">
             <p>
