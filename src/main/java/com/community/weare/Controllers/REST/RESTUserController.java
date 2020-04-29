@@ -115,10 +115,22 @@ public class RESTUserController {
     }
 
     @GetMapping("/")
-    public List<User> getUser(@RequestParam(name = "name", required = false) String name,
-                              @RequestParam(name = "expertise", required = false) String expertise) {
+    public List<User> getUser(@RequestParam(name = "name", defaultValue = "", required = false) String name,
+                              @RequestParam(name = "expertise", defaultValue = "", required = false) String expertise,
+                              String principal) {
         try {
-            return userService.getPublicUsersByCriteria(name, expertise);
+            List<User> users = new ArrayList<>();
+            if (principal != null) {
+                User user = userService.getUserByUserName(principal);
+                users = userService.getAllUsersByCriteria(name, expertise);
+            } else {
+                users = userService.getPublicUsersByCriteria(name, expertise);
+            }
+            if (users.isEmpty()) {
+                throw new EntityNotFoundException("There are no users existing in this search criteria.");
+            } else {
+                return users;
+            }
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));

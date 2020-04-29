@@ -80,7 +80,6 @@ public class UserServiceImpl implements UserService {
         } else {
             return userRepository.getByFirstName(param[0]);
         }
-
     }
 
     @Override
@@ -126,7 +125,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public ExpertiseProfile updateExpertise(User user,
-                                ExpertiseProfile expertiseProfileMerged, String principal, User userToCheck) {
+                                            ExpertiseProfile expertiseProfileMerged, String principal, User userToCheck) {
         ifNotProfileOrAdminOwnerThrow(principal, userToCheck);
         ExpertiseProfile profileDB = expertiseRepository.
                 findById(user.getExpertiseProfile().getId()).orElseThrow(new EntityNotFoundException());
@@ -212,18 +211,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getPublicUsersByCriteria(String name, String expertise) {
-        if (name != null && expertise == null) {
+        if ((name != null && expertise.isEmpty())) {
             return getUserByFirstNameLastName(name).
-                    stream().filter(user -> user.getPersonalProfile().isPicturePrivacy()).
+                    stream().filter(user -> user.getPersonalProfile().isPicturePrivacy() == true).
                     collect(Collectors.toList());
-        } else if (name == null && expertise != null) {
+        } else if (name.isEmpty() && expertise!=null) {
             return getUsersByExpertise(expertise).
-                    stream().filter(user -> user.getPersonalProfile().isPicturePrivacy()).
+                    stream().filter(user -> user.getPersonalProfile().isPicturePrivacy() == true).
                     collect(Collectors.toList());
         } else {
             List<User> users = getUserByFirstNameLastName(name).
-                    stream().filter(user -> user.getPersonalProfile().isPicturePrivacy()).
+                    stream().filter(user -> user.getPersonalProfile().isPicturePrivacy() == true).
                     collect(Collectors.toList());
+            return users.stream().
+                    filter(u -> u.getExpertiseProfile()
+                            .getCategory().getName().equals(expertise)).
+                    collect(Collectors.toList());
+        }
+    }
+
+    @Override
+    public List<User> getAllUsersByCriteria(String name, String expertise) {
+        if (name != null && expertise.isEmpty()) {
+            return getUserByFirstNameLastName(name);
+        } else if (name.isEmpty() && expertise != null) {
+            return getUsersByExpertise(expertise);
+        } else {
+            List<User> users = getUserByFirstNameLastName(name);
             return users.stream().
                     filter(u -> u.getExpertiseProfile()
                             .getCategory().getName().equals(expertise)).

@@ -45,6 +45,8 @@ public interface UserService extends UserDetailsService {
 
     List<User> getPublicUsersByCriteria( String name,String expertise);
 
+    List<User> getAllUsersByCriteria( String name,String expertise);
+
     List<User> findByAuthorities(String role);
 
     void removeFromFriendsList(Request request);

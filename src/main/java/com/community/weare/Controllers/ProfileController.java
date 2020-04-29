@@ -89,9 +89,8 @@ public class ProfileController {
             modelAndView.addObject("page", page);
 
         } catch (EntityNotFoundException e) {
-//            modelAndView.setStatus(HttpStatus.NOT_FOUND);
-//            return modelAndView.addObject("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            modelAndView.setStatus(HttpStatus.NOT_FOUND);
+            return modelAndView.addObject("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
         }
         return modelAndView;
     }
@@ -165,7 +164,7 @@ public class ProfileController {
         model.addAttribute("userToEdit", userModel);
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("error",bindingResult.getFieldError().getDefaultMessage());
+            model.addAttribute("error", bindingResult.getFieldError().getDefaultMessage());
             return "user-profile-edit";
         }
         try {
