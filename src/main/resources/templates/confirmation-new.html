@@ -2,7 +2,7 @@
 <html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Successful Registration</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700&display=swap" rel="stylesheet">
@@ -40,14 +40,26 @@
 
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
+
+                <li class="nav-item cta cta cta-colored"><a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="nav-link">SIGN
+                    IN</a></li>
+
                 <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="browsejobs.html" class="nav-link">Browse Jobs</a></li>
-                <li class="nav-item active"><a th:href="@{/posts}" class="nav-link">Posts</a></li>
-                <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
-                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-                <li class="nav-item cta mr-md-1"><a th:href="@{/posts/auth/newPost}" class="nav-link"
-                                                    sec:authorize="isAuthenticated()">New post</a></li>
-                <li class="nav-item cta cta-colored"><a href="job-post.html" class="nav-link">Want a Job</a></li>
+                <li class="nav-item"><a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{'/admin'}" class="nav-link">GO
+                    TO admin zone</a></li>
+                <!--                <li class="nav-item"><a sec:authorize="!isAuthenticated()" th:href="@{'/auth'}" class="nav-link">GO-->
+                <!--                    TO personal zone</a></li>-->
+                <li class="nav-item"><a sec:authorize="isAuthenticated()"
+                                        th:href="@{'/auth/users/' + ${user.userId} + '/profile'}" class="nav-link">Personal
+                    Profile</a></li>
+                <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Latest Posts</a></li>
+
+                <li class="nav-item cta cta-colored"><a th:href="@{/posts/auth/newPost}" sec:authorize="isAuthenticated()" class="nav-link">Add New post</a></li>
+                <li class="nav-item"><a sec:authorize="isAuthenticated()" th:href="@{/logout}"
+                                        class="nav-link">LOGOUT</a></li>
+
+                <!--				<li sec:authorize="isAuthenticated()" class="nav-item cta mr-md-1"><a th:href="@{'/auth/users/'+${user.userId}+'/profile'}" class="nav-link">Your Profile</a></li>-->
+
 
             </ul>
         </div>
@@ -64,33 +76,29 @@
                 <p class="breadcrumbs mb-0"><span class="mr-3"><a th:href="@{/}">Home
 					<i class="ion-ios-arrow-forward"></i> </a></span> <span>Please update</span>
                     <!--                    <i class="ion-ios-arrow-forward"></i> <span>Login</span></p>-->
-                <h1 class="mb-3 bread">Please update</h1>
+                <h1 class="mb-3 bread">Welcome to our community.</h1>
             </div>
         </div>
     </div>
 </div>
 
 
-<br>
-<br>
+<section>
+<div class=" container d-flex bd-highlight team justify-content-center p-5 bg-white">
+    <div class="row">
+        <div class="col-lg-12">
+        <h1>Would you like to make a difference in the time of the COVID-19 outbreak? </h1>
 
-
-
-<div class="row main ">
-    <div class="main-login main-center">
-        <h1>_Welcome to our community.</h1>
-        <h2>_please confirm your email.</h2>
-
-        <div class="form-group ">
+            <div class="form-group ">
             <a th:href="@{'/auth/users/'+${id}+'/profile/editor'}" target="_blank" type="button" id="button" class="btn btn-primary btn-lg btn-block login-button">please update your profile</a>
             </div>
 
     </div>
+    </div>
 </div>
-</div>
+</section>
 
-<br>
-<br>
+
 
 <section class="ftco-section-parallax">
     <div class="parallax-img d-flex align-items-center">

@@ -41,7 +41,6 @@ public class RegistrationController {
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
         model.addAttribute("user", new UserDTO());
-
         return "register-new";
     }
 
