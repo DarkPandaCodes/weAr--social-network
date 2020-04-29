@@ -54,7 +54,16 @@
                                         th:href="@{'/auth/users/' + ${user.userId} + '/profile'}" class="nav-link">Personal
                     Profile</a></li>
                 <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Latest Posts</a></li>
-                <li class="nav-item cta cta-colored"><a th:href="@{/posts/auth/newPost}" sec:authorize="isAuthenticated()" class="nav-link">Add New post</a></li>
+                <li class="nav-item cta cta-colored">
+                <form action="#" th:action="@{/admin/users}" th:object="${page}"
+                      method="get"
+                      class="search-job">
+                    <label>
+                        <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}" th:field="*{index}" class="mb-2"/>
+                        <input type="hidden" data-th-value="10" th:value="10" th:field="*{size}" class="mb-2"/>
+                    </label>
+                    <input  class="nav-item cta cta-colored" type="submit" value="View Users"/>
+                </form></li>
                 <li class="nav-item"><a sec:authorize="isAuthenticated()" th:href="@{/logout}"
                                         class="nav-link">LOGOUT</a></li>
 
@@ -112,15 +121,6 @@
                         </div>
                     </div>
                 </div>
-                <form action="#" th:action="@{/admin/users}" th:object="${page}"
-                      method="get"
-                      class="search-job">
-                    <label>
-                        <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}" th:field="*{index}" class="mb-2"/>
-                        <input type="hidden" data-th-value="10" th:value="10" th:field="*{size}" class="mb-2"/>
-                    </label>
-                    <input th:if="${users!=null} and ${hasNext}" class="btn btn-primary" type="submit" value="LOAD MORE USERS"/>
-                </form>
             </div>
         </div>
     </div>

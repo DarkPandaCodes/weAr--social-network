@@ -2,6 +2,7 @@ package com.community.weare.Services.users;
 
 import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.security.Principal;
@@ -56,4 +57,5 @@ public interface UserService extends UserDetailsService {
     List<User> getUsersByExpertise(String expertise);
 
 
+    Slice<User> findSliceWithUsers(int index, int size, String username, String name, User user);
 }

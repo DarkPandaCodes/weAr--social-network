@@ -1,5 +1,6 @@
 package com.community.weare.Controllers;
 
+import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.*;
 import com.community.weare.Models.dto.UserDtoRequest;
@@ -14,7 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.EntityNotFoundException;
+
 import java.security.Principal;
 import java.util.*;
 
@@ -61,7 +62,8 @@ public class ConnectionController {
 
     @GetMapping("/{id}/request")
     public String getUserRequests(@PathVariable(name = "id") int id, Model model, Principal principal,
-                                  @ModelAttribute(name = "page") Page page) {
+                                  @ModelAttribute(name = "pageRequest") Page page,
+                                  @ModelAttribute(name = "pagePost") Page pagePost) {
 
         try {
             User user = userService.getUserById(id);
@@ -85,6 +87,8 @@ public class ConnectionController {
 
         } catch (InvalidOperationException e) {
             model.addAttribute("error", NOT_AUTHORISED);
+        }catch (EntityNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         return "request-list";
     }

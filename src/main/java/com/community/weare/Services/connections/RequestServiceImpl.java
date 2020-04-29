@@ -78,6 +78,9 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public Slice<Request> findSliceWithRequest(int index, int size, String param, String principal,User receiver) {
         userService.ifNotProfileOwnerThrow(principal, receiver);
+        if (size==0&&index==0){
+            throw new EntityNotFoundException();
+        }
         Pageable page = PageRequest.of(index, size, Sort.by(param).descending());
         return requestRepository.findRequestsByReceiverIsAndApprovedIsFalse(page,receiver);
     }
