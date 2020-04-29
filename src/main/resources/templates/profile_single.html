@@ -54,14 +54,30 @@
 
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
+                <li class="nav-item cta mr-md-1"><a sec:authorize="!isAuthenticated()" th:href="@{/register}"
+                                                    class="nav-link">REGISTER</a>
+                </li>
+                <li class="nav-item cta cta cta-colored"><a sec:authorize="!isAuthenticated()" th:href="@{/login}"
+                                                            class="nav-link">SIGN
+                    IN</a></li>
+
                 <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="browsejobs.html" class="nav-link">Browse Jobs</a></li>
-                <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Posts</a></li>
-                <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
-                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-                <li class="nav-item cta mr-md-1"><a th:href="@{/posts/auth/newPost}" class="nav-link"
-                                                    sec:authorize="isAuthenticated()">New post</a></li>
-                <li class="nav-item cta cta-colored"><a href="job-post.html" class="nav-link">Want a Job</a></li>
+                <li class="nav-item"><a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{'/admin'}" class="nav-link">GO
+                    TO admin zone</a></li>
+
+                <li class="nav-item"><a sec:authorize="isAuthenticated()"
+                                        th:href="@{'/auth/users/' + ${user.getUserId()} + '/profile'}" class="nav-link">Personal
+                    Profile</a></li>
+                <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Latest Posts</a></li>
+
+                <li class="nav-item cta cta-colored"><a th:href="@{/posts/auth/newPost}"
+                                                        sec:authorize="isAuthenticated()" class="nav-link">Add New
+                    post</a></li>
+                <li class="nav-item"><a sec:authorize="isAuthenticated()" th:href="@{/logout}"
+                                        class="nav-link">LOGOUT</a></li>
+
+                <!--				<li sec:authorize="isAuthenticated()" class="nav-item cta mr-md-1"><a th:href="@{'/auth/users/'+${user.userId}+'/profile'}" class="nav-link">Your Profile</a></li>-->
+
 
             </ul>
         </div>
@@ -147,14 +163,11 @@
                     <div method="post" th:object="${user}">
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="img" th:if="${user.getPersonalProfile().getPicture()==null }">
-                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52y5aInsxSm31CvHOFHWujqUx_wWTS9iM6s7BAm21oEN_RiGoog"
-                                         alt=""/>
+                                <div class="imgPr" th:class="imgPr" th:height="300" th:if="${user.getPersonalProfile().getPicture()==null}">
+                                    <img src="/images/blank-profile-picture.jpg" alt="Image">
                                 </div>
-                                <div class="img" th:class="img" th:height="300" th:if="${user.getPersonalProfile().getPicture()!=null}">
-
+                                <div class="imgPr" th:class="imgPr" th:height="300" th:if="${user.getPersonalProfile().getPicture()!=null}">
                                     <img th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
-
                                 </div>
                             </div>
                             <div class="col-lg-12">

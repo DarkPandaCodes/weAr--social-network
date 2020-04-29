@@ -2,6 +2,7 @@ package com.community.weare.Services.users;
 
 import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -12,9 +13,7 @@ import java.util.List;
 
 public interface UserService extends UserDetailsService {
 
-    int registerUser(User user,Category category);
-
-//    void upgradeProfile(User user, PersonalProfile personalProfile);
+    int registerUser(User user, Category category);
 
     User getUserByUserName(String username);
 
@@ -22,17 +21,17 @@ public interface UserService extends UserDetailsService {
 
     Collection<User> getAllUsers();
 
-    User disableEnableUser(String principal,int userId);
+    User disableEnableUser(String principal, int userId);
 
     boolean isUserDuplicate(User user);
 
-    User updateUser(User user,String principal, User userToCheck);
+    User updateUser(User user, String principal, User userToCheck);
 
     UserModel getUserModelById(int id);
 
     void addToFriendList(Request request);
 
-    ExpertiseProfile updateExpertise(User user, ExpertiseProfile expertiseProfileMerged,String principal, User userToCheck);
+    ExpertiseProfile updateExpertise(User user, ExpertiseProfile expertiseProfileMerged, String principal, User userToCheck);
 
     void ifNotProfileOwnerThrow(String principal, User user);
 
@@ -44,18 +43,17 @@ public interface UserService extends UserDetailsService {
 
     boolean isAdmin(Principal principal);
 
-    List<User> getPublicUsersByCriteria( String name,String expertise);
-
-    List<User> getAllUsersByCriteria( String name,String expertise);
-
-    List<User> findByAuthorities(String role);
+    Slice<User> getAllUsersByCriteria(int index, int size, String name, String expertise);
 
     void removeFromFriendsList(Request request);
 
-    List<User> getUserByFirstNameLastName(String param);
+    Slice<User> getUserByFirstNameLastName(Pageable pageable, String param);
 
-    List<User> getUsersByExpertise(String expertise);
+    Slice<User> getUsersByExpertise(Pageable pageable, String expertise);
 
+    Slice<User> getUserByFirstNameLastNameExpertise(Pageable pageable, String expertise, String name);
 
-    Slice<User> findSliceWithUsers(int index, int size, String username, String name, User user);
+    Slice<User> findSliceWithUsers(int index, int size, String username);
+
+    Slice<User> findSliceWithUsers(Pageable pageable, String username);
 }

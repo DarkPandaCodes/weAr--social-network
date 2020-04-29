@@ -62,14 +62,13 @@ public class ConnectionController {
 
     @GetMapping("/{id}/request")
     public String getUserRequests(@PathVariable(name = "id") int id, Model model, Principal principal,
-                                  @ModelAttribute(name = "pageRequest") Page page,
-                                  @ModelAttribute(name = "pagePost") Page pagePost) {
+                                  @ModelAttribute(name = "pageRequest") Page page) {
 
         try {
             User user = userService.getUserById(id);
-           List<Request> requestList = new ArrayList<>();
+            List<Request> requestList = new ArrayList<>();
             Slice<Request> requestSlice = requestService.findSliceWithRequest
-                    (page.getIndex(), page.getSize(), "timeStamp",principal.getName(), user);
+                    (page.getIndex(), page.getSize(), "timeStamp", principal.getName(), user);
 
             if (requestSlice.hasContent()) {
                 requestList = requestSlice.getContent();
@@ -87,7 +86,7 @@ public class ConnectionController {
 
         } catch (InvalidOperationException e) {
             model.addAttribute("error", NOT_AUTHORISED);
-        }catch (EntityNotFoundException e){
+        } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         return "request-list";

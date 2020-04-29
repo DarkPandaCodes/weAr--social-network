@@ -42,9 +42,11 @@
 
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item cta mr-md-1"><a sec:authorize="!isAuthenticated()" th:href="@{/register}" class="nav-link">REGISTER</a>
+                <li class="nav-item cta mr-md-1"><a sec:authorize="!isAuthenticated()" th:href="@{/register}"
+                                                    class="nav-link">REGISTER</a>
                 </li>
-                <li class="nav-item cta cta cta-colored"><a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="nav-link">SIGN
+                <li class="nav-item cta cta cta-colored"><a sec:authorize="!isAuthenticated()" th:href="@{/login}"
+                                                            class="nav-link">SIGN
                     IN</a></li>
 
                 <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
@@ -57,7 +59,9 @@
                     Profile</a></li>
                 <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Latest Posts</a></li>
 
-                <li class="nav-item cta cta-colored"><a th:href="@{/posts/auth/newPost}" sec:authorize="isAuthenticated()" class="nav-link">Add New post</a></li>
+                <li class="nav-item cta cta-colored"><a th:href="@{/posts/auth/newPost}"
+                                                        sec:authorize="isAuthenticated()" class="nav-link">Add New
+                    post</a></li>
                 <li class="nav-item"><a sec:authorize="isAuthenticated()" th:href="@{/logout}"
                                         class="nav-link">LOGOUT</a></li>
 
@@ -69,15 +73,16 @@
     </div>
 </nav>
 
-<div th:if="${error==null} and ${users!=null} and ${!users.isEmpty()}" class="hero-wrap hero-wrap-2" style="background-image: url('../static/images/bg_1.jpg');"
+<div th:if="${error==null} and ${users!=null} and ${!users.isEmpty()}" class="hero-wrap hero-wrap-2"
+     style="background-image: url('../static/images/bg_1.jpg');"
      data-stellar-background-ratio="0.5">
     <div class="overlay"></div>
     <div class="container">
         <div class="row d-md-flex no-gutters slider-text align-items-center justify-content-center">
             <div class="col-md-10 d-flex align-items-center ftco-animate">
-<!--                <div class="text text-center pt-5 mt-md-5">-->
+                <!--                <div class="text text-center pt-5 mt-md-5">-->
 
-<!--                </div>-->
+                <!--                </div>-->
                 <div class="ftco-search col-md-12">
 
                     <h1 class="mb-2">The Eassiest Way to Hack the Crisis</h1>
@@ -97,13 +102,14 @@
 
                                 <div class="tab-pane fade show active" id="v-pills-1" role="tabpanel"
                                      aria-labelledby="v-pills-nextgen-tab">
-                                    <form action="#" th:action="@{/search}" method="get" class="search-job">
+                                    <form action="#" th:action="@{/search}" th:object="${page}" method="get" class="search-job">
                                         <div class="row no-gutters">
                                             <div class="col-md mr-md-2">
                                                 <div class="form-group">
                                                     <div class="form-field">
                                                         <div class="icon"><span class="icon-briefcase"></span></div>
-                                                        <input type="text" name="expertise" th:value="${expertise}" class="form-control"
+                                                        <input type="text" th:field="*{searchParam1}"
+                                                               class="form-control"
                                                                placeholder="eg. Garphic. Web Developer">
                                                     </div>
                                                 </div>
@@ -112,8 +118,11 @@
                                                 <div class="form-group">
                                                     <div class="form-field">
                                                         <div class="icon"><span class="icon-user"></span></div>
-                                                        <input type="text" name="name" th:value="${name}" class="form-control"
+                                                        <input type="text" name="name" th:field="*{searchParam2}"
+                                                               class="form-control"
                                                                placeholder="Ivan Ivanov">
+                                                        <input type="hidden" data-th-value="0" th:value="0" th:field="*{index}" class="mb-2"/>
+                                                        <input type="hidden" data-th-value="10" th:value="10" th:field="*{size}" class="mb-2"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -160,7 +169,12 @@
                 <div class="row">
                     <div class="col-md-12" th:if="${users!=0}" th:each="user : ${users}">
                         <div class="team d-md-flex p-4 bg-white">
-                            <img  class="img1" th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" >
+
+                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()==null}"
+                                 src="/images/blank-profile-picture.jpg" alt="Image">
+
+                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()!=null}"
+                                 th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
 
                             <div class="text pl-md-4">
                                 <span class="location mb-0" th:if="${user.getPersonalProfile().getLocation()!=null}"
@@ -169,12 +183,13 @@
                                     <h2 class="mr-3 text-black"
                                         th:text="${user.getPersonalProfile().firstName+' '+user.getPersonalProfile().lastName}"
                                         th:type="text"> Ivan Petrov</h2></a>
-                                <span class="position"  th:text=" ${user.getExpertiseProfile().getCategory().name}">Expertise</span>
+                                <span class="position" th:text=" ${user.getExpertiseProfile().getCategory().name}">Expertise</span>
                                 <p th:text="${user.getPersonalProfile().personalReview}" class="mb-2">Far far away,
                                     behind the word mountains, far from the countries Vokalia and Consonantia, there
                                     live the blind texts.</p>
                                 <p th:if="${user.getPersonalProfile().memberSince!=null}" class="proile-rating">
-                                    Member since : <span  class="seen" th:text=" ${user.getPersonalProfile().getMemberSince()}">8/10</span>
+                                    Member since : <span class="seen"
+                                                         th:text=" ${user.getPersonalProfile().getMemberSince()}">8/10</span>
                                 </p>
                                 <p><a th:href="@{'/auth/users/' + ${user.getUserId()} + '/profile'}"
                                       class="btn btn-primary">See Profile</a></p>
@@ -182,7 +197,20 @@
                         </div>
                     </div>
                 </div>
+                <form action="#" th:action="@{/search}" th:object="${page}"
+                      method="get"
+                      class="search-job">
+                    <label>
+                        <input type="hidden" data-th-value="${page.getSearchParam2()}" th:value="${page.getSearchParam2()}" th:field="*{searchParam2}" class="mb-2"/>
+                        <input type="hidden" data-th-value="${page.getSearchParam1()}" th:value="${page.getSearchParam1()}" th:field="*{searchParam1}" class="mb-2"/>
+                        <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}" th:field="*{index}" class="mb-2"/>
+                        <input type="hidden" data-th-value="${page.getSize()}" th:value="${page.getSize()}" th:field="*{size}" class="mb-2"/>
+
+                    </label>
+                    <input th:if="${users!=null} and ${hasNext}" class="btn btn-primary" type="submit" value="LOAD MORE USERS"/>
+                </form>
             </div>
+
         </div>
     </div>
 </section>

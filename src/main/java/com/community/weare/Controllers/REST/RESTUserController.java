@@ -5,6 +5,7 @@ import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Exceptions.ValidationEntityException;
 import com.community.weare.Models.ExpertiseProfile;
+import com.community.weare.Models.Page;
 import com.community.weare.Models.PersonalProfile;
 import com.community.weare.Models.User;
 import com.community.weare.Models.dao.UserModel;
@@ -16,6 +17,7 @@ import com.community.weare.Services.users.PersonalInfoService;
 import com.community.weare.Services.users.UserService;
 import com.community.weare.Models.factories.UserFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -115,17 +117,22 @@ public class RESTUserController {
     }
 
     @GetMapping("/")
-    public List<User> getUser(@RequestParam(name = "name", defaultValue = "", required = false) String name,
-                              @RequestParam(name = "expertise", defaultValue = "", required = false) String expertise,
-                              String principal) {
+    public List<User> getUser(@RequestBody Page page) {
         try {
             List<User> users = new ArrayList<>();
-            if (principal != null) {
-                User user = userService.getUserByUserName(principal);
-                users = userService.getAllUsersByCriteria(name, expertise);
-            } else {
-                users = userService.getPublicUsersByCriteria(name, expertise);
+
+            Slice<User> userSlice = userService.getAllUsersByCriteria(page.getIndex(),
+                    page.getSize(), page.getSearchParam2(), page.getSearchParam1());
+
+            if (userSlice.hasContent() && userSlice.getContent().size() == page.getSize()) {
+                page.setIndex(userSlice.nextOrLastPageable().getPageNumber());
+                page.setSize(userSlice.nextOrLastPageable().getPageSize());
+
+            } else if (userSlice.getNumberOfElements() >= 1) {
+                userSlice = userService.getAllUsersByCriteria(page.getIndex(),
+                        userSlice.getNumberOfElements(), page.getSearchParam2(), page.getSearchParam1());
             }
+            users = userSlice.getContent();
             if (users.isEmpty()) {
                 throw new EntityNotFoundException("There are no users existing in this search criteria.");
             } else {

@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -74,18 +73,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUserByFirstNameLastName(String name) {
+    public Slice<User> getUserByFirstNameLastName(Pageable pageable, String name) {
         String param[] = name.split(" ");
         if (param.length == 2) {
-            return userRepository.getByFirstNameLastName(param[0], param[1]);
+            return userRepository.getByFirstNameLastName(pageable, param[0], param[1]);
         } else {
-            return userRepository.getByFirstName(param[0]);
+            return userRepository.getByFirstName(pageable, param[0]);
         }
     }
 
     @Override
-    public List<User> getUsersByExpertise(String expertise) {
-        return userRepository.getAllByExpertise(expertise);
+    public Slice<User> getUsersByExpertise(Pageable pageable, String expertise) {
+        return userRepository.getAllByExpertise(pageable, expertise);
+    }
+
+    @Override
+    public Slice<User> getUserByFirstNameLastNameExpertise(Pageable pageable, String expertise, String name) {
+        String param[] = name.split(" ");
+        if (param.length > 1) {
+            return userRepository.
+                    getUsersByFirstNameLastNameExpertise
+                            (pageable, expertise, param[0], param[1]);
+        } else {
+            return userRepository.
+                    getUsersByFirstNameAndExpertise(pageable, expertise, param[0]);
+        }
     }
 
     @Override
@@ -99,12 +111,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Slice<User> findSliceWithUsers(int index, int size, String param, String name, User user) {
+    public Slice<User> findSliceWithUsers(int index, int size, String param) {
         if (size == 0 && index == 0) {
             throw new EntityNotFoundException();
         }
         Pageable page = PageRequest.of(index, size, Sort.by(param).descending());
         return userRepository.findAllBy(page);
+    }
+
+    @Override
+    public Slice<User> findSliceWithUsers(Pageable pageable, String username) {
+        return userRepository.findAllBy(pageable);
     }
 
     @Override
@@ -153,7 +170,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addToFriendList(Request approvedRequest) {
         if (approvedRequest.isApproved()) {
-//            Request approvedRequest = requestService.getById(request.getId());
             User receiver = userRepository.getOne(approvedRequest.getReceiver().getUserId());
             receiver.addToFriendList(approvedRequest.getSender());
             userRepository.saveAndFlush(receiver);
@@ -166,7 +182,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void removeFromFriendsList(Request request) {
-//        Request requestToDelete = requestService.getById(request.getId());
         User receiver = userRepository.getOne(request.getReceiver().getUserId());
         User sender = userRepository.getOne(request.getSender().getUserId());
         receiver.removeFromFriendList(sender);
@@ -214,43 +229,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findByAuthorities(String role) {
-        return userRepository.findByAuthorities(role);
-    }
+    public Slice<User> getAllUsersByCriteria(int index, int size, String name, String expertise) {
+        Pageable pageable = PageRequest.of(index, size, Sort.by("username"));
+        if (!name.isEmpty() && expertise.isEmpty()) {
+            return getUserByFirstNameLastName(pageable, name);
 
-    @Override
-    public List<User> getPublicUsersByCriteria(String name, String expertise) {
-        if ((name != null && expertise.isEmpty())) {
-            return getUserByFirstNameLastName(name).
-                    stream().filter(user -> user.getPersonalProfile().isPicturePrivacy() == true).
-                    collect(Collectors.toList());
-        } else if (name.isEmpty() && expertise != null) {
-            return getUsersByExpertise(expertise).
-                    stream().filter(user -> user.getPersonalProfile().isPicturePrivacy() == true).
-                    collect(Collectors.toList());
-        } else {
-            List<User> users = getUserByFirstNameLastName(name).
-                    stream().filter(user -> user.getPersonalProfile().isPicturePrivacy() == true).
-                    collect(Collectors.toList());
-            return users.stream().
-                    filter(u -> u.getExpertiseProfile()
-                            .getCategory().getName().equals(expertise)).
-                    collect(Collectors.toList());
-        }
-    }
+        } else if (name.isEmpty() && !expertise.isEmpty()) {
+            return getUsersByExpertise(pageable, expertise);
 
-    @Override
-    public List<User> getAllUsersByCriteria(String name, String expertise) {
-        if (name != null && expertise.isEmpty()) {
-            return getUserByFirstNameLastName(name);
-        } else if (name.isEmpty() && expertise != null) {
-            return getUsersByExpertise(expertise);
+        } else if (!name.isEmpty() && !expertise.isEmpty()) {
+            return getUserByFirstNameLastNameExpertise(pageable, name,expertise);
+
         } else {
-            List<User> users = getUserByFirstNameLastName(name);
-            return users.stream().
-                    filter(u -> u.getExpertiseProfile()
-                            .getCategory().getName().equals(expertise)).
-                    collect(Collectors.toList());
+            return findSliceWithUsers(pageable, "username");
         }
     }
 }

@@ -96,13 +96,13 @@
 
                                 <div class="tab-pane fade show active" id="v-pills-1" role="tabpanel"
                                      aria-labelledby="v-pills-nextgen-tab">
-                                    <form action="#" th:action="@{/search}" method="get" class="search-job">
+                                    <form action="#" th:action="@{/search}" th:object="${page}" method="get" class="search-job">
                                         <div class="row no-gutters">
                                             <div class="col-md mr-md-2">
                                                 <div class="form-group">
                                                     <div class="form-field">
                                                         <div class="icon"><span class="icon-briefcase"></span></div>
-                                                        <input type="text" name="expertise" th:value="${expertise}"
+                                                        <input type="text" th:field="*{searchParam1}"
                                                                class="form-control"
                                                                placeholder="eg. Garphic. Web Developer">
                                                     </div>
@@ -112,9 +112,11 @@
                                                 <div class="form-group">
                                                     <div class="form-field">
                                                         <div class="icon"><span class="icon-user"></span></div>
-                                                        <input type="text" name="name" th:value="${name}"
+                                                        <input type="text" name="name" th:field="*{searchParam2}"
                                                                class="form-control"
                                                                placeholder="Ivan Ivanov">
+                                                        <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}" th:field="*{index}" class="mb-2"/>
+                                                        <input type="hidden" data-th-value="10" th:value="10" th:field="*{size}" class="mb-2"/>
                                                     </div>
                                                 </div>
                                             </div>
