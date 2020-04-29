@@ -5,8 +5,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -25,12 +27,7 @@ public class ExpertiseProfile {
     @ManyToOne
     private Category category;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH")
-    private LocalDateTime startTime;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH")
-    private LocalDateTime endTime;
-
+    private double availability;
 
     public ExpertiseProfile() {
     }
@@ -43,20 +40,12 @@ public class ExpertiseProfile {
         this.id = id;
     }
 
-    public LocalDateTime getStartTime() {
-        return startTime;
+    public double getAvailability() {
+        return availability;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public LocalDateTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
+    public void setAvailability(double availability) {
+        this.availability = availability;
     }
 
     public List<Skill> getSkills() {
@@ -79,9 +68,4 @@ public class ExpertiseProfile {
         this.category = category;
     }
 
-    public String calculateAvailability() {
-        Duration duration = Duration.between(startTime, endTime);
-        long hours = Math.abs(duration.toHours());
-        return String.format("%d hours", hours);
-    }
 }

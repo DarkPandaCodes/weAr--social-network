@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Skillhunt - Free Bootstrap 4 Template by Colorlib</title>
+    <title>WE are social media</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -43,14 +43,27 @@
 
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
+                <li class="nav-item cta mr-md-1"><a sec:authorize="!isAuthenticated()" th:href="@{/register}" class="nav-link">REGISTER</a>
+                </li>
+                <li class="nav-item cta cta cta-colored"><a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="nav-link">SIGN
+                    IN</a></li>
+
                 <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="browsejobs.html" class="nav-link">Browse Jobs</a></li>
-                <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Posts</a></li>
-                <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
-                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-                <li class="nav-item cta mr-md-1"><a th:href="@{/posts/auth/newPost}" class="nav-link"
-                                                    sec:authorize="isAuthenticated()">New post</a></li>
-                <li class="nav-item cta cta-colored"><a href="job-post.html" class="nav-link">Want a Job</a></li>
+                <li class="nav-item"><a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{'/admin'}" class="nav-link">GO
+                    TO admin zone</a></li>
+                <!--                <li class="nav-item"><a sec:authorize="!isAuthenticated()" th:href="@{'/auth'}" class="nav-link">GO-->
+                <!--                    TO personal zone</a></li>-->
+                <li class="nav-item"><a sec:authorize="isAuthenticated()"
+                                        th:href="@{'/auth/users/' + ${UserPrincipal.getUserId()} + '/profile'}" class="nav-link">Personal
+                    Profile</a></li>
+                <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Latest Posts</a></li>
+
+                <li class="nav-item cta cta-colored"><a th:href="@{/posts/auth/newPost}" sec:authorize="isAuthenticated()" class="nav-link">Add New post</a></li>
+                <li class="nav-item"><a sec:authorize="isAuthenticated()" th:href="@{/logout}"
+                                        class="nav-link">LOGOUT</a></li>
+
+                <!--				<li sec:authorize="isAuthenticated()" class="nav-item cta mr-md-1"><a th:href="@{'/auth/users/'+${user.userId}+'/profile'}" class="nav-link">Your Profile</a></li>-->
+
 
             </ul>
         </div>

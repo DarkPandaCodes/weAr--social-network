@@ -225,7 +225,7 @@
                                     <h2 class="mr-3 text-black"
                                         th:text="${user.getPersonalProfile().firstName+' '+user.getPersonalProfile().lastName}"
                                         th:type="text"> Ivan Petrov</h2></a>
-                                <span class="position">Graduate</span>
+                                <span class="position"  th:text=" ${user.getExpertiseProfile().getCategory().name}">Expertise</span>
                                 <p th:text="${user.getPersonalProfile().personalReview}" class="mb-2">Far far away,
                                     behind the word mountains, far from the countries Vokalia and Consonantia, there
                                     live the blind texts.</p>

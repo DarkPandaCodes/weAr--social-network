@@ -103,7 +103,7 @@
 </div>
 <section th:if="${error==null and user!=null}">
     <div class=" container d-flex bd-highlight team justify-content-center p-5 bg-white">
-        <div class="row">
+        <form class="row">
             <div class="col-2">
                 <form th:if="${!isOwner}" sec:authorize="isAuthenticated()" action="#"
                       th:action="@{/auth/connection/request}"
@@ -123,11 +123,12 @@
 
                     <label>
 
-                        <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}" th:field="*{index}" class="mb-2"/>
+                        <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}"
+                               th:field="*{index}" class="mb-2"/>
                         <input type="hidden" data-th-value="4" th:value="4" th:field="*{size}" class="mb-2"/>
 
                     </label>
-                    <input  class="btn btn-primary" type="submit" value="View my Requests"/>
+                    <input class="btn btn-primary" type="submit" value="View my Requests"/>
                 </form>
                 </p>
                 <form th:if="${isAdmin}" sec:authorize="isAuthenticated()" action="#" th:action="@{/admin/status}"
@@ -143,130 +144,138 @@
             </div>
             <div class="col-8 ">
                 <div class="team p-4 bg-white">
-                <form method="post" th:object="${user}">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="img" th:if="${user.getPersonalProfile().getPicture()==null }">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52y5aInsxSm31CvHOFHWujqUx_wWTS9iM6s7BAm21oEN_RiGoog"
-                                     alt=""/>
+                    <div method="post" th:object="${user}">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="img" th:if="${user.getPersonalProfile().getPicture()==null }">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52y5aInsxSm31CvHOFHWujqUx_wWTS9iM6s7BAm21oEN_RiGoog"
+                                         alt=""/>
+                                </div>
+                                <div class="img" th:class="img" th:if="${user.getPersonalProfile().getPicture()!=null}">
+
+                                    <img th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
+
+                                </div>
                             </div>
-                            <div class="img" th:class="img" th:if="${user.getPersonalProfile().getPicture()!=null}">
+                            <div class="col-lg-12">
+                                <div class="text pl-md-4">
+                                    <h1 class="mr-3 text-black"
+                                        th:text="*{personalProfile.firstName+' '+personalProfile.lastName}"
+                                        th:type="text"></h1>
+                                    <p><span
+                                            th:text=" ${user.getExpertiseProfile().getCategory().name}">Professional</span>
+                                    </p>
+                                    <p th:if="${user.getPersonalProfile().memberSince!=null}" class="proile-rating">
+                                        Member since : <span th:text=" ${user.getPersonalProfile().getMemberSince()}">8/10</span>
+                                    </p>
 
-                                <img th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
+                                    <ul class="nav nav-tabs" id="myTabContent" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" data-toggle="list" href="#home" role="tab"
+                                               aria-controls="home" aria-selected="true">Personal Information</a>
+                                        </li>
 
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-toggle="list" href="#posts" role="tab"
+                                               aria-controls="profile" aria-selected="false">Latest activity</a>
+                                        </li>
+                                    </ul>
+                                    <script>    $('#myTabContent a').on('click', function (e) {
+                                        e.preventDefault()
+                                        $(this).tab('show')
+                                    })</script>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-12">
-                            <div class="text pl-md-4">
-                                <h1 class="mr-3 text-black" th:text="*{personalProfile.firstName+' '+personalProfile.lastName}" th:type="text"></h1>
-                                <p> <span th:text=" ${user.getExpertiseProfile().getCategory().name}" >Professional</span></p>
-                                <p th:if="${user.getPersonalProfile().memberSince!=null}" class="proile-rating">Member since : <span th:text=" ${user.getPersonalProfile().getMemberSince()}">8/10</span></p>
-
-                                <ul class="nav nav-tabs" id="myTabContent" role="tablist">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" data-toggle="list" href="#home" role="tab"
-                                           aria-controls="home" aria-selected="true">Personal Information</a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a class="nav-link" data-toggle="list" href="#posts" role="tab"
-                                           aria-controls="profile" aria-selected="false">Latest activity</a>
-                                    </li>
-                                </ul>
-                                <script>    $('#myTabContent a').on('click', function (e) {
-                                    e.preventDefault()
-                                    $(this).tab('show')
-                                })</script>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-
-                        <div class="col-md-8">
-                            <div class="tab-content profile-tab">
-                                <div class="tab-pane fade show active" id="home" role="tabpanel"
-                                     aria-labelledby="home-tab">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label>User Id</label>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="tab-content profile-tab">
+                                    <div class="tab-pane fade show active" id="home" role="tabpanel"
+                                         aria-labelledby="home-tab">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>User Id</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p th:if="${isOwner}" th:text="${user.username}">Kshiti123</p>
+                                            </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <p th:if="${isOwner}" th:text="${user.username}">Kshiti123</p>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>Name</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p th:text="*{personalProfile.firstName+' '+personalProfile.lastName}">
+                                                    Kshiti Ghelani</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label>Name</label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>Email</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p th:if="${friends or isOwner}" th:text="${user.email}">
+                                                    kshitighelani@gmail.com</p>
+                                            </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <p th:text="*{personalProfile.firstName+' '+personalProfile.lastName}">
-                                                Kshiti Ghelani</p>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>birthday</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p th:if="${friends or isOwner}" th:text="*{personalProfile.birthYear}">
+                                                    123
+                                                    456 7890</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label>Email</label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>Location</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p th:if="*{personalProfile.location!=null}"
+                                                   th:text="*{personalProfile.location.city.city}">Web Developer and
+                                                    Designer</p>
+                                            </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <p th:if="${friends or isOwner}" th:text="${user.email}">
-                                                kshitighelani@gmail.com</p>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label>birthday</label>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <p th:if="${friends or isOwner}" th:text="*{personalProfile.birthYear}">123
-                                                456 7890</p>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label>Location</label>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <p th:if="*{personalProfile.location!=null}" th:text="*{personalProfile.location.city.city}">Web Developer and
-                                                Designer</p>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-
-                                        <div class="col-md-6">
-                                            <h2>I can do </h2>
-                                        </div>
-                                        <div class="col-md-6" th:if="*{!expertiseProfile.skills.isEmpty()}"
-                                             th:each="skill :*{expertiseProfile.skills}">
-                                            <h6 th:text="${skill.skill}">type of service</h6>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label>Availability</label>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <p th:if="*{expertiseProfile.startTime!=null and expertiseProfile.endTime!=null}"
-                                               th:text="*{expertiseProfile.calculateAvailability()}">n/a</p>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <label>Your Bio</label><br/>
-                                            <p th:text="*{personalProfile.personalReview}">Your detail description</p>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <label>Your Bio</label><br/>
+                                                <p th:text="*{personalProfile.personalReview}">Your detail
+                                                    description</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-4 sidebar" th:if="*{!expertiseProfile.skills.isEmpty()}">
+                                <div class="sidebar-box bg-white p-4 ftco-animate">
+                                    <h3 class="heading-sidebar">I can offer</h3>
+                                    <form action="#" class="browse-form"  >
+                                        <div th:if="*{!expertiseProfile.skills.isEmpty()}"
+                                             th:each="skill :*{expertiseProfile.skills}">
+                                            <div><span class="icon-hand-o-up"></span> <span th:text="${skill.skill}"></span></div>
+                                        </div>
+                                    </form>
+                                    <h3 class="heading-sidebar" th:if="*{expertiseProfile.getAvailability()>0}" >Weekly availability </h3>
+                                    <div><span class="icon-clock-o"></span> <span th:text="*{expertiseProfile.getAvailability() +' hours/weekly'}"></span></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    </div>
-                </form>
+                </div>
             </div>
+        </form>
             <div class="col-2" th:if="${isOwner or isAdmin}">
                 <a th:href="@{'/auth/users/'+${user.userId}+'/profile/editor'}" class="nav-link">edit
                     Profile</a>
             </div>
-        </div>
+
+
     </div>
 </section>
 <section th:if="${error==null and user!=null}" class="ftco-section bg-light">
-    <div class="container" >
+    <div class="container">
         <div class="row justify-content-center mb-5 pb-3" id="posts">
             <div class="col-md-7 heading-section text-center ftco-animate" th:if="${posts!=null}">
                 <span class="subheading">Timeline</span>
@@ -302,12 +311,14 @@
 
             <label>
 
-                <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}" th:field="*{index}" class="mb-2"/>
+                <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}"
+                       th:field="*{index}" class="mb-2"/>
                 <input type="hidden" data-th-value="4" th:value="4" th:field="*{size}" class="mb-2"/>
-<!--                <input type="hidden" th:value="1" name="next" class="mb-2"/>-->
+                <!--                <input type="hidden" th:value="1" name="next" class="mb-2"/>-->
             </label>
             <input th:if="${posts==null}" class="btn btn-primary" type="submit" value="LOAD RECENT POSTS"/>
-            <input th:if="${posts!=null} and ${hasNext}" class="btn btn-primary" type="submit" value="LOAD MORE RECENT POSTS"/>
+            <input th:if="${posts!=null} and ${hasNext}" class="btn btn-primary" type="submit"
+                   value="LOAD MORE RECENT POSTS"/>
         </form>
     </div>
 </section>
