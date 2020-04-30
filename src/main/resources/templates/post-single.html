@@ -163,7 +163,6 @@
 
                         <li id="comments" class="comments" th:each="comment : ${post.comments}">
                             <div class="vcard bio">
-                                <!--                                <img src="/images/person_1.jpg" alt="Image placeholder">-->
                                 <div class="vcard bio"
                                      th:if="${comment.getUser().getPersonalProfile().getPicture()==null}">
                                     <img src="/images/blank-profile-picture.jpg" alt="Image">
@@ -181,8 +180,6 @@
                                 <p th:text="${comment.content}"></p>
                                 <span class="position" th:id="like-count + ${comment.getCommentId()}"
                                       th:text="'Likes: ' + ${comment.likes.size()}"></span><br>
-<!--                                <span class="position" sec:authorize="isAuthenticated()"-->
-<!--                                      th:if="${comment.isLiked(UserPrincipal.getUsername()) == true}">You already liked</span>-->
 
                                 <form th:class="like-form" th:id="${comment.getCommentId()}" th:object="${commentDTOlike}"
                                       method="post"
@@ -196,9 +193,6 @@
                                 </form>
 
                                 <p>
-                                    <!--                                    <a href="#" class="reply">Reply</a>-->
-                                    <!--                                    <a href="#" class="reply">Like</a>-->
-                                    <!--                                    <a href="#" class="ion-md-heart-dislike">Dislike</a><br>-->
                                     <a th:href="@{'/comments/editor/' + ${comment.commentId}}"
                                        sec:authorize="isAuthenticated()"
                                        th:if="${(comment.canEdit(UserPrincipal.getUsername()) || isAdmin) == true}"
