@@ -20,10 +20,10 @@ public class CommentFactory {
         this.userService = userService;
     }
 
-    public Comment createCommentFromDTO(CommentDTO commentDTO) {
+    public Comment createCommentFromDTO(CommentDTO commentDTO, Principal principal) {
         Comment newComment = new Comment();
         newComment.setContent(commentDTO.getContent());
-        newComment.setPost(postService.getOne(commentDTO.getPostId()));
+        newComment.setPost(postService.getOne(commentDTO.getPostId(), principal));
         newComment.setUser(userService.getUserById(commentDTO.getUserId()));
         return newComment;
     }
@@ -31,7 +31,7 @@ public class CommentFactory {
     public Comment createCommentFromInput(CommentDTO commentDTO, int postId, Principal principal) {
         Comment newComment = new Comment();
         newComment.setContent(commentDTO.getContent());
-        newComment.setPost(postService.getOne(postId));
+        newComment.setPost(postService.getOne(postId, principal));
         newComment.setUser(userService.getUserByUserName(principal.getName()));
         return newComment;
     }

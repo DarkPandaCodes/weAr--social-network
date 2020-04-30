@@ -20,9 +20,9 @@ public interface PostService {
 
     Slice<Post> findSliceWithPosts(int pageIndex,int pageSize, String sortParam, String username );
 
-    List<Post> findPostsByAlgorithm(Sort sort, Principal principal);
+    List<Post> findAllPostsByAlgorithm(Sort sort, Principal principal);
 
-    List<Post> findPostsPersonalFeed(Sort sort, Principal principal);
+    List<Post> findPostsPersonalFeed(Principal principal);
 
     List<Post> findPostsByAuthority(Sort sort, Principal principal);
 
@@ -34,9 +34,9 @@ public interface PostService {
 
     List<Post> filterPostsByFriends(List<Post> posts, User user);
 
-    List<Post> mergeTwoLists(List<Post> list1, List<Post> list2);
+    List<Post> mergeTwoLists(List<Post> list1, List<Post> list2, Principal principal);
 
-    Post getOne(int postId);
+    Post getOne(int postId, Principal principal);
 
     boolean existsById(int postId);
 
@@ -54,5 +54,5 @@ public interface PostService {
 
     List<Comment> showComments(int postId);
 
-    Post updateRank(Principal principal, Post post);
+    void ifNotAuthorizedToVewPostThrow(Principal principal, Post post);
 }

@@ -107,7 +107,7 @@
                             <!--                                                  th:href="@{'/posts/' + ${post.postId} + '/postImage'}"></div>-->
 
                             <div class="text pl-md-4">
-                                <span class="location mb-0">User rating: x.x</span>
+<!--                                <span class="location mb-0">User rating: x.x</span>-->
                                 <h2><span th:text="${post.user.username}">username</span></h2>
                                 <p class="mb-2" th:text="${post.getCategory().getName()}">category</p>
                                 <span class="position" th:text="'Public post: ' + ${post.public}">public</span>
@@ -133,7 +133,7 @@
                                                th:value="${post.getPostId()}" class="mb-2" th:field="*{postId}"/>
                                     </div>
                                     <input class="fa-heart" type="submit" th:id="submit-val + ${post.getPostId()}"
-                                           th:value="${post.liked ? 'Dislike':'Like'}"/>
+                                           th:value="${post.isLiked2(UserPrincipal.getUsername()) ? 'Dislike':'Like'}"/>
 
                                 </form>
                             </div>
@@ -143,21 +143,21 @@
 
                 </div>
 
-                <div class="row mt-5">
-                    <div class="pagination">
-                        <div class="block-27">
-                            <ul>
-                                <li><a href="#">&lt;</a></li>
-                                <li class="active" th:href="@{/posts}"><span>1</span></li>
-                                <li><a th:href="@{/posts}">2</a></li>
-                                <li><a th:href="@{/posts}">3</a></li>
-                                <li><a th:href="@{/posts}">4</a></li>
-                                <li><a th:href="@{/posts}">5</a></li>
-                                <li><a href="#">&gt;</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+<!--                <div class="row mt-5">-->
+<!--                    <div class="pagination">-->
+<!--                        <div class="block-27">-->
+<!--                            <ul>-->
+<!--                                <li><a href="#">&lt;</a></li>-->
+<!--                                <li class="active" th:href="@{/posts}"><span>1</span></li>-->
+<!--                                <li><a th:href="@{/posts}">2</a></li>-->
+<!--                                <li><a th:href="@{/posts}">3</a></li>-->
+<!--                                <li><a th:href="@{/posts}">4</a></li>-->
+<!--                                <li><a th:href="@{/posts}">5</a></li>-->
+<!--                                <li><a href="#">&gt;</a></li>-->
+<!--                            </ul>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
             </div>
             <!--            *******************FILTER*****************************-->
             <div class="col-lg-4 sidebar">

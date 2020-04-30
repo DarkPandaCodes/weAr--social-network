@@ -68,7 +68,6 @@ public class PostController {
         if (principal != null) {
             model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
         }
-        //TODO Page Public posts? - seen from unAuthorized and easy for filter for the users?
         return "allPosts";
     }
 
@@ -88,8 +87,8 @@ public class PostController {
                 model.addAttribute("error", "User isn't authorised");
                 return "redirect:/";
             }
-            model.addAttribute("posts", postService.findPostsPersonalFeed(sort, principal));
-            boolean isPostLiked = postService.getOne(postDTO2.getPostId()).isLiked2(principal.getName());
+            model.addAttribute("posts", postService.findPostsPersonalFeed(principal));
+            boolean isPostLiked = postService.getOne(postDTO2.getPostId(), principal).isLiked2(principal.getName());
 
             if (isPostLiked) {
                 try {
@@ -118,7 +117,7 @@ public class PostController {
                 boolean isPublic = Boolean.parseBoolean(postDTO2.getPublicity());
                 List<Post> filteredPosts =
                         postService.filterPostsByPublicity
-                                (postService.findPostsByAlgorithm(sort, principal), isPublic);
+                                (postService.findAllPostsByAlgorithm(sort, principal), isPublic);
                 model.addAttribute("posts", filteredPosts);
             } else {
                 model.addAttribute("posts", postService.findPostsByAuthority(sort, principal));
@@ -131,7 +130,7 @@ public class PostController {
                 List<Post> filteredPosts =
                         postService.filterPostsByPublicity
                                 (postService.filterPostsByCategory
-                                        (postService.findPostsByAlgorithm(sort, principal), category.getName()), true);
+                                        (postService.findAllPostsByAlgorithm(sort, principal), category.getName()), true);
                 model.addAttribute("posts", filteredPosts);
             } else {
                 model.addAttribute("posts", postService.findPostsByAuthority(sort, principal));
@@ -145,11 +144,10 @@ public class PostController {
 
     @GetMapping("/{id}")
     public String showPost(Model model, @PathVariable(name = "id") int postId, Principal principal) {
-        //TODO auth or friend
         Post post01;
         try {
-            post01 = postService.getOne(postId);
-        } catch (EntityNotFoundException e) {
+            post01 = postService.getOne(postId, principal);
+        } catch (EntityNotFoundException | InvalidOperationException e) {
             model.addAttribute("error", e.getMessage());
             return "post-single";
         }
@@ -157,7 +155,6 @@ public class PostController {
         model.addAttribute("comment", new CommentDTO());
         model.addAttribute("User", new UserDtoRequest());
         model.addAttribute("commentDTOlike", new CommentDTO());
-        //TODO refactor this into service, and not in the HTML?
         if (principal != null) {
             model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
             model.addAttribute("isAdmin", userService.isAdmin(principal));
@@ -179,7 +176,7 @@ public class PostController {
                 commentService.save(newComment, principal);
             } catch (InvalidOperationException e) {
                 model.addAttribute("error", e.getMessage());
-                model.addAttribute("post", postService.getOne(postId));
+                model.addAttribute("post", postService.getOne(postId, principal));
                 model.addAttribute("commentDTOlike", new CommentDTO());
                 model.addAttribute("comment", new CommentDTO());
                 model.addAttribute("User", new UserDtoRequest());
@@ -207,27 +204,21 @@ public class PostController {
     }
 
     @GetMapping("/auth/newPost")
-    public String newPostData(Model model, Principal principal) {
-        //TODO Auth
+    public String newPostData(Model model) {
         PostDTO post = new PostDTO();
         model.addAttribute("post", post);
         return "newPost";
     }
 
     @GetMapping("/{id}/postImage")
-    public void renderPostImageFormDB(@PathVariable int id, HttpServletResponse response) throws IOException {
-        Post post;
-//        try {
-            post = postService.getOne(id);
-//        } catch (EntityNotFoundException e) {
-//            return "redirect:/";
-//        }
+    public void renderPostImageFormDB(@PathVariable int id, HttpServletResponse response,
+                                      Principal principal) throws IOException {
+        Post post = postService.getOne(id, principal);
         if (post.getPicture() != null) {
             response.setContentType("image/jpeg");
             InputStream is = new ByteArrayInputStream(Base64.getDecoder().decode(post.getPicture()));
             IOUtils.copy(is, response.getOutputStream());
         }
-//        return String.valueOf(post.getPostId());
     }
 
     @Transactional
@@ -255,8 +246,8 @@ public class PostController {
     public String editPostData(Model model, @PathVariable(name = "id") int postId, Principal principal) {
         Post post;
         try {
-            post = postService.getOne(postId);
-        } catch (EntityNotFoundException e) {
+            post = postService.getOne(postId, principal);
+        } catch (EntityNotFoundException | InvalidOperationException e) {
             model.addAttribute("error", e.getMessage());
             return "postEdit";
         }
@@ -287,8 +278,8 @@ public class PostController {
     public String deletePostData(Model model, Principal principal, @PathVariable(name = "id") int postId) {
         Post post;
         try {
-            post = postService.getOne(postId);
-        } catch (EntityNotFoundException e) {
+            post = postService.getOne(postId, principal);
+        } catch (EntityNotFoundException | InvalidOperationException e) {
             model.addAttribute("error", e.getMessage());
             return "postDelete";
         }

@@ -19,16 +19,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
 
-    public static final int POSTS_PER_PAGE = 5;
     private static final double ALGORITHM_EFFECT_LIKES = -1.0;
     private static final double ALGORITHM_EFFECT_COMMENTS = -3.0;
     private static final double ALGORITHM_EFFECT_TIME = 1.0;
@@ -54,18 +50,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Post> findAll(Sort sort) {
-        List<Post> allPost = postRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
-//        List<Post> listSinglePage = new ArrayList<>();
-//
-//        if (allPost.size() > (page - 1) * POSTS_PER_PAGE) {
-//            for (int i = 0; i < POSTS_PER_PAGE; i++) {
-//                if ((page - 1) * POSTS_PER_PAGE + i == allPost.size()) {
-//                    break;
-//                }
-//                listSinglePage.add(allPost.get((page - 1) * POSTS_PER_PAGE + i));
-//            }
-//        }
-        return allPost;
+        return postRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
     }
 
     @Override
@@ -75,39 +60,38 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Slice<Post> findSliceWithPosts(int startIndex, int pageSize, String sortParam, String username) {
-        if (pageSize==0&&startIndex==0){
+        if (pageSize == 0 && startIndex == 0) {
             throw new EntityNotFoundException();
         }
         Pageable page = PageRequest.of(startIndex, pageSize, Sort.by(sortParam).descending());
-        Slice<Post> slicedResult = postRepository.findAllByUserUsername(page, username);
-        return slicedResult;
+        return postRepository.findAllByUserUsername(page, username);
     }
 
     @Override
     @Transactional
-    public List<Post> findPostsByAlgorithm(Sort sort, Principal principal) {
+    public List<Post> findAllPostsByAlgorithm(Sort sort, Principal principal) {
         List<Post> allPost = postRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
         return applyAlgorithm(principal, allPost);
     }
 
     @Override
-    public List<Post> findPostsPersonalFeed(Sort sort, Principal principal) {
+    public List<Post> findPostsPersonalFeed(Principal principal) {
         User user = userService.getUserByUserName(principal.getName());
         List<Post> friendsPosts = filterPostsByFriends
-                (findPostsByAlgorithm(sort, principal), user);
+                (findAll(), user);
 
         Category usersCategory = user.getExpertiseProfile().getCategory();
         List<Post> postsFromMyCategory = filterPostsByCategory
-                (findPostsByAlgorithm(sort, principal), usersCategory.getName());
-        return mergeTwoLists(friendsPosts, postsFromMyCategory);
+                (findAll(), usersCategory.getName());
+        return mergeTwoLists(friendsPosts, postsFromMyCategory, principal);
     }
 
     @Override
     public List<Post> findPostsByAuthority(Sort sort, Principal principal) {
         if (principal == null) {
-            return filterPostsByPublicity(findPostsByAlgorithm(sort, principal), true);
+            return filterPostsByPublicity(findAllPostsByAlgorithm(sort, principal), true);
         }
-        return findPostsPersonalFeed(sort, principal);
+        return findPostsPersonalFeed(principal);
     }
 
     @Override
@@ -115,7 +99,6 @@ public class PostServiceImpl implements PostService {
         List<Post> list = posts.stream()
                 .filter(p -> p.isPublic() == isPublic)
                 .collect(Collectors.toList());
-
         return list;
     }
 
@@ -141,18 +124,21 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> mergeTwoLists(List<Post> list1, List<Post> list2) {
+    public List<Post> mergeTwoLists(List<Post> list1, List<Post> list2, Principal principal) {
         Set<Post> set = new LinkedHashSet<>(list1);
         set.addAll(list2);
-        return new ArrayList<>(set);
+        List<Post> listResult = new ArrayList<>(set);
+        return applyAlgorithm(principal, listResult);
     }
 
     @Override
-    public Post getOne(int postId) {
+    public Post getOne(int postId, Principal principal) {
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
         }
-        return postRepository.getOne(postId);
+        Post post = postRepository.getOne(postId);
+        ifNotAuthorizedToVewPostThrow(principal, post);
+        return post;
     }
 
     @Override
@@ -231,8 +217,7 @@ public class PostServiceImpl implements PostService {
         userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), postToEdit.getUser());
         postToEdit.setPublic(postDTO.isPublic());
         postToEdit.setContent(postDTO.getContent());
-        //TODO think of other way to check if the picture needs to be changed
-        if (postDTO.getPicture().length() > 200) {
+        if (postDTO.getPicture().length() > 0) {
             postToEdit.setPicture(postDTO.getPicture());
         }
         postRepository.save(postToEdit);
@@ -245,7 +230,7 @@ public class PostServiceImpl implements PostService {
         if (!postRepository.existsById(postId)) {
             throw new EntityNotFoundException(String.format("Post with id %d does not exists", postId));
         }
-        Post postToDelete = getOne(postId);
+        Post postToDelete = getOne(postId, principal);
         userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), postToDelete.getUser());
         postToDelete.getLikes().clear();
         postToDelete.getComments().clear();
@@ -262,20 +247,15 @@ public class PostServiceImpl implements PostService {
         return postRepository.getOne(postId).getComments();
     }
 
-    @Override
-    public Post updateRank(Principal principal, Post post) {
-        //it is not correct - we cannot calculate rank if we take only one post..we need to take the whole List
-        List<Post> list = new ArrayList<>();
-        list.add(post);
-        applyAlgorithm(principal, list);
-        return post;
-    }
+    private List<Post> applyAlgorithm(Principal principal, List<Post> postList) {
+        List<Post> sortedListByDate = postList.stream()
+                .sorted(Comparator.comparing(Post::getDate).reversed())
+                .collect(Collectors.toList());
 
-    private List<Post> applyAlgorithm(Principal principal, List<Post> allPost) {
-        for (int i = 0; i < allPost.size(); i++) {
+        for (int i = 0; i < sortedListByDate.size(); i++) {
             double timeEffect = i * ALGORITHM_EFFECT_TIME;
             int numberOfPostsForMonth = 0;
-            Post currentPost = allPost.get(i);
+            Post currentPost = sortedListByDate.get(i);
             List<Post> allPostsOfUser = findAllByUser(currentPost.getUser().getUsername());
             double likesEffect = currentPost.getLikes().size() * ALGORITHM_EFFECT_LIKES;
             double commentsEffect = currentPost.getComments().size() * ALGORITHM_EFFECT_COMMENTS;
@@ -305,6 +285,24 @@ public class PostServiceImpl implements PostService {
             currentPost.setRank(timeEffect + likesEffect + commentsEffect + friendsEffect + multiPostsEffect);
             postRepository.save(currentPost);
         }
-        return postRepository.findAll(Sort.by(Sort.Direction.ASC, "rank"));
+        return sortedListByDate.stream()
+                .sorted(Comparator.comparing(Post::getRank))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void ifNotAuthorizedToVewPostThrow(Principal principal, Post post) {
+        if (principal == null) {
+            if (!post.isPublic()) {
+                throw new InvalidOperationException("User isn't authorised");
+            }
+        } else {
+            User postCreator = userService.getUserByUserName(post.getUser().getUsername());
+            if (!(post.isPublic() || postCreator.getFriendList().stream()
+                    .anyMatch(u -> u.getUsername().equals(principal.getName())) ||
+                    postCreator.getUsername().equals(principal.getName()))) {
+                throw new InvalidOperationException("User isn't authorised");
+            }
+        }
     }
 }

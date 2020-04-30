@@ -39,13 +39,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> findAll(Sort sort) {
-        //TODO only public posts?
         return commentRepository.findAll(Sort.by(Sort.Direction.ASC, "commentId"));
     }
 
     @Override
     public List<Comment> findAllCommentsOfPost(Post post, Sort sort) {
-        //TODO is it public or are you admin, friend, creator?
         if (!postRepository.existsById(post.getPostId())) {
             throw new EntityNotFoundException(String.format
                     ("Post with id %d does not exists", post.getPostId()));
@@ -61,7 +59,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment getOne(int commentId) {
-        //TODO only public posts?
         if (!commentRepository.existsById(commentId)) {
             throw new EntityNotFoundException(String.format
                     ("Comment with id %d does not exists", commentId));

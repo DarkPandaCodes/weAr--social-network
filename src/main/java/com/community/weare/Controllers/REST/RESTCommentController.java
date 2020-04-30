@@ -41,32 +41,36 @@ public class RESTCommentController {
 
     @GetMapping
     public List<Comment> findAll(Sort sort) {
-        //TODO only public
         return commentService.findAll(sort);
     }
 
     @GetMapping("/byPost")
-    public List<Comment> findAllCommentsOfPost(@RequestParam int postId, Sort sort) {
+    public List<Comment> findAllCommentsOfPost(@RequestParam int postId, Sort sort, Principal principal) {
         if (!postService.existsById(postId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post does not exists");
         }
-        Post post = postService.getOne(postId);
+        Post post = postService.getOne(postId, principal);
         return commentService.findAllCommentsOfPost(post, sort);
     }
 
     @GetMapping("/single")
     public Comment getOne(@RequestParam int commentId) {
-        if (commentService.getOne(commentId) == null) {
+        try {
+            return commentService.getOne(commentId);
+        } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format
                     ("Comment with id %d does not exists", commentId));
         }
-        return commentService.getOne(commentId);
     }
 
     @PostMapping("/auth/creator")
     public Comment save(@RequestBody CommentDTO commentDTO, Principal principal) {
-        Comment newComment = commentFactory.createCommentFromDTO(commentDTO);
-        return commentService.save(newComment, principal);
+        Comment newComment = commentFactory.createCommentFromDTO(commentDTO, principal);
+        try {
+            return commentService.save(newComment, principal);
+        } catch (DuplicateEntityException | EntityNotFoundException | InvalidOperationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @PostMapping("/auth/likesUp")
@@ -94,15 +98,6 @@ public class RESTCommentController {
             }
         }
         return commentToLike;
-    }
-
-    @PostMapping("/auth/dislikesUp")
-    public void dislikeComment(@RequestParam int commentId, Principal principal) {
-        try {
-            commentService.dislikeComment(commentId, principal);
-        } catch (DuplicateEntityException | EntityNotFoundException | InvalidOperationException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
     }
 
     @PutMapping("/auth/editor")

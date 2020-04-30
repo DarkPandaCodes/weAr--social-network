@@ -3,10 +3,7 @@ package com.community.weare;
 import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Exceptions.InvalidOperationException;
-import com.community.weare.Models.Category;
-import com.community.weare.Models.Comment;
-import com.community.weare.Models.Post;
-import com.community.weare.Models.User;
+import com.community.weare.Models.*;
 import com.community.weare.Models.dto.PostDTO;
 import com.community.weare.Repositories.PostRepository;
 import com.community.weare.Services.contents.CommentService;
@@ -19,7 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -108,6 +105,41 @@ public class PostServiceImplTests {
     }
 
     @Test
+    public void findSliceWithPostsShould_CallRepository() {
+        //arrange
+        Post post = FactoryPostComment.createPost();
+        List<Post> list = new ArrayList<>();
+        list.add(post);
+        Slice<Post> slice = new PageImpl<>(list);
+        int startIndex = 1;
+        int pageSize = 1;
+        String sortParam = "param1";
+        String username = "userName";
+        Pageable page = PageRequest.of(startIndex, pageSize, Sort.by(sortParam).descending());
+        Mockito.when(postRepository.findAllByUserUsername(page, username)).thenReturn(slice);
+
+        //act
+        mockPostService.findSliceWithPosts(startIndex, pageSize, sortParam, username);
+
+        //assert
+        Mockito.verify(postRepository, Mockito.times(1))
+                .findAllByUserUsername(page, username);
+    }
+
+    @Test
+    public void findSliceWithPostsShould_ThrowIfPageAndIndexAreZero() {
+        //arrange
+        int startIndex = 0;
+        int pageSize = 0;
+        String sortParam = "param1";
+        String username = "param2";
+
+        //Act, Assert
+        Assert.assertThrows(EntityNotFoundException.class,
+                () -> mockPostService.findSliceWithPosts(startIndex, pageSize, sortParam, username));
+    }
+
+    @Test
     public void sortingAlgorithmShould_SortCorrectly() {
         //arrange
         User user01 = Factory.createUser();
@@ -126,7 +158,7 @@ public class PostServiceImplTests {
         post1.getComments().add(new Comment());
 
         Post post2 = FactoryPostComment.createPost();
-        post1.setDate("18/04/2020 23:34:13");
+        post2.setDate("19/04/2020 23:34:13");
         post2.setUser(userTedi);
 
         post2.getLikes().add(Factory.createUser());
@@ -141,7 +173,7 @@ public class PostServiceImplTests {
 
         Post post3 = FactoryPostComment.createPost();
         post3.setUser(userTedi);
-        post1.setDate("18/04/2020 23:34:13");
+        post3.setDate("20/04/2020 23:34:13");
 
         List<Post> sortedList = new ArrayList<>();
         sortedList.add(post3);
@@ -151,8 +183,6 @@ public class PostServiceImplTests {
         Principal principal = () -> "tedi";
         Mockito.when(postRepository.findAll(Sort.by(Sort.Direction.DESC, "date")))
                 .thenReturn(sortedList);
-        Mockito.when(postRepository.findAll(Sort.by(Sort.Direction.ASC, "rank")))
-                .thenReturn(sortedList);
 
         Mockito.when(postRepository.findAllByUserUsername
                 (Sort.by(Sort.Direction.DESC, "date"),
@@ -160,22 +190,324 @@ public class PostServiceImplTests {
         Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(userTedi);
 
         //act
-        List<Post> listResult = mockPostService.findPostsByAlgorithm
+        List<Post> listResult = mockPostService.findAllPostsByAlgorithm
                 ((Sort.by(Sort.Direction.DESC, "date")), principal);
 
         //assert
-        assertEquals(0, listResult.get(0).getRank(), 0);
-        assertEquals(-3, listResult.get(1).getRank(), 0);
+        assertEquals(-3, listResult.get(0).getRank(), 0);
+        assertEquals(0, listResult.get(1).getRank(), 0);
         assertEquals(13, listResult.get(2).getRank(), 0);
+    }
+
+    @Test
+    public void mergeTwoListsShould_applySortingAlgorithm() {
+        //arrange
+        User user01 = Factory.createUser();
+        user01.setUsername("otherName");
+        User userTedi = Factory.createUser();
+        userTedi.getFriendList().add(user01);
+        user01.getFriendList().add(userTedi);
+
+        Post post1 = FactoryPostComment.createPost();
+        post1.setDate("18/04/2020 23:34:13");
+        post1.setUser(userTedi);
+        post1.getLikes().add(Factory.createUser());
+        post1.getLikes().add(Factory.createUser());
+        post1.getLikes().add(Factory.createUser());
+
+        post1.getComments().add(new Comment());
+        post1.getComments().add(new Comment());
+
+        Post post2 = FactoryPostComment.createPost();
+        post2.setDate("19/04/2020 23:34:13");
+        //the difference
+        post2.setUser(user01);
+
+        post2.getLikes().add(Factory.createUser());
+        post2.getLikes().add(Factory.createUser());
+        post2.getLikes().add(Factory.createUser());
+        post2.getLikes().add(Factory.createUser());
+        post2.getLikes().add(Factory.createUser());
+
+        post2.getComments().add(new Comment());
+        post2.getComments().add(new Comment());
+        post2.getComments().add(new Comment());
+
+        Post post3 = FactoryPostComment.createPost();
+        post3.setUser(userTedi);
+        post3.setDate("20/04/2020 23:34:13");
+
+        List<Post> list1 = new ArrayList<>();
+        List<Post> list2 = new ArrayList<>();
+        list1.add(post3);
+        list1.add(post1);
+        list2.add(post2);
+
+        Principal principal = () -> "tedi";
+
+        Mockito.when(postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"),
+                        post1.getUser().getUsername())).thenReturn(list1);
+        Mockito.when(postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"),
+                        post3.getUser().getUsername())).thenReturn(list1);
+        Mockito.when(postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"),
+                        post2.getUser().getUsername())).thenReturn(list2);
+        Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(userTedi);
+
+        //act
+        List<Post> listResult = mockPostService.mergeTwoLists
+                (list1, list2, principal);
+
+        //assert
+        assertEquals(-23, listResult.get(0).getRank(), 0);
+        assertEquals(0, listResult.get(1).getRank(), 0);
+        assertEquals(3, listResult.get(2).getRank(), 0);
+    }
+
+
+    @Test
+    public void filterPostsByFriendsShould_ReturnFilteredPosts() {
+        //arrange
+        Post post1 = FactoryPostComment.createPost();
+        Post post2 = FactoryPostComment.createPost();
+        post2.setPublic(false);
+        Post post3 = FactoryPostComment.createPost();
+        User userTedi = Factory.createUser();
+        User user1 = Factory.createUser();
+        user1.setUsername("tediFriend");
+        userTedi.getFriendList().add(user1);
+        user1.getFriendList().add(userTedi);
+
+        post1.setUser(userTedi);
+        post2.setUser(userTedi);
+        post3.setUser(user1);
+
+        List<Post> list = new ArrayList<>();
+        list.add(post1);
+        list.add(post2);
+        list.add(post3);
+
+        //act
+        List<Post> listResult = mockPostService.filterPostsByFriends(list, userTedi);
+
+        //assert
+        assertEquals(1, listResult.size());
+        assertEquals(post3, listResult.get(0));
+    }
+
+    @Test
+    public void findPostsPersonalFeedShould_ReturnFilteredPosts() {
+        //arrange
+        Post post1 = FactoryPostComment.createPost();
+        post1.setDate("20/04/2020 11:34:13");
+        Post post2 = FactoryPostComment.createPost();
+        post2.setDate("20/04/2020 12:34:13");
+        Post post3 = FactoryPostComment.createPost();
+        post3.setDate("20/04/2020 13:34:13");
+        Post post4 = FactoryPostComment.createPost();
+        post4.setDate("20/04/2020 14:34:13");
+        Post post5 = FactoryPostComment.createPost();
+        post5.setDate("20/04/2020 15:34:13");
+        Post post6 = FactoryPostComment.createPost();
+        post6.setDate("20/04/2020 16:34:13");
+        Post post7 = FactoryPostComment.createPost();
+        post7.setDate("20/04/2020 17:34:13");
+
+        Principal principal = () -> "tedi";
+        User userTedi = Factory.createUser();
+        User user1 = Factory.createUser();
+        user1.setUsername("tediFriend");
+        userTedi.getFriendList().add(user1);
+        user1.getFriendList().add(userTedi);
+        Category categoryDoctor = new Category("Doctor");
+        Category categoryDentist = new Category("Dentist");
+        userTedi.getExpertiseProfile().setCategory(categoryDoctor);
+        user1.getExpertiseProfile().setCategory(categoryDentist);
+
+        post1.setUser(userTedi);
+        post2.setUser(userTedi);
+        post3.setUser(user1);
+
+        User userGeorge = Factory.createUser();
+        userGeorge.setUsername("George");
+        userGeorge.getExpertiseProfile().setCategory(categoryDentist);
+        post4.setUser(userGeorge);
+        post5.setUser(userGeorge);
+
+        User userAlex = Factory.createUser();
+        userAlex.setUsername("Alex");
+        userAlex.getExpertiseProfile().setCategory(categoryDoctor);
+        post6.setUser(userAlex);
+        post7.setUser(userAlex);
+
+        List<Post> listAll = new ArrayList<>();
+        listAll.add(post1);
+        listAll.add(post2);
+        listAll.add(post3);
+        listAll.add(post4);
+        listAll.add(post5);
+        listAll.add(post6);
+        listAll.add(post7);
+
+        List<Post> listTedi = new ArrayList<>();
+        List<Post> listUser1 = new ArrayList<>();
+        List<Post> listGeorge = new ArrayList<>();
+        List<Post> listAlex = new ArrayList<>();
+
+        //order is extremely important
+        listTedi.add(post2);
+        listTedi.add(post1);
+        listUser1.add(post3);
+        listGeorge.add(post5);
+        listGeorge.add(post4);
+        listAlex.add(post7);
+        listAlex.add(post6);
+
+
+        Mockito.when(postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"),
+                        post1.getUser().getUsername())).thenReturn(listTedi);
+        Mockito.when(postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"),
+                        post2.getUser().getUsername())).thenReturn(listTedi);
+        Mockito.when(postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"),
+                        post3.getUser().getUsername())).thenReturn(listUser1);
+        Mockito.when(postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"),
+                        post6.getUser().getUsername())).thenReturn(listAlex);
+        Mockito.when(postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"),
+                        post7.getUser().getUsername())).thenReturn(listAlex);
+
+        Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(userTedi);
+        Mockito.when(postRepository.findAll()).thenReturn(listAll);
+
+        //act
+        List<Post> listResult = mockPostService.findPostsPersonalFeed(principal);
+
+        //assert
+        assertEquals(5, listResult.size());
+        assertEquals(post3, listResult.get(0));
+        assertEquals(post7, listResult.get(1));
+        assertEquals(post2, listResult.get(2));
+        assertEquals(post6, listResult.get(3));
+        assertEquals(post1, listResult.get(4));
+    }
+
+    @Test
+    public void findPostsByAuthorityShould_ReturnPersonalFeedIfPrincipalNotNull() {
+        //arrange
+        Post post1 = FactoryPostComment.createPost();
+        post1.setDate("20/04/2020 11:34:13");
+        Post post2 = FactoryPostComment.createPost();
+        post2.setDate("20/04/2020 12:34:13");
+        Post post3 = FactoryPostComment.createPost();
+        post3.setDate("20/04/2020 13:34:13");
+        Post post4 = FactoryPostComment.createPost();
+        post4.setDate("20/04/2020 14:34:13");
+        Post post5 = FactoryPostComment.createPost();
+        post5.setDate("20/04/2020 15:34:13");
+        Post post6 = FactoryPostComment.createPost();
+        post6.setDate("20/04/2020 16:34:13");
+        Post post7 = FactoryPostComment.createPost();
+        post7.setDate("20/04/2020 17:34:13");
+
+        Principal principal = () -> "tedi";
+        User userTedi = Factory.createUser();
+        User user1 = Factory.createUser();
+        user1.setUsername("tediFriend");
+        userTedi.getFriendList().add(user1);
+        user1.getFriendList().add(userTedi);
+        Category categoryDoctor = new Category("Doctor");
+        Category categoryDentist = new Category("Dentist");
+        userTedi.getExpertiseProfile().setCategory(categoryDoctor);
+        user1.getExpertiseProfile().setCategory(categoryDentist);
+
+        post1.setUser(userTedi);
+        post2.setUser(userTedi);
+        post3.setUser(user1);
+
+        User userGeorge = Factory.createUser();
+        userGeorge.setUsername("George");
+        userGeorge.getExpertiseProfile().setCategory(categoryDentist);
+        post4.setUser(userGeorge);
+        post5.setUser(userGeorge);
+
+        User userAlex = Factory.createUser();
+        userAlex.setUsername("Alex");
+        userAlex.getExpertiseProfile().setCategory(categoryDoctor);
+        post6.setUser(userAlex);
+        post7.setUser(userAlex);
+
+        List<Post> listAll = new ArrayList<>();
+        listAll.add(post1);
+        listAll.add(post2);
+        listAll.add(post3);
+        listAll.add(post4);
+        listAll.add(post5);
+        listAll.add(post6);
+        listAll.add(post7);
+
+        List<Post> listTedi = new ArrayList<>();
+        List<Post> listUser1 = new ArrayList<>();
+        List<Post> listGeorge = new ArrayList<>();
+        List<Post> listAlex = new ArrayList<>();
+
+        //order is extremely important
+        listTedi.add(post2);
+        listTedi.add(post1);
+        listUser1.add(post3);
+        listGeorge.add(post5);
+        listGeorge.add(post4);
+        listAlex.add(post7);
+        listAlex.add(post6);
+
+
+        Mockito.when(postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"),
+                        post1.getUser().getUsername())).thenReturn(listTedi);
+        Mockito.when(postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"),
+                        post2.getUser().getUsername())).thenReturn(listTedi);
+        Mockito.when(postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"),
+                        post3.getUser().getUsername())).thenReturn(listUser1);
+        Mockito.when(postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"),
+                        post6.getUser().getUsername())).thenReturn(listAlex);
+        Mockito.when(postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"),
+                        post7.getUser().getUsername())).thenReturn(listAlex);
+
+        Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(userTedi);
+        Mockito.when(postRepository.findAll()).thenReturn(listAll);
+
+        //act
+        List<Post> listResult = mockPostService.findPostsByAuthority
+                (Sort.by(Sort.Direction.DESC, "date"),principal);
+
+        //assert
+        assertEquals(5, listResult.size());
+        assertEquals(post3, listResult.get(0));
+        assertEquals(post7, listResult.get(1));
+        assertEquals(post2, listResult.get(2));
+        assertEquals(post6, listResult.get(3));
+        assertEquals(post1, listResult.get(4));
     }
 
     @Test
     public void filterPostsByPublicityShould_ReturnFilteredPosts() {
         //arrange
         Post post1 = FactoryPostComment.createPost();
+        post1.setDate("20/04/2020 14:34:13");
         Post post2 = FactoryPostComment.createPost();
+        post2.setDate("20/04/2020 15:34:13");
         post2.setPublic(false);
         Post post3 = FactoryPostComment.createPost();
+        post3.setDate("20/04/2020 16:34:13");
 
 
         List<Post> list = new ArrayList<>();
@@ -190,6 +522,31 @@ public class PostServiceImplTests {
         assertEquals(2, listResult.size());
         assertEquals(post1, listResult.get(0));
         assertEquals(post3, listResult.get(1));
+    }
+
+    @Test
+    public void findPostsByAuthorityShould_ReturnPublicPosts_WhenPrincipalNull() {
+        //arrange
+        Post post1 = FactoryPostComment.createPost();
+        Post post2 = FactoryPostComment.createPost();
+        post2.setPublic(false);
+        Post post3 = FactoryPostComment.createPost();
+
+        List<Post> list = new ArrayList<>();
+        list.add(post3);
+        list.add(post2);
+        list.add(post1);
+
+        Mockito.when(postRepository.findAll(Sort.by
+                (Sort.Direction.DESC, "date"))).thenReturn(list);
+        //act
+        List<Post> listResult = mockPostService.findPostsByAuthority
+                (Sort.by(Sort.Direction.DESC, "date"), null);
+
+        //assert
+        assertEquals(2, listResult.size());
+        assertEquals(post3, listResult.get(0));
+        assertEquals(post1, listResult.get(1));
     }
 
     @Test
@@ -265,12 +622,13 @@ public class PostServiceImplTests {
         //arrange
         Post post = FactoryPostComment.createPost();
         post.setPostId(1);
+        Principal principal = () -> "tedi";
 
         Mockito.when(postRepository.existsById(1)).thenReturn(true);
         Mockito.when(postRepository.getOne(1)).thenReturn(post);
 
         //act
-        mockPostService.getOne(1);
+        mockPostService.getOne(1, principal);
         //assert
         Mockito.verify(postRepository, Mockito.times(1)).getOne(1);
     }
@@ -278,10 +636,10 @@ public class PostServiceImplTests {
     @Test
     public void getOneShould_ThrowIfPostDoesNotExists() {
         //arrange
-
+        Principal principal = () -> "tedi";
         //Act, Assert
         Assert.assertThrows(EntityNotFoundException.class,
-                () -> mockPostService.getOne(1));
+                () -> mockPostService.getOne(1, principal));
     }
 
     @Test
@@ -343,6 +701,60 @@ public class PostServiceImplTests {
     }
 
     @Test
+    public void likePostShould_Throw_IfPrincipalIsNull() {
+        //Arrange
+        Post post = FactoryPostComment.createPost();
+        post.setPublic(false);
+
+        //Act, Assert
+        Assert.assertThrows(InvalidOperationException.class,
+                () -> mockPostService.likePost(1, null));
+    }
+
+    @Test
+    public void Save_Throw_IfPrincipalIsNull() {
+        //Arrange
+        Post post = FactoryPostComment.createPost();
+        post.setPublic(false);
+
+        //Act, Assert
+        Assert.assertThrows(InvalidOperationException.class,
+                () -> mockPostService.save(post, null));
+    }
+
+    @Test
+    public void Save_Throw_IfContentLongerThan1000() {
+        //Arrange
+        Post post = FactoryPostComment.createPost();
+        post.setPostId(1);
+        post.setContent(new String(new char[1001]));
+
+        Principal principal = () -> "tedi";
+
+        //Assert
+
+        //Act
+        Assert.assertThrows(InvalidOperationException.class,
+                () -> mockPostService.save(post, principal));
+    }
+
+    @Test
+    public void Save_Should_CallRepository() {
+        //Arrange
+        Post post = FactoryPostComment.createPost();
+        post.setPostId(1);
+        post.setContent("real Content");
+
+        Principal principal = () -> "tedi";
+
+        //Assert
+        mockPostService.save(post, principal);
+
+        //Act
+        Mockito.verify(postRepository, Mockito.times(1)).save(post);
+    }
+
+    @Test
     public void dislikePostShould_RemoveLike() {
         //arrange
         Post post = FactoryPostComment.createPost();
@@ -387,6 +799,17 @@ public class PostServiceImplTests {
     }
 
     @Test
+    public void dislikePostShould_Throw_IfPrincipalIsNull() {
+        //Arrange
+        Post post = FactoryPostComment.createPost();
+        post.setPublic(false);
+
+        //Act, Assert
+        Assert.assertThrows(InvalidOperationException.class,
+                () -> mockPostService.dislikePost(1, null));
+    }
+
+    @Test
     public void isLikedShould_ReturnCorrect() {
         //arrange
         Post post = FactoryPostComment.createPost();
@@ -409,10 +832,29 @@ public class PostServiceImplTests {
 
         PostDTO postDTO = new PostDTO();
 
+        //Assert
         Principal principal = () -> "tedi";
 
-        //Act, Assert
+        //Act
         Assert.assertThrows(EntityNotFoundException.class,
+                () -> mockPostService.editPost(post.getPostId(), postDTO, principal));
+    }
+
+    @Test
+    public void editPostShould_Throw_WhenContentLongerThan1000() {
+        //Arrange
+        Post post = FactoryPostComment.createPost();
+        post.setPostId(1);
+
+        PostDTO postDTO = new PostDTO();
+        postDTO.setContent(new String(new char[1001]));
+        Principal principal = () -> "tedi";
+
+        //Assert
+        Mockito.when(postRepository.existsById(1)).thenReturn(true);
+
+        //Act
+        Assert.assertThrows(InvalidOperationException.class,
                 () -> mockPostService.editPost(post.getPostId(), postDTO, principal));
     }
 
@@ -424,6 +866,7 @@ public class PostServiceImplTests {
         post.setPicture("picture");
         PostDTO postDTO = new PostDTO();
         postDTO.setPicture(new String(new char[501]));
+        postDTO.setContent("content");
         Principal principal = () -> "tedi";
 
         List<User> list = new ArrayList<>();
@@ -445,6 +888,7 @@ public class PostServiceImplTests {
         post.setPostId(1);
         post.setPicture("picture");
         PostDTO postDTO = new PostDTO();
+        postDTO.setContent("content");
         postDTO.setPicture(new String(new char[501]));
         Principal principal = () -> "xxx";
         List<User> list = new ArrayList<>();
@@ -536,5 +980,37 @@ public class PostServiceImplTests {
 
         //Act, Assert
         assertEquals(comment1, mockPostService.showComments(post.getPostId()).get(0));
+    }
+
+    @Test
+    public void ifNotAuthorizedToVewPostThrow_IfPrincipalIsNullAndPostNotPublic() {
+        //Arrange
+        Post post = FactoryPostComment.createPost();
+        post.setPublic(false);
+
+
+        //Act, Assert
+        Assert.assertThrows(InvalidOperationException.class,
+                () -> mockPostService.ifNotAuthorizedToVewPostThrow(null, post));
+    }
+
+    @Test
+    public void ifNotAuthorizedToVewPostThrow_IfNotAuthorized() {
+        //Arrange
+        Post post = FactoryPostComment.createPost();
+        post.setPublic(false);
+        User user = Factory.createUser();
+        User user2 = Factory.createUser();
+        user2.setUsername("newPerson");
+        post.setUser(user);
+        user.getFriendList().add(user2);
+        Principal principal = () -> "xxx";
+
+        //Assert
+        Mockito.when(userService.getUserByUserName(post.getUser().getUsername())).thenReturn(user);
+        //Act
+
+        Assert.assertThrows(InvalidOperationException.class,
+                () -> mockPostService.ifNotAuthorizedToVewPostThrow(principal, post));
     }
 }

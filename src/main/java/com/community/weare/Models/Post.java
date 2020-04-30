@@ -49,7 +49,7 @@ public class Post {
 
     private double rank;
 
-    @Column(name = "is_liked")
+    @Transient
     @NotNull
     private boolean isLiked = false;
 

@@ -43,7 +43,7 @@ public class Comment {
     @Column(name = "date_time")
     private String date;
 
-    @Column(name = "is_liked")
+    @Transient
     @NotNull
     private boolean isLiked = false;
 

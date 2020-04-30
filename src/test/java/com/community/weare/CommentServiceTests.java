@@ -168,10 +168,79 @@ public class CommentServiceTests {
         Principal principal = () -> "tedi";
 
         //act
-        mockCommentService.save(comment,principal);
+        mockCommentService.save(comment, principal);
         //assert
         Mockito.verify(commentRepository, Mockito.times(1)).save(comment);
         Mockito.verify(postRepository, Mockito.times(1)).save(post);
+    }
+
+    @Test
+    public void saveShould_ThrowIfPrincipalIsNull() {
+        //Arrange
+        Comment comment = FactoryPostComment.createComment();
+
+        //Act, Assert
+        Assert.assertThrows(InvalidOperationException.class,
+                () -> mockCommentService.save(comment, null));
+    }
+
+    @Test
+    public void Save_Throw_IfContentLongerThan1000() {
+        //Arrange
+        Comment comment = FactoryPostComment.createComment();
+        comment.setContent(new String(new char[1001]));
+
+        Principal principal = () -> "tedi";
+
+        //Assert
+
+        //Act
+        Assert.assertThrows(InvalidOperationException.class,
+                () -> mockCommentService.save(comment, principal));
+    }
+
+    @Test
+    public void likeCommentShould_ThrowIfPrincipalIsNull() {
+        //Arrange
+        Comment comment = FactoryPostComment.createComment();
+
+        //Act, Assert
+        Assert.assertThrows(InvalidOperationException.class,
+                () -> mockCommentService.likeComment(comment.getCommentId(), null));
+    }
+
+    @Test
+    public void dislikeCommentShould_ThrowIfPrincipalIsNull() {
+        //Arrange
+        Comment comment = FactoryPostComment.createComment();
+
+        //Act, Assert
+        Assert.assertThrows(InvalidOperationException.class,
+                () -> mockCommentService.dislikeComment(comment.getCommentId(), null));
+    }
+
+    @Test
+    public void editCommentShould_ThrowIfPrincipalIsNull() {
+        //Arrange
+        Comment comment = FactoryPostComment.createComment();
+        comment.setContent(new String(new char[100]));
+
+        //Act, Assert
+        Assert.assertThrows(InvalidOperationException.class,
+                () -> mockCommentService.editComment(comment.getCommentId(), comment.getContent(), null));
+    }
+
+    @Test
+    public void editCommentShould_ThrowIfContentLongerThan1000() {
+        //Arrange
+        Comment comment = FactoryPostComment.createComment();
+        comment.setContent(new String(new char[1001]));
+        Principal principal = () -> "tedi";
+        Mockito.when(commentRepository.existsById(comment.getCommentId())).thenReturn(true);
+
+        //Act, Assert
+        Assert.assertThrows(InvalidOperationException.class,
+                () -> mockCommentService.editComment(comment.getCommentId(), comment.getContent(), principal));
     }
 
     @Test
@@ -310,14 +379,15 @@ public class CommentServiceTests {
     public void deleteCommentByPostPostIdShould_CallRepository() {
         //arrange
         Post post = FactoryPostComment.createPost();
-        post.setPostId(1);
+        post.setPostId(6);
         Comment comment1 = FactoryPostComment.createComment();
+        comment1.setPost(post);
         post.getComments().add(comment1);
 
-        Mockito.when(commentRepository.existsById(comment1.getCommentId())).thenReturn(true);
+        Mockito.when(postRepository.existsById(comment1.getPost().getPostId())).thenReturn(true);
 
         //act
-        mockCommentService.deleteCommentByPostPostId(comment1.getCommentId());
+        mockCommentService.deleteCommentByPostPostId(comment1.getPost().getPostId());
         //assert
         Mockito.verify(commentRepository, Mockito.times(1))
                 .deleteCommentByPostPostId(comment1.getCommentId());
@@ -350,18 +420,31 @@ public class CommentServiceTests {
         Mockito.when(commentRepository.existsById(comment1.getCommentId())).thenReturn(false);
         //Act, Assert
         Assert.assertThrows(EntityNotFoundException.class,
-                () -> mockCommentService.deleteComment(comment1.getCommentId(),principal));
+                () -> mockCommentService.deleteComment(comment1.getCommentId(), principal));
+    }
+
+    @Test
+    public void deleteCommentShould_ThrowIfPrincipalIsNull() {
+        //Arrange
+        Comment comment = FactoryPostComment.createComment();
+        comment.setContent(new String(new char[100]));
+
+        //Act, Assert
+        Assert.assertThrows(InvalidOperationException.class,
+                () -> mockCommentService.deleteComment(comment.getCommentId(), null));
     }
 
     @Test
     public void deleteCommentByPostPostIdShould_ThrowIfCommentDoesNotExists() {
         //arrange
         Comment comment1 = FactoryPostComment.createComment();
+        Post post = FactoryPostComment.createPost();
+        comment1.setPost(post);
 
         Mockito.when(postRepository.existsById(comment1.getPost().getPostId())).thenReturn(false);
         //Act, Assert
         Assert.assertThrows(EntityNotFoundException.class,
-                () -> mockCommentService.deleteCommentByPostPostId(comment1.getCommentId()));
+                () -> mockCommentService.deleteCommentByPostPostId(post.getPostId()));
     }
 
 }

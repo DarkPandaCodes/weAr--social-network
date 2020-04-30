@@ -2,8 +2,6 @@ package com.community.weare.Services.contents;
 
 import com.community.weare.Models.Comment;
 import com.community.weare.Models.Post;
-import com.community.weare.Models.User;
-import com.community.weare.Models.dto.CommentDTO;
 import org.springframework.data.domain.Sort;
 
 import java.security.Principal;

@@ -15,9 +15,6 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Integer>,
         JpaSpecificationExecutor<Post> {
 
-//    @Query(value = "SELECT p.postId FROM Post as p join p.likes as l where p.postId = ?1 and l.userId = ?2")
-//    Integer isLiked(int postId, int userId);
-
     List<Post> findAllByUserUsername(Sort sort, String userName);
 
     Slice<Post> findAllByUserUsername(Pageable pageRequest, String userName);

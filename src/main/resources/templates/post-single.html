@@ -191,8 +191,8 @@
                                         <input name="postId" type="hidden" data-th-value="${comment.getCommentId()}"
                                                th:value="${comment.getCommentId()}" class="mb-2" th:field="*{commentId}"/>
                                     </div>
-                                    <input class="fa-heart" type="submit" th:id="submit-val + ${comment.getCommentId()}"
-                                           th:value="${comment.isLiked() ? 'Dislike':'Like'}"/>
+                                    <input class="reply" type="submit" th:id="submit-val + ${comment.getCommentId()}"
+                                           th:value="${comment.isLiked2(UserPrincipal.getUsername()) ? 'Dislike':'Like'}"/>
                                 </form>
 
                                 <p>
