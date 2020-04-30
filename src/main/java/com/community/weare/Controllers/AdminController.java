@@ -2,12 +2,7 @@ package com.community.weare.Controllers;
 
 import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.Page;
-import com.community.weare.Models.Request;
 import com.community.weare.Models.User;
-import com.community.weare.Models.factories.ExpertiseProfileFactory;
-import com.community.weare.Models.factories.UserFactory;
-import com.community.weare.Services.SkillCategoryService;
-import com.community.weare.Services.models.SkillService;
 import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
@@ -21,7 +16,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Controller
@@ -54,7 +48,7 @@ public class AdminController {
             model.addAttribute("user", user);
             List<User> userList = new ArrayList<>();
             Slice<User> userSlice = userService.findSliceWithUsers
-                    (page.getIndex(), page.getSize(), "username",principal.getName(), user);
+                    (page.getIndex(), page.getSize(), "username");
 
             if (userSlice.hasContent()) {
                 userList = userSlice.getContent();

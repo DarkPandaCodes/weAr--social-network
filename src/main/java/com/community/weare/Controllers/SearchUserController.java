@@ -5,6 +5,8 @@ import com.community.weare.Models.Page;
 import com.community.weare.Models.User;
 import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -30,24 +32,32 @@ public class SearchUserController {
     }
 
     @GetMapping("/search")
-    public String getUsers(@RequestParam(name = "name", defaultValue = "") String name,
-                           @RequestParam(name = "expertise", defaultValue = "") String expertise,
+    public String getUsers(@ModelAttribute(name = "page") Page page,
                            Model model, Principal principal) {
         try {
-            List<User> users = new ArrayList<>();
             if (principal != null) {
                 User user = userService.getUserByUserName(principal.getName());
                 model.addAttribute("user", user);
-                users = userService.getAllUsersByCriteria(name, expertise);
-                model.addAttribute("users", users);
-            } else {
-                users = userService.getPublicUsersByCriteria(name, expertise);
-                model.addAttribute("users", users);
             }
+            Slice<User> userSlice = userService.getAllUsersByCriteria(page.getIndex(),
+                    page.getSize(), page.getSearchParam2(), page.getSearchParam1());
+            List<User> users = new ArrayList<>();
+            if (userSlice.hasContent() && userSlice.getContent().size() == page.getSize()) {
+                page.setIndex(userSlice.nextOrLastPageable().getPageNumber());
+                page.setSize(userSlice.nextOrLastPageable().getPageSize());
+                model.addAttribute("hasNext", userSlice.hasNext());
+            } else if (userSlice.getNumberOfElements() >= 1) {
+                userSlice = userService.getAllUsersByCriteria(page.getIndex(),
+                        userSlice.getNumberOfElements(), page.getSearchParam2(), page.getSearchParam1());
+            }
+
+            users = userSlice.getContent();
+            model.addAttribute("users", users);
+
             if (users.isEmpty()) {
                 throw new EntityNotFoundException("There are no users existing in this search criteria.");
             }
-            model.addAttribute("users", users);
+
         } catch (EntityNotFoundException e) {
             model.addAttribute("error", e.getMessage());
         }

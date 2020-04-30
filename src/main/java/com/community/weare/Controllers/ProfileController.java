@@ -77,14 +77,30 @@ public class ProfileController {
         ModelAndView modelAndView = new ModelAndView("profile_single");
         try {
             User user = userService.getUserById(id);
+            Page page=new Page();
+            page.setSize(4);
+            modelAndView.addObject("pagePost", page);
+
+            Slice<Post> postSlice = postService.findSliceWithPosts
+                    (page.getIndex(), page.getSize(), "date", user.getUsername());
+            List<Post> postsOfUser = new ArrayList<>();
+            if (postSlice.hasContent()) {
+                postsOfUser = postSlice.getContent();
+                page.setSize(postSlice.nextOrLastPageable().getPageSize());
+                page.setIndex(postSlice.nextOrLastPageable().getPageNumber());
+                modelAndView.addObject("posts", postsOfUser);
+            }
+
+            modelAndView.addObject("hasNext", postSlice.hasNext());
             modelAndView.addObject("userDisable", new User());
             modelAndView.addObject("user", user);
             modelAndView.addObject("userRequest", new UserDtoRequest());
             modelAndView.addObject("friends", user.isFriend(principal.getName()));
             modelAndView.addObject("isOwner", userService.isOwner(principal.getName(), user));
             modelAndView.addObject("isAdmin", userService.isAdmin(principal));
-            modelAndView.addObject("pagePost", new Page());
+
             modelAndView.addObject("pageRequest", new Page());
+
         } catch (EntityNotFoundException e) {
             modelAndView.setStatus(HttpStatus.NOT_FOUND);
             return modelAndView.addObject("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
@@ -94,8 +110,7 @@ public class ProfileController {
 
     @GetMapping("/{id}/profile/posts")
     public ModelAndView showProfilePosts(@PathVariable(name = "id") int id, Principal principal,
-                                         @ModelAttribute(name = "pagePost") Page page,
-                                         @ModelAttribute(name = "pageRequest") Page pageRequest) {
+                                         @ModelAttribute(name = "pagePost") Page page) {
         ModelAndView modelAndView = new ModelAndView("profile_single");
         try {
             User user = userService.getUserById(id);
@@ -110,6 +125,7 @@ public class ProfileController {
                 modelAndView.addObject("posts", postsOfUser);
             }
             modelAndView.addObject("hasNext", postSlice.hasNext());
+            modelAndView.addObject("pageRequest",new Page());
             modelAndView.addObject("userDisable", new User());
             modelAndView.addObject("userRequest", new UserDtoRequest());
             modelAndView.addObject("user", user);
@@ -149,8 +165,6 @@ public class ProfileController {
         } catch (InvalidOperationException e) {
             model.addAttribute("error", NOT_AUTHORISED);
         }
-        //TODO validation fields in template
-
         return "user-profile-edit";
     }
 
