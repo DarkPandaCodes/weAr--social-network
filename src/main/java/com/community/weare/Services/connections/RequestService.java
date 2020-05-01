@@ -10,21 +10,15 @@ public interface RequestService {
 
     Request createRequest(User sender, User receiver);
 
-    Request approveRequest(int id,User user,String principal);
+    Request approveRequest(int id, User user, String principal);
 
-    Collection<Request> getAllRequestsForUserUnSeen(User receiver);
+    Collection<Request> getAllRequestsForUser(User receiver, String principal);
 
-    Collection<Request> getAllRequestsForUser(User receiver,String principal);
+    Request getByUsers(User receiver, User sender);
 
-    Collection<Request> getAllRequestsForUserSeen(User receiver);
-
-    Request getById(Integer id);
-
-    Request getByUsers(User receiver,User sender);
-
-    Request getByUsersApproved(User receiver,User sender);
+    Request getByUsersApproved(User receiver, User sender);
 
     void deleteRequest(Request request);
 
-    Slice<Request> findSliceWithRequest(int index, int size, String date, String principal,User receiver);
+    Slice<Request> findSliceWithRequest(int index, int size, String date, String principal, User receiver);
 }

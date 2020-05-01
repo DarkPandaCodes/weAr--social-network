@@ -197,9 +197,7 @@
                         </div>
                     </div>
                 </div>
-                <form action="#" th:action="@{/search}" th:object="${page}"
-                      method="get"
-                      class="search-job">
+                <form th:class="load-form"  th:object="${page}" method="get" >
                     <label>
                         <input type="hidden" data-th-value="${page.getSearchParam2()}" th:value="${page.getSearchParam2()}" th:field="*{searchParam2}" class="mb-2"/>
                         <input type="hidden" data-th-value="${page.getSearchParam1()}" th:value="${page.getSearchParam1()}" th:field="*{searchParam1}" class="mb-2"/>
@@ -207,10 +205,9 @@
                         <input type="hidden" data-th-value="${page.getSize()}" th:value="${page.getSize()}" th:field="*{size}" class="mb-2"/>
 
                     </label>
-                    <input th:if="${users!=null} and ${hasNext}" class="btn btn-primary" type="submit" value="LOAD MORE USERS"/>
+                    <input th:if="${users!=null} and ${hasNext}" class="btn btn-primary" type="submit" th:value="${page.hasNext() ? 'Load More':'There are no users'}"/>
                 </form>
             </div>
-
         </div>
     </div>
 </section>
@@ -560,6 +557,7 @@
 
 
 <script th:src="@{/js/jquery.min.js}" src="/static/js/jquery.min.js"></script>
+
 <script th:src="@{/js/jquery-migrate-3.0.1.min.js}" src="/static/js/jquery-migrate-3.0.1.min.js"></script>
 <script th:src="@{/js/popper.min.js}" src="/static/js/popper.min.js"></script>
 <script th:src="@{/js/bootstrap.min.js}" src="/static/js/bootstrap.min.js"></script>
@@ -574,6 +572,26 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
 <script src="js/google-map.js"></script>
 <script src="js/main.js"></script>
-
+<script>
+    $(".load-form").click(function (event) {
+        console.log("this is a load log:)") //check
+        console.log(event) //check
+        let data = $(this).serialize();
+        // debugger;
+        console.log("data: " + data) //check
+        console.log("this: " + $(this)) //check
+        $.ajax({
+            type: "GET",
+            url: "/api/users",
+            data: data,
+            success: function (p) {
+                if(p.hasNext())
+                    $("#button").val("LOAD MORE")
+                else
+                    $("#button").val("NO MORE")
+            }
+        })
+    })
+</script>
 </body>
 </html>

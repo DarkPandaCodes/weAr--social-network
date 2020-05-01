@@ -22,11 +22,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.*;
 
 import java.security.Principal;
 import java.util.*;
 
 import static com.community.weare.Factory.*;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -178,22 +180,16 @@ public class UserServiceImplTests {
 
     @Test
     public void getUserByNameShould_CallRepository() {
-        List<User> users = getUsers();
-
-        Mockito.when(userRepository.getByFirstName("Teodora"))
-                .thenReturn(users);
-        Mockito.when(userRepository.getByFirstNameLastName("Teodora","Ivanova"))
-                .thenReturn(users);
-
+        Pageable pageable=PageRequest.of(1,10);
         //Act
-        mockUserService.getUserByFirstNameLastName("Teodora");
-        mockUserService.getUserByFirstNameLastName("Teodora Ivanova");
+        mockUserService.getUserByFirstNameLastName(pageable, "Teodora");
+        mockUserService.getUserByFirstNameLastName(pageable, "Teodora Ivanova");
 
         Mockito.verify(userRepository,
-                times(1)).getByFirstName("Teodora");
+                times(1)).getByFirstName(pageable,"Teodora");
 
         Mockito.verify(userRepository,
-                times(1)).getByFirstNameLastName("Teodora","Ivanova");
+                times(1)).getByFirstNameLastName(pageable,"Teodora","Ivanova");
     }
 
     @Test
@@ -226,24 +222,26 @@ public class UserServiceImplTests {
 
     @Test
     public void getUsersByExpertiseShould_CallRepository() {
-        List<User> users = getUsers();
 
-        Mockito.when(userRepository.getAllByExpertise("Marketing"))
-                .thenReturn(users);
+        Pageable pageable=PageRequest.of(1,10);
+
         //Act
-        mockUserService.getUsersByExpertise("Marketing");
+        mockUserService.getUsersByExpertise(pageable,"Marketing");
 
         Mockito.verify(userRepository,
-                times(1)).getAllByExpertise("Marketing");
+                times(1)).getAllByExpertise(pageable, "Marketing");
     }
 
     @Test
     public void getAllUsersByExpertiseShould_ReturnUsers_WhenUsersExists() {
 
-        Mockito.when(userRepository.getAllByExpertise("Marketing"))
-                .thenReturn(Collections.singletonList(createUser()));
+       Pageable pageable=PageRequest.of(1,5,Sort.by("username").ascending());
 
-        Assert.assertEquals(1, mockUserService.getUsersByExpertise("Marketing").size());
+       mockUserService.getAllUsersByCriteria(1,5,"Milena","Marketing");
+
+        Mockito.verify(userRepository,
+                times(1)).getUsersByFirstNameAndExpertise(pageable,"Marketing","Milena");
+
     }
 
     @Test
@@ -336,7 +334,7 @@ public class UserServiceImplTests {
         request.setSender(user1);
         request.setReceiver(user2);
 
-        Mockito.when(requestService.getById(1)).thenReturn(request);
+
         Mockito.when(userRepository.getOne(1)).thenReturn(user1);
         Mockito.when(userRepository.getOne(2)).thenReturn(user2);
 
@@ -356,7 +354,7 @@ public class UserServiceImplTests {
         request.setSender(user1);
         request.setReceiver(user2);
 
-        Mockito.when(requestService.getById(1)).thenReturn(request);
+
         Mockito.when(userRepository.getOne(1)).thenReturn(user1);
         Mockito.when(userRepository.getOne(2)).thenReturn(user2);
 
@@ -379,7 +377,7 @@ public class UserServiceImplTests {
         request.setSender(user1);
         request.setReceiver(user2);
 
-        Mockito.when(requestService.getById(1)).thenReturn(request);
+
         Mockito.when(userRepository.getOne(1)).thenReturn(user1);
         Mockito.when(userRepository.getOne(2)).thenReturn(user2);
 
@@ -399,6 +397,7 @@ public class UserServiceImplTests {
            mockUserService.ifNotProfileOwnerThrow(principal,user);
         });
     }
+
     @Test
     public void ifNotAdminShould_ThrowInvalidExc() {
         User user1=createUser();
@@ -406,7 +405,6 @@ public class UserServiceImplTests {
 
         Mockito.when(userRepository.findByUsername("neli"))
                 .thenThrow(new EntityNotFoundException());
-
 
         Assertions.assertThrows(EntityNotFoundException.class, () -> {
             mockUserService.ifNotAdminThrow(principal,user1);

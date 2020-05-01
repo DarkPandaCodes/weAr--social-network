@@ -5,6 +5,7 @@ public class Page {
     int size;
     String searchParam1;
     String searchParam2;
+    boolean hasNext;
 
     public Page() {
     }
@@ -39,5 +40,13 @@ public class Page {
 
     public void setSearchParam2(String searchParam2) {
         this.searchParam2 = searchParam2;
+    }
+
+    public boolean hasNext() {
+        return hasNext;
+    }
+
+    public void setNext(boolean hasNext) {
+        this.hasNext = hasNext;
     }
 }

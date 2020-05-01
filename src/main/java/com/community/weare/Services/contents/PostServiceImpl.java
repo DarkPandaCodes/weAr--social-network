@@ -70,12 +70,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Slice<Post> findSliceWithPosts(int startIndex, int pageSize, String sortParam, String username) {
+    public Slice<Post> findSliceWithPosts(int startIndex, int pageSize, String sortParam, User user, String principal) {
         if (pageSize == 0 && startIndex == 0) {
             throw new EntityNotFoundException();
         }
         Pageable page = PageRequest.of(startIndex, pageSize, Sort.by(sortParam).descending());
-        return postRepository.findAllByUserUsername(page, username);
+        if (user.isFriend(principal)||user.getUsername().equals(principal)) {
+            return postRepository.findAllByUserUsername(page, user.getUsername());
+        } else {
+            return postRepository.findAllByUserUsernamePublic(page, user.getUsername());
+        }
     }
 
     @Override

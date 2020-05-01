@@ -94,19 +94,21 @@ public class ConnectionController {
 
     @Transactional
     @PostMapping("/request/approve")
-    public String approveRequests(@ModelAttribute Request request, Principal principal, Model model) {
+    public String approveRequests(@ModelAttribute(name = "requestN") Request request, Principal principal, Model model) {
         Request approvedRequest = new Request();
+
         try {
             if (request.isApproved()) {
-                approvedRequest = requestService.approveRequest(request.getId(), request.getReceiver(), principal.getName());
+                User receiver=userService.getUserById(request.getReceiver().getUserId());
+                approvedRequest = requestService.approveRequest(request.getId(), receiver, principal.getName());
                 userService.addToFriendList(approvedRequest);
-                model.addAttribute("user", request.getReceiver());
+                model.addAttribute("user", receiver);
                 model.addAttribute("requests", requestService.getAllRequestsForUser(approvedRequest.getReceiver(), principal.getName()));
             }
         } catch (InvalidOperationException e) {
             model.addAttribute("error", NOT_AUTHORISED);
         }
-        return "redirect:/auth/connection/ " + approvedRequest.getReceiver().getUserId() + "/request";
+        return "redirect:/auth/connection/ " + request.getReceiver().getUserId() + "/request?index=0&size=4";
     }
 
 }

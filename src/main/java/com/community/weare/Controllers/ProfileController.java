@@ -8,7 +8,6 @@ import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
 import com.community.weare.Models.dto.UserDtoRequest;
 import com.community.weare.Models.factories.ExpertiseProfileFactory;
-import com.community.weare.Models.factories.FactoryUtils;
 import com.community.weare.Models.factories.PersonalProfileFactory;
 import com.community.weare.Models.factories.UserFactory;
 import com.community.weare.Services.SkillCategoryService;
@@ -16,14 +15,8 @@ import com.community.weare.Services.contents.PostService;
 import com.community.weare.Services.models.SkillService;
 import com.community.weare.Services.users.PersonalInfoService;
 import com.community.weare.Services.users.UserService;
-import com.community.weare.utils.HttpMessages;
-import io.swagger.models.auth.In;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,14 +24,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.Principal;
 import java.util.*;
 
@@ -75,21 +64,26 @@ public class ProfileController {
     public ModelAndView showProfilePage(@PathVariable(name = "id") int id,
                                         Principal principal) {
         ModelAndView modelAndView = new ModelAndView("profile_single");
+
         try {
             User user = userService.getUserById(id);
-            Page page=new Page();
-            page.setSize(4);
-            modelAndView.addObject("pagePost", page);
+           int index = 0;
+           int size =4;
+           modelAndView.addObject("index",index);
+           modelAndView.addObject("size",size);
 
             Slice<Post> postSlice = postService.findSliceWithPosts
-                    (page.getIndex(), page.getSize(), "date", user.getUsername());
+                    (index, size, "date", user,principal.getName());
+
             List<Post> postsOfUser = new ArrayList<>();
+
             if (postSlice.hasContent()) {
                 postsOfUser = postSlice.getContent();
-                page.setSize(postSlice.nextOrLastPageable().getPageSize());
-                page.setIndex(postSlice.nextOrLastPageable().getPageNumber());
+                index+=1;
                 modelAndView.addObject("posts", postsOfUser);
+                modelAndView.addObject("index",index);
             }
+
 
             modelAndView.addObject("hasNext", postSlice.hasNext());
             modelAndView.addObject("userDisable", new User());
@@ -110,28 +104,26 @@ public class ProfileController {
 
     @GetMapping("/{id}/profile/posts")
     public ModelAndView showProfilePosts(@PathVariable(name = "id") int id, Principal principal,
-                                         @ModelAttribute(name = "pagePost") Page page) {
-        ModelAndView modelAndView = new ModelAndView("profile_single");
+                                         @RequestParam (name = "size") int size,
+                                         @RequestParam(name = "index") int index) {
+    ModelAndView modelAndView = new ModelAndView("post-fragment :: postFragment");
         try {
             User user = userService.getUserById(id);
             List<Post> postsOfUser = new ArrayList<>();
             Slice<Post> postSlice = postService.findSliceWithPosts
-                    (page.getIndex(), page.getSize(), "date", user.getUsername());
+                    (index, size, "date", user,principal.getName() );
 
             if (postSlice.hasContent()) {
                 postsOfUser = postSlice.getContent();
-                page.setSize(postSlice.nextOrLastPageable().getPageSize());
-                page.setIndex(postSlice.nextOrLastPageable().getPageNumber());
+                index+=1;
                 modelAndView.addObject("posts", postsOfUser);
+                modelAndView.addObject("hasNext", postSlice.hasNext());
+                modelAndView.addObject("hasPrev", postSlice.hasPrevious());
             }
-            modelAndView.addObject("hasNext", postSlice.hasNext());
-            modelAndView.addObject("pageRequest",new Page());
-            modelAndView.addObject("userDisable", new User());
-            modelAndView.addObject("userRequest", new UserDtoRequest());
             modelAndView.addObject("user", user);
-            modelAndView.addObject("friends", user.isFriend(principal.getName()));
-            modelAndView.addObject("isOwner", userService.isOwner(principal.getName(), user));
-            modelAndView.addObject("isAdmin", userService.isAdmin(principal));
+            modelAndView.addObject("index",index);
+            modelAndView.addObject("size",size);
+
         } catch (EntityNotFoundException e) {
             modelAndView.setStatus(HttpStatus.NOT_FOUND);
             return modelAndView.addObject("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));

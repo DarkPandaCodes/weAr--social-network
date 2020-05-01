@@ -152,6 +152,8 @@
                                        th:field="*{approved}"/>
                                 <input type="hidden" th:value="${request.getId()}"
                                        data-th-value="${request.getId()}" class="mb-2" th:field="*{id}"/>
+                                <input type="hidden" th:value="${request.getReceiver().getUserId()}"
+                                       data-th-value="${request.getReceiver().getUserId()}" class="mb-2" th:field="*{receiver.userId}"/>
                                 <input class="btn btn-primary py-2" type="submit"
                                        value="Approve Request"/>
                             </form>

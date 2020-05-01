@@ -4,15 +4,13 @@ import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Exceptions.ValidationEntityException;
-import com.community.weare.Models.ExpertiseProfile;
-import com.community.weare.Models.Page;
-import com.community.weare.Models.PersonalProfile;
-import com.community.weare.Models.User;
+import com.community.weare.Models.*;
 import com.community.weare.Models.dao.UserModel;
 import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
 import com.community.weare.Models.factories.ExpertiseProfileFactory;
 import com.community.weare.Models.factories.PersonalProfileFactory;
+import com.community.weare.Services.contents.PostService;
 import com.community.weare.Services.users.PersonalInfoService;
 import com.community.weare.Services.users.UserService;
 import com.community.weare.Models.factories.UserFactory;
@@ -40,15 +38,17 @@ public class RESTUserController {
     private final ExpertiseProfileFactory expertiseProfileFactory;
     private final PersonalProfileFactory personalProfileFactory;
     private final UserFactory mapperHelper;
+    private final PostService postService;
 
     @Autowired
-    public RESTUserController(UserService userService, PersonalInfoService personalInfoService,
-                              ExpertiseProfileFactory expertiseProfileFactory, PersonalProfileFactory personalProfileFactory, UserFactory mapperHelper) {
+    public RESTUserController(UserService userService, PersonalInfoService personalInfoService, ExpertiseProfileFactory expertiseProfileFactory,
+                              PersonalProfileFactory personalProfileFactory, UserFactory mapperHelper, PostService postService) {
         this.userService = userService;
         this.personalInfoService = personalInfoService;
         this.expertiseProfileFactory = expertiseProfileFactory;
         this.personalProfileFactory = personalProfileFactory;
         this.mapperHelper = mapperHelper;
+        this.postService = postService;
     }
 
     @PostMapping("/")
@@ -116,8 +116,30 @@ public class RESTUserController {
         }
     }
 
-    @GetMapping("/")
-    public List<User> getUser(@RequestBody Page page) {
+    @GetMapping("/{id}/posts")
+    public List<Post> showProfilePosts(@PathVariable(name = "id") int id, Principal principal,
+                                       @RequestBody Page page) {
+
+        try {
+            User user = userService.getUserById(id);
+            List<Post> postsOfUser = new ArrayList<>();
+            Slice<Post> postSlice = postService.findSliceWithPosts
+                    (page.getIndex(), page.getSize(), "date", user, principal.getName());
+
+            if (postSlice.hasContent()) {
+                postsOfUser = postSlice.getContent();
+                page.setSize(postSlice.nextOrLastPageable().getPageSize());
+                page.setIndex(postSlice.nextOrLastPageable().getPageNumber());
+                page.setNext(postSlice.hasNext());
+            }
+            return postsOfUser;
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @GetMapping("")
+    public List<User> getUsers(@RequestBody Page page) {
         try {
             List<User> users = new ArrayList<>();
 
@@ -127,7 +149,7 @@ public class RESTUserController {
             if (userSlice.hasContent() && userSlice.getContent().size() == page.getSize()) {
                 page.setIndex(userSlice.nextOrLastPageable().getPageNumber());
                 page.setSize(userSlice.nextOrLastPageable().getPageSize());
-
+                page.setNext(userSlice.hasNext());
             } else if (userSlice.getNumberOfElements() >= 1) {
                 userSlice = userService.getAllUsersByCriteria(page.getIndex(),
                         userSlice.getNumberOfElements(), page.getSearchParam2(), page.getSearchParam1());

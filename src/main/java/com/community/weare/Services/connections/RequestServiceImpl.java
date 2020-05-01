@@ -40,54 +40,35 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
-    public Request approveRequest(int id,User user,String principal) {
-        userService.ifNotProfileOwnerThrow(principal,user);
+    public Request approveRequest(int id, User user, String principal) {
+        userService.ifNotProfileOwnerThrow(principal, user);
         Request requestApproved = requestRepository.getOne(id);
         requestApproved.setApproved(true);
-        requestRepository.saveAndFlush(requestApproved);
-        return requestApproved;
+        return requestRepository.saveAndFlush(requestApproved);
+
     }
 
     @Transactional
     @Override
     public void deleteRequest(Request request) {
-      requestRepository.delete(request);
+        requestRepository.delete(request);
     }
 
-    @Override
-    public Collection<Request> getAllRequestsForUserUnSeen(User receiver) {
-        Collection<Request> requests = requestRepository.findRequestsByReceiverIsAndSeenFalse(receiver);
-        if (requests.isEmpty()) {
-            requests.forEach(r -> r.setSeen(true));
-            requests.forEach(r -> requestRepository.saveAndFlush(r));
-        }
-        return requests;
-    }
 
     @Override
-    public Collection<Request> getAllRequestsForUserSeen(User receiver) {
-        return requestRepository.findRequestsByReceiverIsAndSeenTrue(receiver);
-    }
-
-    @Override
-    public Collection<Request> getAllRequestsForUser(User receiver,String principal) {
-      userService.ifNotProfileOwnerThrow(principal, receiver);
+    public Collection<Request> getAllRequestsForUser(User receiver, String principal) {
+        userService.ifNotProfileOwnerThrow(principal, receiver);
         return requestRepository.findRequestsByReceiverIsAndApprovedIsFalse(receiver);
     }
 
     @Override
-    public Slice<Request> findSliceWithRequest(int index, int size, String param, String principal,User receiver) {
+    public Slice<Request> findSliceWithRequest(int index, int size, String param, String principal, User receiver) {
         userService.ifNotProfileOwnerThrow(principal, receiver);
-        if (size==0&&index==0){
+        if (size == 0 && index == 0) {
             throw new EntityNotFoundException();
         }
         Pageable page = PageRequest.of(index, size, Sort.by(param).descending());
-        return requestRepository.findRequestsByReceiverIsAndApprovedIsFalse(page,receiver);
-    }
-
-    @Override
-    public Request getById(Integer id) {
-        return requestRepository.getOne(id);
+        return requestRepository.findRequestsByReceiverIsAndApprovedIsFalse(page, receiver);
     }
 
     @Override
