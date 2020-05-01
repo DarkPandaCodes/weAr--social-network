@@ -24,6 +24,11 @@ public class HomeController {
         this.userService = userService;
     }
 
+    @GetMapping("/aboutUs")
+    public String aboutUs() {
+        return "aboutUs";
+    }
+
 
    @RequestMapping(value = {"/","/auth"},method = RequestMethod.GET)
     public String showAuthPage(Principal principal, Model model) {
