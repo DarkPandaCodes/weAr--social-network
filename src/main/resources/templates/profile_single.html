@@ -95,7 +95,7 @@
             <div class="col-md-12 ftco-animate text-center mb-5">
                 <p class="breadcrumbs mb-0"><span class="mr-3"><a th:href="@{/}">Home
 					<i class="ion-ios-arrow-forward"></i></a></span> <span class="mr-3">
-                    <a th:href="@{'/search?expertise='+${user.getExpertiseProfile().getCategory().name}+'&name='}"
+                    <a th:href="@{'/search?searchParam1='+${user.getExpertiseProfile().getCategory().name}+'&searchParam2=&index=0&size=10'}"
                        th:text="${user.getExpertiseProfile().getCategory().name}">Professionals</a></span></p>
                 <h1 class="mb-3 bread"
                     th:text="${user.getPersonalProfile().getFirstName()+' '+user.getPersonalProfile().getLastName()}">

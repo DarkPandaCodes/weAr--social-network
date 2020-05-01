@@ -31,8 +31,10 @@ public class UserModel {
     private Sex gender;
     private City city;
 
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate birthYear;
+
     @Size(max = 250, message = "Personal review must have be max 250 symbols!")
     private String personalReview;
     //    private String picture;

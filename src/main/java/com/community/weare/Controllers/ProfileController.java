@@ -67,21 +67,21 @@ public class ProfileController {
 
         try {
             User user = userService.getUserById(id);
-           int index = 0;
-           int size =4;
-           modelAndView.addObject("index",index);
-           modelAndView.addObject("size",size);
+            int index = 0;
+            int size = 4;
+            modelAndView.addObject("index", index);
+            modelAndView.addObject("size", size);
 
             Slice<Post> postSlice = postService.findSliceWithPosts
-                    (index, size, "date", user,principal.getName());
+                    (index, size, "date", user, principal.getName());
 
             List<Post> postsOfUser = new ArrayList<>();
 
             if (postSlice.hasContent()) {
                 postsOfUser = postSlice.getContent();
-                index+=1;
+                index += 1;
                 modelAndView.addObject("posts", postsOfUser);
-                modelAndView.addObject("index",index);
+                modelAndView.addObject("index", index);
             }
 
 
@@ -104,25 +104,25 @@ public class ProfileController {
 
     @GetMapping("/{id}/profile/posts")
     public ModelAndView showProfilePosts(@PathVariable(name = "id") int id, Principal principal,
-                                         @RequestParam (name = "size") int size,
+                                         @RequestParam(name = "size") int size,
                                          @RequestParam(name = "index") int index) {
-    ModelAndView modelAndView = new ModelAndView("post-fragment :: postFragment");
+        ModelAndView modelAndView = new ModelAndView("post-fragment :: postFragment");
         try {
             User user = userService.getUserById(id);
             List<Post> postsOfUser = new ArrayList<>();
             Slice<Post> postSlice = postService.findSliceWithPosts
-                    (index, size, "date", user,principal.getName() );
+                    (index, size, "date", user, principal.getName());
 
             if (postSlice.hasContent()) {
                 postsOfUser = postSlice.getContent();
-                index+=1;
+                index += 1;
                 modelAndView.addObject("posts", postsOfUser);
                 modelAndView.addObject("hasNext", postSlice.hasNext());
                 modelAndView.addObject("hasPrev", postSlice.hasPrevious());
             }
             modelAndView.addObject("user", user);
-            modelAndView.addObject("index",index);
-            modelAndView.addObject("size",size);
+            modelAndView.addObject("index", index);
+            modelAndView.addObject("size", size);
 
         } catch (EntityNotFoundException e) {
             modelAndView.setStatus(HttpStatus.NOT_FOUND);
@@ -211,6 +211,7 @@ public class ProfileController {
                                            Principal principal) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("error", bindingResult.getFieldError().getDefaultMessage());
+            model.addAttribute("categories", skillCategoryService.getAll());
             return "user-profile-edit";
         }
 
