@@ -365,8 +365,9 @@
             <div class="col-md-12 ftco-animate" >
                 <div class="carousel-candidates owl-carousel"  >
                     <div class="item" th:each="user : ${latestUsers}">
-                        <div href="#" class="team text-center">
-                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()==null}"
+                       <div href="#" class="team text-center">
+                           <a th:href="@{'/auth/users/' + ${user.getUserId()} + '/profile'}" >
+                               <img class="img1" th:if="${user.getPersonalProfile().getPicture()==null}"
                                  src="/images/blank-profile-picture.jpg" alt="Image"/>
                             <img class="img1" th:if="${user.getPersonalProfile().getPicture()!=null}"
                                  th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
