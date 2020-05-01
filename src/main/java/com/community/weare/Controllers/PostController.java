@@ -164,7 +164,7 @@ public class PostController {
 
     @PostMapping("/{id}")
     public String leaveCommentAndShowPosts(@ModelAttribute("comment") CommentDTO commentDTO,
-                                           @ModelAttribute("User") UserDtoRequest user,
+                                           @ModelAttribute("User") UserDtoRequest userDto,
                                            @ModelAttribute("postDTO") PostDTO postDTO,
                                            @ModelAttribute("postDTO2") PostDTO2 postDTO2,
                                            @ModelAttribute("category") Category category,
@@ -189,16 +189,14 @@ public class PostController {
         }
 
         //All posts of user
-        if (user.getId() != 0) {
-            List<Post> postsOfUser =
-                    postService.filterPostsByPublicity
-                            (postService.findAllByUser
-                                    (userService.getUserById(user.getId()).getUsername()), true);
+        if (userDto.getId() != 0) {
+            User user = userService.getUserById(userDto.getId());
+            List<Post> postsOfUser = postService.findAllByUser(user.getUsername(), principal);
             model.addAttribute("posts", postsOfUser);
             if (principal != null) {
                 model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
             }
-            return "redirect:/posts/";
+            return "allPosts";
         }
         return "redirect:/posts/" + postId;
     }

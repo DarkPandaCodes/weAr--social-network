@@ -82,26 +82,136 @@ public class PostServiceImplTests {
     }
 
     @Test
-    public void findAllByUserShould_ReturnCorrectPosts() {
+    public void findAllByUserShould_ReturnWhenPrincipalIsNull() {
         //arrange
+        Post post1 = FactoryPostComment.createPost();
+        post1.setDate("20/04/2020 11:34:13");
+        Post post2 = FactoryPostComment.createPost();
+        post2.setDate("20/04/2020 12:34:13");
+        Post post3 = FactoryPostComment.createPost();
+        post3.setDate("20/04/2020 13:34:13");
+        post3.setPublic(false);
         Post post4 = FactoryPostComment.createPost();
+        post4.setDate("20/04/2020 14:34:13");
+        post4.setPublic(false);
 
         User user1 = Factory.createUser();
         user1.setUsername("TheChosenOne");
-
+        post1.setUser(user1);
+        post2.setUser(user1);
+        post3.setUser(user1);
         post4.setUser(user1);
 
-        List<Post> listOfUser = new ArrayList<>();
-        listOfUser.add(post4);
+//        Principal principal = () -> "tedi";
+
+        List<Post> allUserPosts = new ArrayList<>();
+        allUserPosts.add(post4);
+        allUserPosts.add(post3);
+        allUserPosts.add(post2);
+        allUserPosts.add(post1);
 
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"), "TheChosenOne")).thenReturn(listOfUser);
+                (Sort.by(Sort.Direction.DESC, "date"), "TheChosenOne")).thenReturn(allUserPosts);
         //act
-        List<Post> listResult = mockPostService.findAllByUser("TheChosenOne");
+        List<Post> listResult = mockPostService.findAllByUser("TheChosenOne", null);
 
         //assert
+        assertEquals(2, listResult.size());
+        assertEquals(post2, listResult.get(0));
+        assertEquals(post1, listResult.get(1));
+    }
+
+    @Test
+    public void findAllByUserShould_ReturnWhenPrincipalIsFriend() {
+        //arrange
+        Post post1 = FactoryPostComment.createPost();
+        post1.setDate("20/04/2020 11:34:13");
+        Post post2 = FactoryPostComment.createPost();
+        post2.setDate("20/04/2020 12:34:13");
+        Post post3 = FactoryPostComment.createPost();
+        post3.setDate("20/04/2020 13:34:13");
+        post3.setPublic(false);
+        Post post4 = FactoryPostComment.createPost();
+        post4.setDate("20/04/2020 14:34:13");
+        post4.setPublic(false);
+
+        User user1 = Factory.createUser();
+        user1.setUsername("TheChosenOne");
+        post1.setUser(user1);
+        post2.setUser(user1);
+        post3.setUser(user1);
+        post4.setUser(user1);
+
+        User userTedi = Factory.createUser();
+        Principal principal = () -> "tedi";
+
+        user1.getFriendList().add(userTedi);
+        userTedi.getFriendList().add(user1);
+
+        List<Post> allUserPosts = new ArrayList<>();
+        allUserPosts.add(post4);
+        allUserPosts.add(post3);
+        allUserPosts.add(post2);
+        allUserPosts.add(post1);
+
+        Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(userTedi);
+        Mockito.when(userService.getUserByUserName(user1.getUsername())).thenReturn(user1);
+
+        Mockito.when(postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"), "TheChosenOne")).thenReturn(allUserPosts);
+        //act
+        List<Post> listResult = mockPostService.findAllByUser("TheChosenOne", principal);
+
+        //assert
+        assertEquals(4, listResult.size());
         assertEquals(post4, listResult.get(0));
-        assertEquals(1, listResult.size());
+        assertEquals(post3, listResult.get(1));
+        assertEquals(post2, listResult.get(2));
+        assertEquals(post1, listResult.get(3));
+    }
+
+    @Test
+    public void findAllByUserShould_ReturnWhenPrincipalIsNotFriend() {
+        //arrange
+        Post post1 = FactoryPostComment.createPost();
+        post1.setDate("20/04/2020 11:34:13");
+        Post post2 = FactoryPostComment.createPost();
+        post2.setDate("20/04/2020 12:34:13");
+        Post post3 = FactoryPostComment.createPost();
+        post3.setDate("20/04/2020 13:34:13");
+        post3.setPublic(false);
+        Post post4 = FactoryPostComment.createPost();
+        post4.setDate("20/04/2020 14:34:13");
+        post4.setPublic(false);
+
+        User user1 = Factory.createUser();
+        user1.setUsername("TheChosenOne");
+        post1.setUser(user1);
+        post2.setUser(user1);
+        post3.setUser(user1);
+        post4.setUser(user1);
+
+        User userTedi = Factory.createUser();
+        Principal principal = () -> "tedi";
+
+        List<Post> allUserPosts = new ArrayList<>();
+        allUserPosts.add(post4);
+        allUserPosts.add(post3);
+        allUserPosts.add(post2);
+        allUserPosts.add(post1);
+
+        Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(userTedi);
+        Mockito.when(userService.getUserByUserName(user1.getUsername())).thenReturn(user1);
+
+        Mockito.when(postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"), "TheChosenOne")).thenReturn(allUserPosts);
+        //act
+        List<Post> listResult = mockPostService.findAllByUser("TheChosenOne", principal);
+
+        //assert
+        assertEquals(2, listResult.size());
+        assertEquals(post2, listResult.get(0));
+        assertEquals(post1, listResult.get(1));
     }
 
     @Test
@@ -487,7 +597,7 @@ public class PostServiceImplTests {
 
         //act
         List<Post> listResult = mockPostService.findPostsByAuthority
-                (Sort.by(Sort.Direction.DESC, "date"),principal);
+                (Sort.by(Sort.Direction.DESC, "date"), principal);
 
         //assert
         assertEquals(5, listResult.size());

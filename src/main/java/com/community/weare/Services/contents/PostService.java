@@ -16,7 +16,7 @@ public interface PostService {
 
     List<Post> findAll(Sort sort);
 
-    List<Post> findAllByUser(String userName);
+    List<Post> findAllByUser(String userName, Principal principal);
 
     Slice<Post> findSliceWithPosts(int pageIndex,int pageSize, String sortParam, String username );
 

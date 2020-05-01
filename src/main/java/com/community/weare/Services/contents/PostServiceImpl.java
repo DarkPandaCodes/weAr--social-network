@@ -54,8 +54,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> findAllByUser(String userName) {
-        return postRepository.findAllByUserUsername(Sort.by(Sort.Direction.DESC, "date"), userName);
+    public List<Post> findAllByUser(String userName, Principal principal) {
+        User postCreator = userService.getUserByUserName(userName);
+        List<Post> allUserPosts = postRepository.findAllByUserUsername
+                (Sort.by(Sort.Direction.DESC, "date"), userName);
+        if (principal == null) {
+            return filterPostsByPublicity(allUserPosts, true);
+        }
+        User userViewer = userService.getUserByUserName(principal.getName());
+        if (postCreator == userViewer || postCreator.getFriendList().contains(userViewer)) {
+            return allUserPosts;
+        } else {
+            return filterPostsByPublicity(allUserPosts, true);
+        }
     }
 
     @Override
@@ -96,10 +107,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Post> filterPostsByPublicity(List<Post> posts, boolean isPublic) {
-        List<Post> list = posts.stream()
+        return posts.stream()
                 .filter(p -> p.isPublic() == isPublic)
                 .collect(Collectors.toList());
-        return list;
     }
 
     @Override
@@ -256,7 +266,8 @@ public class PostServiceImpl implements PostService {
             double timeEffect = i * ALGORITHM_EFFECT_TIME;
             int numberOfPostsForMonth = 0;
             Post currentPost = sortedListByDate.get(i);
-            List<Post> allPostsOfUser = findAllByUser(currentPost.getUser().getUsername());
+            List<Post> allPostsOfUser = postRepository.findAllByUserUsername
+                    (Sort.by(Sort.Direction.DESC, "date"), currentPost.getUser().getUsername());
             double likesEffect = currentPost.getLikes().size() * ALGORITHM_EFFECT_LIKES;
             double commentsEffect = currentPost.getComments().size() * ALGORITHM_EFFECT_COMMENTS;
             double friendsEffect;
