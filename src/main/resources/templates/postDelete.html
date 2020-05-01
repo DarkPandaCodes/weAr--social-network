@@ -41,13 +41,13 @@
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="browsejobs.html" class="nav-link">Browse Jobs</a></li>
-                <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Posts</a></li>
-                <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
-                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+<!--                <li class="nav-item"><a href="browsejobs.html" class="nav-link">Browse Jobs</a></li>-->
+                <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Latest Posts</a></li>
+<!--                <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>-->
+                <li class="nav-item"><a th:href="@{/about-us}" class="nav-link">About us</a></li>
                 <li class="nav-item cta mr-md-1"><a th:href="@{/posts/auth/newPost}" class="nav-link"
                                                     sec:authorize="isAuthenticated()">New post</a></li>
-                <li class="nav-item cta cta-colored"><a href="job-post.html" class="nav-link">Want a Job</a></li>
+<!--                <li class="nav-item cta cta-colored"><a href="job-post.html" class="nav-link">Want a Job</a></li>-->
 
             </ul>
         </div>
@@ -245,6 +245,9 @@
     </svg>
 </div>
 
+<!--<section th:insert="fragments/sing-up :: sing-up"></section>-->
+
+<!--<div th:insert="fragments/footer :: footer"></div>-->
 
 <script src="/js/jquery.min.js"></script>
 <script src="/js/jquery-migrate-3.0.1.min.js"></script>
