@@ -41,22 +41,26 @@
 
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item cta mr-md-1"><a sec:authorize="!isAuthenticated()" th:href="@{/register}" class="nav-link">REGISTER</a>
+                <li class="nav-item cta mr-md-1"><a sec:authorize="!isAuthenticated()" th:href="@{/register}"
+                                                    class="nav-link">REGISTER</a>
                 </li>
-                <li class="nav-item cta cta cta-colored"><a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="nav-link">SIGN
+                <li class="nav-item cta cta cta-colored"><a sec:authorize="!isAuthenticated()" th:href="@{/login}"
+                                                            class="nav-link">SIGN
                     IN</a></li>
 
                 <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
                 <li class="nav-item"><a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{'/admin'}" class="nav-link">GO
                     TO admin zone</a></li>
-<!--                <li class="nav-item"><a sec:authorize="!isAuthenticated()" th:href="@{'/auth'}" class="nav-link">GO-->
-<!--                    TO personal zone</a></li>-->
+                <!--                <li class="nav-item"><a sec:authorize="!isAuthenticated()" th:href="@{'/auth'}" class="nav-link">GO-->
+                <!--                    TO personal zone</a></li>-->
                 <li class="nav-item"><a sec:authorize="isAuthenticated()"
-                                        th:href="@{'/auth/users/' + ${user.userId} + '/profile'}" class="nav-link">Personal
+                                        th:href="@{'/auth/users/' + ${user.userId} + '/profile'}"   class="nav-link">Personal
                     Profile</a></li>
                 <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Latest Posts</a></li>
 
-                <li class="nav-item cta cta-colored"><a th:href="@{/posts/auth/newPost}" sec:authorize="isAuthenticated()" class="nav-link">Add New post</a></li>
+                <li class="nav-item cta cta-colored"><a th:href="@{/posts/auth/newPost}"
+                                                        sec:authorize="isAuthenticated()" class="nav-link">Add New
+                    post</a></li>
                 <li class="nav-item"><a sec:authorize="isAuthenticated()" th:href="@{/logout}"
                                         class="nav-link">LOGOUT</a></li>
 
@@ -96,7 +100,8 @@
 
                                 <div class="tab-pane fade show active" id="v-pills-1" role="tabpanel"
                                      aria-labelledby="v-pills-nextgen-tab">
-                                    <form action="#" th:action="@{/search}" th:object="${page}" method="get" class="search-job">
+                                    <form action="#" th:action="@{/search}" th:object="${page}" method="get"
+                                          class="search-job">
                                         <div class="row no-gutters">
                                             <div class="col-md mr-md-2">
                                                 <div class="form-group">
@@ -115,8 +120,11 @@
                                                         <input type="text" name="name" th:field="*{searchParam2}"
                                                                class="form-control"
                                                                placeholder="Ivan Ivanov">
-                                                        <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}" th:field="*{index}" class="mb-2"/>
-                                                        <input type="hidden" data-th-value="10" th:value="10" th:field="*{size}" class="mb-2"/>
+                                                        <input type="hidden" data-th-value="${page.getIndex()}"
+                                                               th:value="${page.getIndex()}" th:field="*{index}"
+                                                               class="mb-2"/>
+                                                        <input type="hidden" data-th-value="10" th:value="10"
+                                                               th:field="*{size}" class="mb-2"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -148,7 +156,7 @@
     <div class="container">
         <div class="row justify-content-center mb-5">
             <div class="col-md-7 heading-section text-center ftco-animate">
-                <span class="subheading">Job Categories</span>
+                <span class="subheading">Popular Services Categories</span>
                 <h2 class="mb-0">Top Categories</h2>
             </div>
         </div>
@@ -212,8 +220,9 @@
                 <div class="media block-6 services d-block">
                     <div class="icon"><span class="flaticon-resume"></span></div>
                     <div class="media-body">
-                        <h3 class="heading mb-3">Search Millions of Jobs</h3>
-                        <p>A small river named Duden flows by their place and supplies.</p>
+                        <h3 class="heading mb-3">Register and Search Thousands of Services that People in Bulgaria are willing to share with you.Sign up to create an account. </h3>
+                        <p>You must provide your email and phone number. We will send you a link to validate your email address.
+                            The more complete your profile is, the easier it is for potential partners to contact you.</p>
                     </div>
                 </div>
             </div>
@@ -221,8 +230,9 @@
                 <div class="media block-6 services d-block">
                     <div class="icon"><span class="flaticon-team"></span></div>
                     <div class="media-body">
-                        <h3 class="heading mb-3">Easy To Manage Jobs</h3>
-                        <p>A small river named Duden flows by their place and supplies.</p>
+                        <h3 class="heading mb-3">Leverage your skills. What can you do? When and where can you do it?</h3>
+                        <p>Register and pick up your field of expertise.By putting you in touch with the person who is seeking the skill or service that you are offering,
+                            Weare enables sharing, exchanging, and trading and a return to the community values of old in the process. </p>
                     </div>
                 </div>
             </div>
@@ -230,8 +240,9 @@
                 <div class="media block-6 services d-block">
                     <div class="icon"><span class="flaticon-career"></span></div>
                     <div class="media-body">
-                        <h3 class="heading mb-3">Top Careers</h3>
-                        <p>A small river named Duden flows by their place and supplies.</p>
+                        <h3 class="heading mb-3">Search for people that can help you or your business</h3>
+                        <p>After you helped someone. They can either return the favour directly to you or to someone else in the Weare community.
+                           </p>
                     </div>
                 </div>
             </div>
@@ -239,8 +250,10 @@
                 <div class="media block-6 services d-block">
                     <div class="icon"><span class="flaticon-employees"></span></div>
                     <div class="media-body">
-                        <h3 class="heading mb-3">Search Expert Candidates</h3>
-                        <p>A small river named Duden flows by their place and supplies.</p>
+                        <h3 class="heading mb-3">You are wanted</h3>
+                        <p>Is your hobby sports, music, cooking or handicrafts or...?
+                            Whatever you enjoy doing, share it with others by registering as a member
+                            and publish your skills.</p>
                     </div>
                 </div>
             </div>
@@ -248,310 +261,15 @@
     </div>
 </section>
 
-<section class="ftco-section bg-light">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-9 pr-lg-5">
-                <div class="row justify-content-center pb-3">
-                    <div class="col-md-12 heading-section ftco-animate">
-                        <span class="subheading">Recently Added Jobs</span>
-                        <h2 class="mb-4">Featured Jobs Posts For This Week</h2>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 ftco-animate">
-                        <div class="job-post-item p-4 d-block d-lg-flex align-items-center">
-                            <div class="one-third mb-4 mb-md-0">
-                                <div class="job-post-item-header align-items-center">
-                                    <span class="subadge">Partime</span>
-                                    <h2 class="mr-3 text-black"><a href="#">Frontend Development</a></h2>
-                                </div>
-                                <div class="job-post-item-body d-block d-md-flex">
-                                    <div class="mr-3"><span class="icon-layers"></span> <a href="#">Facebook, Inc.</a>
-                                    </div>
-                                    <div><span class="icon-my_location"></span> <span>Western City, UK</span></div>
-                                </div>
-                            </div>
 
-                            <div class="one-forth ml-auto d-flex align-items-center mt-4 md-md-0">
-                                <div>
-                                    <a href="#"
-                                       class="icon text-center d-flex justify-content-center align-items-center icon mr-2">
-                                        <span class="icon-heart"></span>
-                                    </a>
-                                </div>
-                                <a href="job-single.html" class="btn btn-primary py-2">Apply Job</a>
-                            </div>
-                        </div>
-                    </div><!-- end -->
-
-                    <div class="col-md-12 ftco-animate">
-                        <div class="job-post-item p-4 d-block d-lg-flex align-items-center">
-                            <div class="one-third mb-4 mb-md-0">
-                                <div class="job-post-item-header align-items-center">
-                                    <span class="subadge">Fulltime</span>
-                                    <h2 class="mr-3 text-black"><a href="#">Full Stack Developer</a></h2>
-                                </div>
-                                <div class="job-post-item-body d-block d-md-flex">
-                                    <div class="mr-3"><span class="icon-layers"></span> <a href="#">Google, Inc.</a>
-                                    </div>
-                                    <div><span class="icon-my_location"></span> <span>Western City, UK</span></div>
-                                </div>
-                            </div>
-
-                            <div class="one-forth ml-auto d-flex align-items-center mt-4 md-md-0">
-                                <div>
-                                    <a href="#"
-                                       class="icon text-center d-flex justify-content-center align-items-center icon mr-2">
-                                        <span class="icon-heart"></span>
-                                    </a>
-                                </div>
-                                <a href="job-single.html" class="btn btn-primary py-2">Apply Job</a>
-                            </div>
-                        </div>
-                    </div><!-- end -->
-
-                    <div class="col-md-12 ftco-animate">
-                        <div class="job-post-item p-4 d-block d-lg-flex align-items-center">
-                            <div class="one-third mb-4 mb-md-0">
-                                <div class="job-post-item-header align-items-center">
-                                    <span class="subadge">Freelance</span>
-                                    <h2 class="mr-3 text-black"><a href="#">Open Source Interactive Developer</a></h2>
-                                </div>
-                                <div class="job-post-item-body d-block d-md-flex">
-                                    <div class="mr-3"><span class="icon-layers"></span> <a href="#">New York Times</a>
-                                    </div>
-                                    <div><span class="icon-my_location"></span> <span>Western City, UK</span></div>
-                                </div>
-                            </div>
-
-                            <div class="one-forth ml-auto d-flex align-items-center mt-4 md-md-0">
-                                <div>
-                                    <a href="#"
-                                       class="icon text-center d-flex justify-content-center align-items-center icon mr-2">
-                                        <span class="icon-heart"></span>
-                                    </a>
-                                </div>
-                                <a href="job-single.html" class="btn btn-primary py-2">Apply Job</a>
-                            </div>
-                        </div>
-                    </div><!-- end -->
-
-                    <div class="col-md-12 ftco-animate">
-                        <div class="job-post-item p-4 d-block d-lg-flex align-items-center">
-                            <div class="one-third mb-4 mb-md-0">
-                                <div class="job-post-item-header align-items-center">
-                                    <span class="subadge">Partime</span>
-                                    <h2 class="mr-3 text-black"><a href="#">Frontend Development</a></h2>
-                                </div>
-                                <div class="job-post-item-body d-block d-md-flex">
-                                    <div class="mr-3"><span class="icon-layers"></span> <a href="#">Facebook, Inc.</a>
-                                    </div>
-                                    <div><span class="icon-my_location"></span> <span>Western City, UK</span></div>
-                                </div>
-                            </div>
-
-                            <div class="one-forth ml-auto d-flex align-items-center mt-4 md-md-0">
-                                <div>
-                                    <a href="#"
-                                       class="icon text-center d-flex justify-content-center align-items-center icon mr-2">
-                                        <span class="icon-heart"></span>
-                                    </a>
-                                </div>
-                                <a href="job-single.html" class="btn btn-primary py-2">Apply Job</a>
-                            </div>
-                        </div>
-                    </div><!-- end -->
-
-                    <div class="col-md-12 ftco-animate">
-                        <div class="job-post-item p-4 d-block d-lg-flex align-items-center">
-                            <div class="one-third mb-4 mb-md-0">
-                                <div class="job-post-item-header align-items-center">
-                                    <span class="subadge">Temporary</span>
-                                    <h2 class="mr-3 text-black"><a href="#">Open Source Interactive Developer</a></h2>
-                                </div>
-                                <div class="job-post-item-body d-block d-md-flex">
-                                    <div class="mr-3"><span class="icon-layers"></span> <a href="#">New York Times</a>
-                                    </div>
-                                    <div><span class="icon-my_location"></span> <span>Western City, UK</span></div>
-                                </div>
-                            </div>
-
-                            <div class="one-forth ml-auto d-flex align-items-center mt-4 md-md-0">
-                                <div>
-                                    <a href="#"
-                                       class="icon text-center d-flex justify-content-center align-items-center icon mr-2">
-                                        <span class="icon-heart"></span>
-                                    </a>
-                                </div>
-                                <a href="job-single.html" class="btn btn-primary py-2">Apply Job</a>
-                            </div>
-                        </div>
-                    </div><!-- end -->
-
-                    <div class="col-md-12 ftco-animate">
-                        <div class="job-post-item p-4 d-block d-lg-flex align-items-center">
-                            <div class="one-third mb-4 mb-md-0">
-                                <div class="job-post-item-header align-items-center">
-                                    <span class="subadge">Fulltime</span>
-                                    <h2 class="mr-3 text-black"><a href="#">Full Stack Developer</a></h2>
-                                </div>
-                                <div class="job-post-item-body d-block d-md-flex">
-                                    <div class="mr-3"><span class="icon-layers"></span> <a href="#">Google, Inc.</a>
-                                    </div>
-                                    <div><span class="icon-my_location"></span> <span>Western City, UK</span></div>
-                                </div>
-                            </div>
-
-                            <div class="one-forth ml-auto d-flex align-items-center mt-4 md-md-0">
-                                <div>
-                                    <a href="#"
-                                       class="icon text-center d-flex justify-content-center align-items-center icon mr-2">
-                                        <span class="icon-heart"></span>
-                                    </a>
-                                </div>
-                                <a href="job-single.html" class="btn btn-primary py-2">Apply Job</a>
-                            </div>
-                        </div>
-                    </div><!-- end -->
-
-                    <div class="col-md-12 ftco-animate">
-                        <div class="job-post-item p-4 d-block d-lg-flex align-items-center">
-                            <div class="one-third mb-4 mb-md-0">
-                                <div class="job-post-item-header align-items-center">
-                                    <span class="subadge">Freelance</span>
-                                    <h2 class="mr-3 text-black"><a href="#">Open Source Interactive Developer</a></h2>
-                                </div>
-                                <div class="job-post-item-body d-block d-md-flex">
-                                    <div class="mr-3"><span class="icon-layers"></span> <a href="#">New York Times</a>
-                                    </div>
-                                    <div><span class="icon-my_location"></span> <span>Western City, UK</span></div>
-                                </div>
-                            </div>
-
-                            <div class="one-forth ml-auto d-flex align-items-center mt-4 md-md-0">
-                                <div>
-                                    <a href="#"
-                                       class="icon text-center d-flex justify-content-center align-items-center icon mr-2">
-                                        <span class="icon-heart"></span>
-                                    </a>
-                                </div>
-                                <a href="job-single.html" class="btn btn-primary py-2">Apply Job</a>
-                            </div>
-                        </div>
-                    </div><!-- end -->
-
-                    <div class="col-md-12 ftco-animate">
-                        <div class="job-post-item p-4 d-block d-lg-flex align-items-center">
-                            <div class="one-third mb-4 mb-md-0">
-                                <div class="job-post-item-header align-items-center">
-                                    <span class="subadge">Internship</span>
-                                    <h2 class="mr-3 text-black"><a href="#">Frontend Development</a></h2>
-                                </div>
-                                <div class="job-post-item-body d-block d-md-flex">
-                                    <div class="mr-3"><span class="icon-layers"></span> <a href="#">Facebook, Inc.</a>
-                                    </div>
-                                    <div><span class="icon-my_location"></span> <span>Western City, UK</span></div>
-                                </div>
-                            </div>
-
-                            <div class="one-forth ml-auto d-flex align-items-center mt-4 md-md-0">
-                                <div>
-                                    <a href="#"
-                                       class="icon text-center d-flex justify-content-center align-items-center icon mr-2">
-                                        <span class="icon-heart"></span>
-                                    </a>
-                                </div>
-                                <a href="job-single.html" class="btn btn-primary py-2">Apply Job</a>
-                            </div>
-                        </div>
-                    </div><!-- end -->
-
-                    <div class="col-md-12 ftco-animate">
-                        <div class="job-post-item p-4 d-block d-lg-flex align-items-center">
-                            <div class="one-third mb-4 mb-md-0">
-                                <div class="job-post-item-header align-items-center">
-                                    <span class="subadge">Temporary</span>
-                                    <h2 class="mr-3 text-black"><a href="#">Open Source Interactive Developer</a></h2>
-                                </div>
-                                <div class="job-post-item-body d-block d-md-flex">
-                                    <div class="mr-3"><span class="icon-layers"></span> <a href="#">New York Times</a>
-                                    </div>
-                                    <div><span class="icon-my_location"></span> <span>Western City, UK</span></div>
-                                </div>
-                            </div>
-
-                            <div class="one-forth ml-auto d-flex align-items-center mt-4 md-md-0">
-                                <div>
-                                    <a href="#"
-                                       class="icon text-center d-flex justify-content-center align-items-center icon mr-2">
-                                        <span class="icon-heart"></span>
-                                    </a>
-                                </div>
-                                <a href="job-single.html" class="btn btn-primary py-2">Apply Job</a>
-                            </div>
-                        </div>
-                    </div><!-- end -->
-                </div>
-            </div>
-            <div class="col-lg-3 sidebar">
-                <div class="row justify-content-center pb-3">
-                    <div class="col-md-12 heading-section ftco-animate">
-                        <h2 class="mb-4">Top Recruitments</h2>
-                    </div>
-                </div>
-                <div class="sidebar-box ftco-animate">
-                    <div class="">
-                        <a href="#" class="company-wrap"><img src="images/company-1.jpg" class="img-fluid"
-                                                              alt="Colorlib Free Template"></a>
-                        <div class="text p-3">
-                            <h3><a href="#">Company Company</a></h3>
-                            <p><span class="number">500</span> <span>Open position</span></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="sidebar-box ftco-animate">
-                    <div class="">
-                        <a href="#" class="company-wrap"><img src="images/company-2.jpg" class="img-fluid"
-                                                              alt="Colorlib Free Template"></a>
-                        <div class="text p-3">
-                            <h3><a href="#">Facebook Company</a></h3>
-                            <p><span class="number">700</span> <span>Open position</span></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="sidebar-box ftco-animate">
-                    <div class="">
-                        <a href="#" class="company-wrap"><img src="images/company-3.jpg" class="img-fluid"
-                                                              alt="Colorlib Free Template"></a>
-                        <div class="text p-3">
-                            <h3><a href="#">IT Programming INC</a></h3>
-                            <p><span class="number">700</span> <span>Open position</span></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="sidebar-box ftco-animate">
-                    <div class="">
-                        <a href="#" class="company-wrap"><img src="images/company-4.jpg" class="img-fluid"
-                                                              alt="Colorlib Free Template"></a>
-                        <div class="text p-3">
-                            <h3><a href="#">IT Programming INC</a></h3>
-                            <p><span class="number">700</span> <span>Open position</span></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
 
 <section class="ftco-section testimony-section">
     <div class="container">
         <div class="row justify-content-center mb-4">
             <div class="col-md-7 text-center heading-section ftco-animate">
-                <span class="subheading">Testimonial</span>
-                <h2 class="mb-4">Happy Clients</h2>
+                <span class="subheading">How does it work?</span>
+                <h2 class="mb-4">Do what you love, get what you need</h2>
             </div>
         </div>
         <div class="row ftco-animate">
@@ -560,12 +278,11 @@
                     <div class="item">
                         <div class="testimony-wrap py-4">
                             <div class="text">
-                                <p class="mb-4">Far far away, behind the word mountains, far from the countries Vokalia
-                                    and Consonantia, there live the blind texts.</p>
+                                <p class="mb-4">I'm marketing manager I can create an effective instagram hashtag growth strategy, I need legal Consulting  </p>
                                 <div class="d-flex align-items-center">
-                                    <div class="user-img" style="background-image: url(images/person_1.jpg)"></div>
+                                    <div class="user-img" style="background-image: url(images/photo-of-women.jpg)"></div>
                                     <div class="pl-3">
-                                        <p class="name">Roger Scott</p>
+                                        <p class="name">Mariq Ivanova</p>
                                         <span class="position">Marketing Manager</span>
                                     </div>
                                 </div>
@@ -575,13 +292,12 @@
                     <div class="item">
                         <div class="testimony-wrap py-4">
                             <div class="text">
-                                <p class="mb-4">Far far away, behind the word mountains, far from the countries Vokalia
-                                    and Consonantia, there live the blind texts.</p>
+                                <p class="mb-4">I will do patent search and trademark search for your invention or products. I need for someone that can care for my garden </p>
                                 <div class="d-flex align-items-center">
-                                    <div class="user-img" style="background-image: url(images/person_2.jpg)"></div>
+                                    <div class="user-img" style="background-image: url(images/businesswomen-businesswoman-interview-meeting-70292.jpg)"></div>
                                     <div class="pl-3">
-                                        <p class="name">Roger Scott</p>
-                                        <span class="position">Marketing Manager</span>
+                                        <p class="name">Katerina Hristova</p>
+                                        <span class="position">Legal Consulting</span>
                                     </div>
                                 </div>
                             </div>
@@ -590,13 +306,12 @@
                     <div class="item">
                         <div class="testimony-wrap py-4">
                             <div class="text">
-                                <p class="mb-4">Far far away, behind the word mountains, far from the countries Vokalia
-                                    and Consonantia, there live the blind texts.</p>
+                                <p class="mb-4">Find any service you need. Post what you like to do. Get someone else to do the jobs you dislike.</p>
                                 <div class="d-flex align-items-center">
-                                    <div class="user-img" style="background-image: url(images/person_3.jpg)"></div>
+                                    <div class="user-img" style="background-image: url(images/dog.jpg)"></div>
                                     <div class="pl-3">
-                                        <p class="name">Roger Scott</p>
-                                        <span class="position">Marketing Manager</span>
+                                        <p class="name">Dimitar Ivanov</p>
+                                        <span class="position">Dog walker</span>
                                     </div>
                                 </div>
                             </div>
@@ -605,13 +320,12 @@
                     <div class="item">
                         <div class="testimony-wrap py-4">
                             <div class="text">
-                                <p class="mb-4">Far far away, behind the word mountains, far from the countries Vokalia
-                                    and Consonantia, there live the blind texts.</p>
+                                <p class="mb-4">You can repair things ? Fix things locally and use the WEare  anywhere in the World.</p>
                                 <div class="d-flex align-items-center">
-                                    <div class="user-img" style="background-image: url(images/person_1.jpg)"></div>
+                                    <div class="user-img" style="background-image: url(images/man-fixing.jpg)"></div>
                                     <div class="pl-3">
-                                        <p class="name">Roger Scott</p>
-                                        <span class="position">Marketing Manager</span>
+                                        <p class="name">Petar Mangurov</p>
+                                        <span class="position">Auto Mechanic </span>
                                     </div>
                                 </div>
                             </div>
@@ -620,13 +334,12 @@
                     <div class="item">
                         <div class="testimony-wrap py-4">
                             <div class="text">
-                                <p class="mb-4">Far far away, behind the word mountains, far from the countries Vokalia
-                                    and Consonantia, there live the blind texts.</p>
+                                <p class="mb-4">I'm a hairdresser  and i can help you with my services</p>
                                 <div class="d-flex align-items-center">
-                                    <div class="user-img" style="background-image: url(images/person_2.jpg)"></div>
+                                    <div class="user-img" style="background-image: url(images/woman-getting-a-haircut-3992872.jpg)"></div>
                                     <div class="pl-3">
-                                        <p class="name">Roger Scott</p>
-                                        <span class="position">Marketing Manager</span>
+                                        <p class="name">Ralica Borisova</p>
+                                        <span class="position">Hairdresser</span>
                                     </div>
                                 </div>
                             </div>
@@ -642,60 +355,30 @@
     <div class="container">
         <div class="row justify-content-center pb-3">
             <div class="col-md-10 heading-section heading-section-white text-center ftco-animate">
-                <span class="subheading">Candidates</span>
-                <h2 class="mb-4">Latest Candidates</h2>
+                <span class="subheading">#WEare all together</span>
+                <h2 class="mb-4">Latest WEare people</h2>
             </div>
         </div>
     </div>
-    <div class="container">
+    <div class="container" th:if="${latestUsers!=null}">
         <div class="row">
-            <div class="col-md-12 ftco-animate">
-                <div class="carousel-candidates owl-carousel">
-                    <div class="item">
-                        <a href="#" class="team text-center">
-                            <div class="img" th:class="img" style="background-image: url(images/person_1.jpg);"></div>
-                            <h2>Danica Lewis</h2>
-                            <span class="position">Western City, UK</span>
-                        </a>
-                    </div>
-                    <div class="item">
-                        <a href="#" class="team text-center">
-                            <div class="img" style="background-image: url(images/person_2.jpg);"></div>
-                            <h2>Nicole Simon</h2>
-                            <span class="position">Western City, UK</span>
-                        </a>
-                    </div>
-                    <div class="item">
-                        <a href="#" class="team text-center">
-                            <div class="img" style="background-image: url(images/person_3.jpg);"></div>
-                            <h2>Cloe Meyer</h2>
-                            <span class="position">Western City, UK</span>
-                        </a>
-                    </div>
-                    <div class="item">
-                        <a href="#" class="team text-center">
-                            <div class="img" style="background-image: url(images/person_4.jpg);"></div>
-                            <h2>Rachel Clinton</h2>
-                            <span class="position">Western City, UK</span>
-                        </a>
-                    </div>
-                    <div class="item">
-                        <a href="#" class="team text-center">
-                            <div class="img" style="background-image: url(images/person_5.jpg);"></div>
-                            <h2>Dave Buff</h2>
-                            <span class="position">Western City, UK</span>
-                        </a>
-                    </div>
-                    <div class="item">
-                        <a href="#" class="team text-center">
-                            <div class="img" style="background-image: url(images/person_6.jpg);"></div>
-                            <h2>Dave Buff</h2>
-                            <span class="position">Western City, UK</span>
+            <div class="col-md-12 ftco-animate" >
+                <div class="carousel-candidates owl-carousel"  >
+                    <div class="item" th:each="user : ${latestUsers}">
+                        <div href="#" class="team text-center">
+                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()==null}"
+                                 src="/images/blank-profile-picture.jpg" alt="Image"/>
+                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()!=null}"
+                                 th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
+                            <h2 th:text="${user.getPersonalProfile().firstName+' '+user.getPersonalProfile().lastName}"
+                                th:type="text">Danica Lewis</h2>
+                            <span class="position" th:text=" ${user.getExpertiseProfile().getCategory().name}">Western City, UK</span>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </section>
 
@@ -703,68 +386,50 @@
     <div class="container">
         <div class="row justify-content-center mb-5 pb-3">
             <div class="col-md-7 heading-section text-center ftco-animate">
-                <span class="subheading">Our Blog</span>
-                <h2><span>Recent</span> Blog</h2>
+                <span class="subheading">Help Others, Help Yourself</span>
+                <h2><span>#WEare</span> in this together</h2>
             </div>
         </div>
         <div class="row d-flex">
             <div class="col-md-3 d-flex ftco-animate">
                 <div class="blog-entry align-self-stretch">
-                    <a href="blog-single.html" class="block-20" style="background-image: url('images/image_1.jpg');">
+                    <a class="block-20" style="background-image: url('images/boy-child.jpg');">
                     </a>
                     <div class="text mt-3">
-                        <div class="meta mb-2">
-                            <div><a href="#">August 28, 2019</a></div>
-                            <div><a href="#">Admin</a></div>
-                            <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
-                        </div>
-                        <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind
-                            texts</a></h3>
+
+                        <h3 class="heading">We are firmly convinced that each of us has a talent, a skill or a special
+                            knowledge that can be of great value and benefit to others. Sharing with someone creates joy
+                            and giving makes one happy. </h3>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 d-flex ftco-animate">
                 <div class="blog-entry align-self-stretch">
-                    <a href="blog-single.html" class="block-20" style="background-image: url('images/image_2.jpg');">
+                    <a  class="block-20" style="background-image: url('images/couple.jpg');">
                     </a>
                     <div class="text mt-3">
-                        <div class="meta mb-2">
-                            <div><a href="#">August 28, 2019</a></div>
-                            <div><a href="#">Admin</a></div>
-                            <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
-                        </div>
-                        <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind
-                            texts</a></h3>
+                        <h3 class="heading"> It is not about money or about generating a profit, but about
+                            the appreciation received by giving your time and skill for the benefit of other
+                            people.</h3>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 d-flex ftco-animate">
                 <div class="blog-entry align-self-stretch">
-                    <a href="blog-single.html" class="block-20" style="background-image: url('images/image_3.jpg');">
+                    <a  class="block-20" style="background-image: url('images/people-doing.jpg');">
                     </a>
                     <div class="text mt-3">
-                        <div class="meta mb-2">
-                            <div><a href="#">August 28, 2019</a></div>
-                            <div><a href="#">Admin</a></div>
-                            <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
-                        </div>
-                        <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind
-                            texts</a></h3>
+                        <h3 class="heading">A community you can trust. Do  good and get something back. </h3>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 d-flex ftco-animate">
                 <div class="blog-entry align-self-stretch">
-                    <a href="blog-single.html" class="block-20" style="background-image: url('images/image_4.jpg');">
+                    <a  class="block-20" style="background-image: url('images/person_help.jpg');">
                     </a>
                     <div class="text mt-3">
-                        <div class="meta mb-2">
-                            <div><a href="#">August 28, 2019</a></div>
-                            <div><a href="#">Admin</a></div>
-                            <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
-                        </div>
-                        <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind
-                            texts</a></h3>
+
+                        <h3 class="heading">We can not hold our hands but we can still help each other</h3>
                     </div>
                 </div>
             </div>
@@ -772,112 +437,10 @@
     </div>
 </section>
 
-<section class="ftco-section-parallax">
-    <div class="parallax-img d-flex align-items-center">
-        <div class="container">
-            <div class="row d-flex justify-content-center">
-                <div class="col-md-7 text-center heading-section heading-section-white ftco-animate">
-                    <h2>Subcribe to our Newsletter</h2>
-                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there
-                        live the blind texts. Separated they live in</p>
-                    <div class="row d-flex justify-content-center mt-4 mb-4">
-                        <div class="col-md-12">
-                            <form action="#" class="subscribe-form">
-                                <div class="form-group d-flex">
-                                    <input type="text" class="form-control" placeholder="Enter email address">
-                                    <input type="submit" value="Subscribe" class="submit px-3">
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<footer class="ftco-footer ftco-bg-dark ftco-section">
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-md">
-                <div class="ftco-footer-widget mb-4">
-                    <h2 class="ftco-heading-2">Skillhunt Jobboard</h2>
-                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there
-                        live the blind texts.</p>
-                    <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-3">
-                        <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
-                        <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
-                        <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md">
-                <div class="ftco-footer-widget mb-4">
-                    <h2 class="ftco-heading-2">Employers</h2>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="pb-1 d-block">Browse Candidates</a></li>
-                        <li><a href="#" class="pb-1 d-block">Post a Job</a></li>
-                        <li><a href="#" class="pb-1 d-block">Employer Listing</a></li>
-                        <li><a href="#" class="pb-1 d-block">Resume Page</a></li>
-                        <li><a href="#" class="pb-1 d-block">Dashboard</a></li>
-                        <li><a href="#" class="pb-1 d-block">Job Packages</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md">
-                <div class="ftco-footer-widget mb-4 ml-md-4">
-                    <h2 class="ftco-heading-2">Candidate</h2>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="pb-1 d-block">Browse Jobs</a></li>
-                        <li><a href="#" class="pb-1 d-block">Submit Resume</a></li>
-                        <li><a href="#" class="pb-1 d-block">Dashboard</a></li>
-                        <li><a href="#" class="pb-1 d-block">Browse Categories</a></li>
-                        <li><a href="#" class="pb-1 d-block">My Bookmarks</a></li>
-                        <li><a href="#" class="pb-1 d-block">Candidate Listing</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md">
-                <div class="ftco-footer-widget mb-4 ml-md-4">
-                    <h2 class="ftco-heading-2">Account</h2>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="pb-1 d-block">My Account</a></li>
-                        <li><a href="#" class="pb-1 d-block">Sign In</a></li>
-                        <li><a href="#" class="pb-1 d-block">Create Account</a></li>
-                        <li><a href="#" class="pb-1 d-block">Checkout</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md">
-                <div class="ftco-footer-widget mb-4">
-                    <h2 class="ftco-heading-2">Have a Questions?</h2>
-                    <div class="block-23 mb-3">
-                        <ul>
-                            <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span>
-                            </li>
-                            <li><a href="#"><span class="icon icon-phone"></span><span
-                                    class="text">+2 392 3929 210</span></a></li>
-                            <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 text-center">
+<section th:insert="fragments/sing-up :: sing-up"></section>
 
-                <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                    Copyright &copy;<script>document.write(new Date().getFullYear());</script>
-                    All rights reserved | This template is made with <i class="icon-heart text-danger"
-                                                                        aria-hidden="true"></i> by <a
-                            href="https://colorlib.com" target="_blank">Colorlib</a>
-                    <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
-            </div>
-        </div>
-    </div>
-</footer>
-
+<div th:insert="fragments/footer :: footer"></div>
 
 <!-- loader -->
 <div id="ftco-loader" class="show fullscreen">

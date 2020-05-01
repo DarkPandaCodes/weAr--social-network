@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.Collection;
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -120,7 +119,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Slice<User> findSliceWithUsers(Pageable pageable, String username) {
+    public Slice<User> findSliceWithLatestUsers(Pageable pageable) {
+
         return userRepository.findAllBy(pageable);
     }
 
@@ -241,7 +241,7 @@ public class UserServiceImpl implements UserService {
             return getUserByFirstNameLastNameExpertise(pageable, name,expertise);
 
         } else {
-            return findSliceWithUsers(pageable, "username");
+            return findSliceWithLatestUsers(pageable);
         }
     }
 }

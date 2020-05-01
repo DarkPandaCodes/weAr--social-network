@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.security.Principal;
 import java.util.Collection;
-import java.util.List;
 
 
 public interface UserService extends UserDetailsService {
@@ -55,5 +54,5 @@ public interface UserService extends UserDetailsService {
 
     Slice<User> findSliceWithUsers(int index, int size, String username);
 
-    Slice<User> findSliceWithUsers(Pageable pageable, String username);
+    Slice<User> findSliceWithLatestUsers(Pageable pageable);
 }

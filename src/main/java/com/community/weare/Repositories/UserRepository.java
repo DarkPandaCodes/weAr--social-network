@@ -43,8 +43,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "SELECT u from User as u where u.personalProfile.firstName like :firstName")
     Slice<User> getByFirstName(Pageable page,@Param("firstName") String firstName);
 
-
+    @Query(value = "SELECT u from User as u order by u.personalProfile.memberSince desc ")
     Slice<User>findAllBy(Pageable page);
+
     @Query(value = "SELECT u from User as u where u.personalProfile.firstName like :firstName and  u.personalProfile.lastName like :lastName " +
             "and u.expertiseProfile.category.name like :expertise")
     Slice<User> getUsersByFirstNameLastNameExpertise(Pageable pageable, @Param("expertise") String expertise,
@@ -53,4 +54,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "and u.expertiseProfile.category.name like :expertise")
     Slice<User> getUsersByFirstNameAndExpertise(Pageable pageable, @Param("expertise") String expertise,
                                                 @Param("firstName") String firstName);
+
+
 }
