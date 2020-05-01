@@ -169,7 +169,7 @@
                                  th:if="${user.getPersonalProfile().getPicture()==null}">
                                 <img src="/images/blank-profile-picture.jpg" alt="Image" height="300">
                             </div>
-                            <div class="imgPr" th:class="imgPr" 
+                            <div class="imgPr" th:class="imgPr"
                                  th:if="${user.getPersonalProfile().getPicture()!=null}">
                                 <img th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt="" height="300">
                             </div>
