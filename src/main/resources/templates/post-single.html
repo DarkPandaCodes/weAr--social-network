@@ -57,7 +57,7 @@
                                         th:href="@{'/auth/users/' + ${UserPrincipal.getUserId()} + '/profile'}" class="nav-link">Personal
                     Profile</a></li>
                 <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Latest Posts</a></li>
-
+                <li class="nav-item"><a th:href="@{/about-us}" class="nav-link">About us</a></li>
                 <li class="nav-item cta cta-colored"><a th:href="@{/posts/auth/newPost}" sec:authorize="isAuthenticated()" class="nav-link">Add New post</a></li>
                 <li class="nav-item"><a sec:authorize="isAuthenticated()" th:href="@{/logout}"
                                         class="nav-link">LOGOUT</a></li>
@@ -383,6 +383,10 @@
                 stroke="#F96D00"/>
     </svg>
 </div>
+
+<!--<section th:insert="fragments/sing-up :: sing-up"></section>-->
+
+<!--<div th:insert="fragments/footer :: footer"></div>-->
 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"

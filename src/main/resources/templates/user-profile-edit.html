@@ -71,6 +71,7 @@
                                         th:href="@{'/auth/users/' + ${user.userId} + '/profile'}" class="nav-link">Personal
                     Profile</a></li>
                 <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Latest Posts</a></li>
+                <li class="nav-item"><a th:href="@{/about-us}" class="nav-link">About us</a></li>
 
                 <li class="nav-item cta cta-colored"><a th:href="@{/posts/auth/newPost}" sec:authorize="isAuthenticated()" class="nav-link">Add New post</a></li>
                 <li class="nav-item"><a sec:authorize="isAuthenticated()" th:href="@{/logout}"

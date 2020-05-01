@@ -69,7 +69,7 @@
                                         th:href="@{'/auth/users/' + ${user.getUserId()} + '/profile'}" class="nav-link">Personal
                     Profile</a></li>
                 <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Latest Posts</a></li>
-
+                <li class="nav-item"><a th:href="@{/about-us}" class="nav-link">About us</a></li>
                 <li class="nav-item cta cta-colored"><a th:href="@{/posts/auth/newPost}"
                                                         sec:authorize="isAuthenticated()" class="nav-link">Add New
                     post</a></li>
@@ -165,13 +165,13 @@
                 <div method="post" th:object="${user}">
                     <div class="row">
                         <div class="col-md-4">
-                            <div class="imgPr" th:class="imgPr" th:height="300"
+                            <div class="imgPr" th:class="imgPr"
                                  th:if="${user.getPersonalProfile().getPicture()==null}">
-                                <img src="/images/blank-profile-picture.jpg" alt="Image">
+                                <img src="/images/blank-profile-picture.jpg" alt="Image" height="300">
                             </div>
-                            <div class="imgPr" th:class="imgPr" th:height="300"
+                            <div class="imgPr" th:class="imgPr" 
                                  th:if="${user.getPersonalProfile().getPicture()!=null}">
-                                <img th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
+                                <img th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt="" height="300">
                             </div>
                         </div>
                         <div class="col-lg-12">
