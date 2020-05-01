@@ -25,17 +25,21 @@ public class HomeController {
     }
 
     @GetMapping("/aboutUs")
-    public String aboutUs() {
+    public String aboutUs(Principal principal, Model model) {
+        if (principal != null) {
+            model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+        }
         return "aboutUs";
     }
 
 
-   @RequestMapping(value = {"/","/auth"},method = RequestMethod.GET)
+    @RequestMapping(value = {"/", "/auth"}, method = RequestMethod.GET)
     public String showAuthPage(Principal principal, Model model) {
-        model.addAttribute("page",new Page());
-        if (principal!=null){
-        User user=userService.getUserByUserName(principal.getName());
-        model.addAttribute("user",user);}
+        model.addAttribute("page", new Page());
+        if (principal != null) {
+            User user = userService.getUserByUserName(principal.getName());
+            model.addAttribute("user", user);
+        }
         return "index_new";
     }
 }
