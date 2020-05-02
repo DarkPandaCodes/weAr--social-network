@@ -50,14 +50,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Post> findAll(Sort sort) {
-        return postRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
+        return postRepository.findAll(Sort.by(Sort.Direction.DESC, "postId"));
     }
 
     @Override
     public List<Post> findAllByUser(String userName, Principal principal) {
         User postCreator = userService.getUserByUserName(userName);
         List<Post> allUserPosts = postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"), userName);
+                (Sort.by(Sort.Direction.DESC, "postId"), userName);
         if (principal == null) {
             return filterPostsByPublicity(allUserPosts, true);
         }
@@ -85,7 +85,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public List<Post> findAllPostsByAlgorithm(Sort sort, Principal principal) {
-        List<Post> allPost = postRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
+        List<Post> allPost = postRepository.findAll(Sort.by(Sort.Direction.DESC, "postId"));
         return applyAlgorithm(principal, allPost);
     }
 
@@ -271,7 +271,7 @@ public class PostServiceImpl implements PostService {
             int numberOfPostsForMonth = 0;
             Post currentPost = sortedListByDate.get(i);
             List<Post> allPostsOfUser = postRepository.findAllByUserUsername
-                    (Sort.by(Sort.Direction.DESC, "date"), currentPost.getUser().getUsername());
+                    (Sort.by(Sort.Direction.DESC, "postId"), currentPost.getUser().getUsername());
             double likesEffect = currentPost.getLikes().size() * ALGORITHM_EFFECT_LIKES;
             double commentsEffect = currentPost.getComments().size() * ALGORITHM_EFFECT_COMMENTS;
             double friendsEffect;

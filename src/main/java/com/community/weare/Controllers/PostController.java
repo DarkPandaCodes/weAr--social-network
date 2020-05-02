@@ -237,7 +237,12 @@ public class PostController {
             model.addAttribute("error", e.getMessage());
             return "newPost";
         }
-        return "newPost";
+        model.addAttribute("posts", postService.findAllByUser(principal.getName(), principal));
+        model.addAttribute("postDTO2", new PostDTO2());
+        model.addAttribute("postDTO", new PostDTO());
+        model.addAttribute("category", new Category("Marketing"));
+        model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+        return "allPosts";
     }
 
     @GetMapping("/auth/editor/{id}")

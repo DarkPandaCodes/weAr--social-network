@@ -72,9 +72,9 @@ public class PostServiceImplTests {
         listSorted.add(post2);
         listSorted.add(post1);
 
-        Mockito.when(postRepository.findAll(Sort.by(Sort.Direction.DESC, "date"))).thenReturn(listSorted);
+        Mockito.when(postRepository.findAll(Sort.by(Sort.Direction.DESC, "postId"))).thenReturn(listSorted);
         //act
-        List<Post> listResult = mockPostService.findAll(Sort.by(Sort.Direction.DESC, "date"));
+        List<Post> listResult = mockPostService.findAll(Sort.by(Sort.Direction.DESC, "postId"));
         //assert
         assertEquals(list.get(0), listResult.get(1));
         assertEquals(list.get(1), listResult.get(2));
@@ -111,7 +111,7 @@ public class PostServiceImplTests {
         allUserPosts.add(post1);
 
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"), "TheChosenOne")).thenReturn(allUserPosts);
+                (Sort.by(Sort.Direction.DESC, "postId"), "TheChosenOne")).thenReturn(allUserPosts);
         //act
         List<Post> listResult = mockPostService.findAllByUser("TheChosenOne", null);
 
@@ -158,7 +158,7 @@ public class PostServiceImplTests {
         Mockito.when(userService.getUserByUserName(user1.getUsername())).thenReturn(user1);
 
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"), "TheChosenOne")).thenReturn(allUserPosts);
+                (Sort.by(Sort.Direction.DESC, "postId"), "TheChosenOne")).thenReturn(allUserPosts);
         //act
         List<Post> listResult = mockPostService.findAllByUser("TheChosenOne", principal);
 
@@ -204,7 +204,7 @@ public class PostServiceImplTests {
         Mockito.when(userService.getUserByUserName(user1.getUsername())).thenReturn(user1);
 
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"), "TheChosenOne")).thenReturn(allUserPosts);
+                (Sort.by(Sort.Direction.DESC, "postId"), "TheChosenOne")).thenReturn(allUserPosts);
         //act
         List<Post> listResult = mockPostService.findAllByUser("TheChosenOne", principal);
 
@@ -224,16 +224,17 @@ public class PostServiceImplTests {
         int startIndex = 1;
         int pageSize = 1;
         String sortParam = "param1";
+        User user = Factory.createUser();
         String username = "userName";
         Pageable page = PageRequest.of(startIndex, pageSize, Sort.by(sortParam).descending());
-        Mockito.when(postRepository.findAllByUserUsername(page, username)).thenReturn(slice);
+        Principal principal = () -> "tedi";
 
         //act
-        mockPostService.findSliceWithPosts(startIndex, pageSize, sortParam, username);
+        mockPostService.findSliceWithPosts(startIndex, pageSize, sortParam, user, "tedi");
 
         //assert
         Mockito.verify(postRepository, Mockito.times(1))
-                .findAllByUserUsername(page, username);
+                .findAllByUserUsername(page, "tedi");
     }
 
     @Test
@@ -243,10 +244,12 @@ public class PostServiceImplTests {
         int pageSize = 0;
         String sortParam = "param1";
         String username = "param2";
+        User user = Factory.createUser();
+        Principal principal = () -> "tedi";
 
         //Act, Assert
         Assert.assertThrows(EntityNotFoundException.class,
-                () -> mockPostService.findSliceWithPosts(startIndex, pageSize, sortParam, username));
+                () -> mockPostService.findSliceWithPosts(startIndex, pageSize, sortParam, user,"tedi"));
     }
 
     @Test
@@ -291,17 +294,17 @@ public class PostServiceImplTests {
         sortedList.add(post1);
 
         Principal principal = () -> "tedi";
-        Mockito.when(postRepository.findAll(Sort.by(Sort.Direction.DESC, "date")))
+        Mockito.when(postRepository.findAll(Sort.by(Sort.Direction.DESC, "postId")))
                 .thenReturn(sortedList);
 
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"),
+                (Sort.by(Sort.Direction.DESC, "postId"),
                         post1.getUser().getUsername())).thenReturn(sortedList);
         Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(userTedi);
 
         //act
         List<Post> listResult = mockPostService.findAllPostsByAlgorithm
-                ((Sort.by(Sort.Direction.DESC, "date")), principal);
+                ((Sort.by(Sort.Direction.DESC, "postId")), principal);
 
         //assert
         assertEquals(-3, listResult.get(0).getRank(), 0);
@@ -356,13 +359,13 @@ public class PostServiceImplTests {
         Principal principal = () -> "tedi";
 
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"),
+                (Sort.by(Sort.Direction.DESC, "postId"),
                         post1.getUser().getUsername())).thenReturn(list1);
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"),
+                (Sort.by(Sort.Direction.DESC, "postId"),
                         post3.getUser().getUsername())).thenReturn(list1);
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"),
+                (Sort.by(Sort.Direction.DESC, "postId"),
                         post2.getUser().getUsername())).thenReturn(list2);
         Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(userTedi);
 
@@ -477,19 +480,19 @@ public class PostServiceImplTests {
 
 
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"),
+                (Sort.by(Sort.Direction.DESC, "postId"),
                         post1.getUser().getUsername())).thenReturn(listTedi);
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"),
+                (Sort.by(Sort.Direction.DESC, "postId"),
                         post2.getUser().getUsername())).thenReturn(listTedi);
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"),
+                (Sort.by(Sort.Direction.DESC, "postId"),
                         post3.getUser().getUsername())).thenReturn(listUser1);
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"),
+                (Sort.by(Sort.Direction.DESC, "postId"),
                         post6.getUser().getUsername())).thenReturn(listAlex);
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"),
+                (Sort.by(Sort.Direction.DESC, "postId"),
                         post7.getUser().getUsername())).thenReturn(listAlex);
 
         Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(userTedi);
@@ -577,19 +580,19 @@ public class PostServiceImplTests {
 
 
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"),
+                (Sort.by(Sort.Direction.DESC, "postId"),
                         post1.getUser().getUsername())).thenReturn(listTedi);
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"),
+                (Sort.by(Sort.Direction.DESC, "postId"),
                         post2.getUser().getUsername())).thenReturn(listTedi);
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"),
+                (Sort.by(Sort.Direction.DESC, "postId"),
                         post3.getUser().getUsername())).thenReturn(listUser1);
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"),
+                (Sort.by(Sort.Direction.DESC, "postId"),
                         post6.getUser().getUsername())).thenReturn(listAlex);
         Mockito.when(postRepository.findAllByUserUsername
-                (Sort.by(Sort.Direction.DESC, "date"),
+                (Sort.by(Sort.Direction.DESC, "postId"),
                         post7.getUser().getUsername())).thenReturn(listAlex);
 
         Mockito.when(userService.getUserByUserName(principal.getName())).thenReturn(userTedi);
@@ -597,7 +600,7 @@ public class PostServiceImplTests {
 
         //act
         List<Post> listResult = mockPostService.findPostsByAuthority
-                (Sort.by(Sort.Direction.DESC, "date"), principal);
+                (Sort.by(Sort.Direction.DESC, "postId"), principal);
 
         //assert
         assertEquals(5, listResult.size());
@@ -648,10 +651,10 @@ public class PostServiceImplTests {
         list.add(post1);
 
         Mockito.when(postRepository.findAll(Sort.by
-                (Sort.Direction.DESC, "date"))).thenReturn(list);
+                (Sort.Direction.DESC, "postId"))).thenReturn(list);
         //act
         List<Post> listResult = mockPostService.findPostsByAuthority
-                (Sort.by(Sort.Direction.DESC, "date"), null);
+                (Sort.by(Sort.Direction.DESC, "postId"), null);
 
         //assert
         assertEquals(2, listResult.size());
