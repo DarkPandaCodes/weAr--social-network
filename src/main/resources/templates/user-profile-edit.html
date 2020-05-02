@@ -4,11 +4,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
-
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"
-          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" id="bootstrap-css">
-
+    <title>Update your profile</title>
 
 
     <link rel="stylesheet" type="text/css" th:href="@{/style.css}" href="/static/style.css"/>
@@ -38,10 +34,12 @@
             src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script th:src="@{/js/bootstrap.js}" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" id="bootstrap-css">
     <link rel="stylesheet" th:href="@{/css/flaticon.css}" href="../static/css/flaticon.css">
     <link rel="stylesheet" th:href="@{/css/icomoon.css}" href="../static/css/icomoon.css">
     <link rel="stylesheet" th:href="@{/css/style.css}" href="../static/css/style.css">
+
 </head>
 
 
@@ -214,7 +212,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="birthDayE" class="col-4 col-form-label">birthday</label>
+                                    <label for="birthDayE" class="col-4 col-form-label">birthday in format YYYY-MM-DD </label>
                                     <div class="col-8">
                                         <input id="birthDayE" th:type="text" th:field="*{birthYear}"
                                                placeholder="YYYY-MM-DD" class="form-control here"
@@ -244,7 +242,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="publicinfoE" class="col-4 col-form-label">Public Info</label>
+                                    <label for="publicinfoE" class="col-4 col-form-label">Drop Few Words about Yourself</label>
                                     <div class="col-8">
                                             <textarea id="publicinfoE" th:field="*{personalReview}" name="publicinfo"
                                                       cols="40" rows="4" class="form-control"></textarea>
@@ -354,7 +352,7 @@
                                     <!--                                        </div>-->
                                     <!--                                    </div>-->
                                     <div class="form-group row">
-                                        <label class="col-4 col-form-label"> Update your Weekly resource </label>
+                                        <label class="col-4 col-form-label"> Update your Services here </label>
                                         <input type="hidden" data-th-value="${profile.getCategory().getName()}" th:value="${profile.getCategory().getName()}" th:field="*{category.name}">
                                         <input id="skill1" th:field="*{skill1}"
                                                placeholder="what service can you offer?"
