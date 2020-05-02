@@ -111,7 +111,7 @@
                 <h2 class="mb-3" th:text="${post.user.username}"></h2>
                 <p th:text="${post.content}"></p>
                 <p>
-                    <img th:src="@{'/posts/' + ${post.postId} + '/postImage'}" height="400">
+                    <img th:src="@{'/posts/' + ${post.postId} + '/postImage'}" width="500">
                     <!--                   th:href="@{'/posts/' + ${post.postId} + '/postImage'}">-->
                 </p>
                 <p>See my profile for more information or just contact me</p>
@@ -384,9 +384,9 @@
     </svg>
 </div>
 
-<!--<section th:insert="fragments/sing-up :: sing-up"></section>-->
+<section th:insert="fragments/sing-up :: sing-up"></section>
 
-<!--<div th:insert="fragments/footer :: footer"></div>-->
+<div th:insert="fragments/footer :: footer"></div>
 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
