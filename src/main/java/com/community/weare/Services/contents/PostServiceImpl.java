@@ -263,7 +263,7 @@ public class PostServiceImpl implements PostService {
 
     private List<Post> applyAlgorithm(Principal principal, List<Post> postList) {
         List<Post> sortedListByDate = postList.stream()
-                .sorted(Comparator.comparing(Post::getDate).reversed())
+                .sorted(Comparator.comparing(Post::getPostId).reversed())
                 .collect(Collectors.toList());
 
         for (int i = 0; i < sortedListByDate.size(); i++) {
