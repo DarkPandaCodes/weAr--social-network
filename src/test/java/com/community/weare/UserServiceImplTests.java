@@ -4,7 +4,7 @@ import com.community.weare.Exceptions.DuplicateEntityException;
 import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.*;
-import com.community.weare.Models.dao.UserModel;
+import com.community.weare.Models.dto.UserModel;
 import com.community.weare.Models.dto.UserDTO;
 import com.community.weare.Models.factories.UserFactory;
 import com.community.weare.Repositories.ExpertiseRepository;
@@ -28,7 +28,6 @@ import java.security.Principal;
 import java.util.*;
 
 import static com.community.weare.Factory.*;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -282,7 +281,6 @@ public class UserServiceImplTests {
         Mockito.when(userRepository.findByUsernameIs("tedi"))
                 .thenReturn(Optional.of(user1));
 
-
         Assertions.assertThrows(DuplicateEntityException.class, () -> {
            mockUserService.registerUser(user1,new Category("Marketing"));
         });
@@ -334,7 +332,6 @@ public class UserServiceImplTests {
         request.setSender(user1);
         request.setReceiver(user2);
 
-
         Mockito.when(userRepository.getOne(1)).thenReturn(user1);
         Mockito.when(userRepository.getOne(2)).thenReturn(user2);
 
@@ -353,7 +350,6 @@ public class UserServiceImplTests {
         user2.setUserId(2);
         request.setSender(user1);
         request.setReceiver(user2);
-
 
         Mockito.when(userRepository.getOne(1)).thenReturn(user1);
         Mockito.when(userRepository.getOne(2)).thenReturn(user2);
@@ -376,7 +372,6 @@ public class UserServiceImplTests {
         user2.addToFriendList(user1);
         request.setSender(user1);
         request.setReceiver(user2);
-
 
         Mockito.when(userRepository.getOne(1)).thenReturn(user1);
         Mockito.when(userRepository.getOne(2)).thenReturn(user2);

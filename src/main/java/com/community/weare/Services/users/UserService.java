@@ -1,7 +1,7 @@
 package com.community.weare.Services.users;
 
 import com.community.weare.Models.*;
-import com.community.weare.Models.dao.UserModel;
+import com.community.weare.Models.dto.UserModel;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.core.userdetails.UserDetailsService;

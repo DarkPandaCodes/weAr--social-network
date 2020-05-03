@@ -1,7 +1,7 @@
 package com.community.weare;
 
 import com.community.weare.Models.*;
-import com.community.weare.Models.dao.UserModel;
+import com.community.weare.Models.dto.UserModel;
 import com.community.weare.Models.dto.ExpertiseProfileDTO;
 
 import java.util.*;

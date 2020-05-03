@@ -1,23 +1,12 @@
 package com.community.weare;
 
-import com.community.weare.Exceptions.DuplicateEntityException;
-import com.community.weare.Exceptions.EntityNotFoundException;
-import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.*;
-import com.community.weare.Models.dao.UserModel;
-import com.community.weare.Models.dto.UserDTO;
-import com.community.weare.Models.factories.UserFactory;
 import com.community.weare.Repositories.CityRepository;
-import com.community.weare.Repositories.ExpertiseRepository;
 import com.community.weare.Repositories.PersonalInfoRepository;
 import com.community.weare.Repositories.UserRepository;
-import com.community.weare.Services.connections.RequestServiceImpl;
 import com.community.weare.Services.users.PersonalInfoServiceImpl;
 import com.community.weare.Services.users.UserService;
-import com.community.weare.Services.users.UserServiceImpl;
-import org.junit.Assert;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -25,12 +14,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.security.Principal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 import static com.community.weare.Factory.*;
-import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PersonalProfileServiceImplTests {

@@ -18,6 +18,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.community.weare.utils.ErrorMessages.REQUEST_NOT_FOUND;
+
 @Service
 public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
@@ -85,6 +87,6 @@ public class RequestServiceImpl implements RequestService {
         if (requestRepository.findRequestByUsers(users).isApproved()) {
             return requestRepository.findRequestByUsers(users);
         }
-        throw new EntityNotFoundException("Request not found");
+        throw new EntityNotFoundException(REQUEST_NOT_FOUND);
     }
 }

@@ -53,8 +53,8 @@
                     TO admin zone</a></li>
                 <!--                <li class="nav-item"><a sec:authorize="!isAuthenticated()" th:href="@{'/auth'}" class="nav-link">GO-->
                 <!--                    TO personal zone</a></li>-->
-                <li class="nav-item"><a sec:authorize="isAuthenticated()"
-                                        th:href="@{'/auth/users/' + ${user.userId} + '/profile'}"   class="nav-link">Personal
+                <li class="nav-item"><a sec:authorize="isAuthenticated()" th:if="${user!=null}"
+                                        th:href="@{'/auth/users/' + ${user.userId} + '/profile'}" class="nav-link">Personal
                     Profile</a></li>
                 <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Latest Posts</a></li>
                 <li class="nav-item"><a th:href="@{/about-us}" class="nav-link">About us</a></li>
@@ -141,74 +141,104 @@
                                         </div>
                                     </form>
                                 </div>
-
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
-
 </div>
 
-<section class="ftco-section">
+<section class="ftco-section testimony-section">
     <div class="container">
-        <div class="row justify-content-center mb-5">
-            <div class="col-md-7 heading-section text-center ftco-animate">
-                <span class="subheading">Popular Services Categories</span>
-                <h2 class="mb-0">Top Categories</h2>
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-7 text-center heading-section ftco-animate">
+                <span class="subheading">How does it work?</span>
+                <h2 class="mb-4">Do what you love, get what you need</h2>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-3 ftco-animate">
-                <ul class="category text-center">
-                    <li><a href="#">Web Development <br><span class="number">354</span> <span>Open position</span><i
-                            class="ion-ios-arrow-forward"></i></a></li>
-                    <li><a href="#">Graphic Designer <br><span class="number">143</span> <span>Open position</span><i
-                            class="ion-ios-arrow-forward"></i></a></li>
-                    <li><a href="#">Multimedia <br><span class="number">100</span> <span>Open position</span><i
-                            class="ion-ios-arrow-forward"></i></a></li>
-                    <li><a href="#">Advertising <br><span class="number">90</span> <span>Open position</span><i
-                            class="ion-ios-arrow-forward"></i></a></li>
-                </ul>
-            </div>
-            <div class="col-md-3 ftco-animate">
-                <ul class="category text-center">
-                    <li><a href="#">Education &amp; Training <br><span class="number">100</span>
-                        <span>Open position</span><i class="ion-ios-arrow-forward"></i></a></li>
-                    <li><a href="#">English <br><span class="number">200</span> <span>Open position</span><i
-                            class="ion-ios-arrow-forward"></i></a></li>
-                    <li><a href="#">Social Media <br><span class="number">300</span> <span>Open position</span><i
-                            class="ion-ios-arrow-forward"></i></a></li>
-                    <li><a href="#">Writing <br><span class="number">150</span> <span>Open position</span><i
-                            class="ion-ios-arrow-forward"></i></a></li>
-                </ul>
-            </div>
-            <div class="col-md-3 ftco-animate">
-                <ul class="category text-center">
-                    <li><a href="#">PHP Programming <br><span class="number">400</span> <span>Open position</span><i
-                            class="ion-ios-arrow-forward"></i></a></li>
-                    <li><a href="#">Project Management <br><span class="number">100</span> <span>Open position</span><i
-                            class="ion-ios-arrow-forward"></i></a></li>
-                    <li><a href="#">Finance Management <br><span class="number">222</span> <span>Open position</span><i
-                            class="ion-ios-arrow-forward"></i></a></li>
-                    <li><a href="#">Office &amp; Admin <br><span class="number">123</span> <span>Open position</span><i
-                            class="ion-ios-arrow-forward"></i></a></li>
-                </ul>
-            </div>
-            <div class="col-md-3 ftco-animate">
-                <ul class="category text-center">
-                    <li><a href="#">Web Designer <br><span class="number">324</span> <span>Open position</span></span><i
-                            class="ion-ios-arrow-forward"></i></a></li>
-                    <li><a href="#">Customer Service <br><span class="number">564</span> <span>Open position</span><i
-                            class="ion-ios-arrow-forward"></i></a></li>
-                    <li><a href="#">Marketing &amp; Sales <br><span class="number">234</span> <span>Open position</span><i
-                            class="ion-ios-arrow-forward"></i></a></li>
-                    <li><a href="#">Software Development <br><span class="number">425</span>
-                        <span>Open position</span><i class="ion-ios-arrow-forward"></i></a></li>
-                </ul>
+        <div class="row ftco-animate">
+            <div class="col-md-12">
+                <div class="carousel-testimony owl-carousel ftco-owl">
+                    <div class="item">
+                        <div class="testimony-wrap py-4">
+                            <div class="text">
+                                <p class="mb-4">I'm marketing manager I can create an effective instagram hashtag growth
+                                    strategy, I need legal Consulting </p>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-img"
+                                         style="background-image: url(images/photo-of-women.jpg)"></div>
+                                    <div class="pl-3">
+                                        <p class="name">Mariq Ivanova</p>
+                                        <span class="position">Marketing Manager</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="testimony-wrap py-4">
+                            <div class="text">
+                                <p class="mb-4">I will do patent search and trademark search for your invention or
+                                    products. I need for someone that can care for my garden </p>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-img"
+                                         style="background-image: url(images/businesswomen-businesswoman-interview-meeting-70292.jpg)"></div>
+                                    <div class="pl-3">
+                                        <p class="name">Katerina Hristova</p>
+                                        <span class="position">Legal Consulting</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="testimony-wrap py-4">
+                            <div class="text">
+                                <p class="mb-4">Find any service you need. Post what you like to do. Get someone else to
+                                    do the jobs you dislike.</p>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-img" style="background-image: url(images/dog.jpg)"></div>
+                                    <div class="pl-3">
+                                        <p class="name">Dimitar Ivanov</p>
+                                        <span class="position">Dog walker</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="testimony-wrap py-4">
+                            <div class="text">
+                                <p class="mb-4">You can repair things ? Fix things locally and use the WEare anywhere in
+                                    the World.</p>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-img" style="background-image: url(images/man-fixing.jpg)"></div>
+                                    <div class="pl-3">
+                                        <p class="name">Petar Mangurov</p>
+                                        <span class="position">Auto Mechanic </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="testimony-wrap py-4">
+                            <div class="text">
+                                <p class="mb-4">I'm a hairdresser and i can help you with my services</p>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-img"
+                                         style="background-image: url(images/woman-getting-a-haircut-3992872.jpg)"></div>
+                                    <div class="pl-3">
+                                        <p class="name">Ralica Borisova</p>
+                                        <span class="position">Hairdresser</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -221,9 +251,12 @@
                 <div class="media block-6 services d-block">
                     <div class="icon"><span class="flaticon-resume"></span></div>
                     <div class="media-body">
-                        <h3 class="heading mb-3">Register and Search Thousands of Services that People in Bulgaria are willing to share with you.Sign up to create an account. </h3>
-                        <p>You must provide your email and phone number. We will send you a link to validate your email address.
-                            The more complete your profile is, the easier it is for potential partners to contact you.</p>
+                        <h3 class="heading mb-3">Register and Search Thousands of Services that People in Bulgaria are
+                            willing to share with you.Sign up to create an account. </h3>
+                        <p>You must provide your email and phone number. We will send you a link to validate your email
+                            address.
+                            The more complete your profile is, the easier it is for potential partners to contact
+                            you.</p>
                     </div>
                 </div>
             </div>
@@ -231,9 +264,12 @@
                 <div class="media block-6 services d-block">
                     <div class="icon"><span class="flaticon-team"></span></div>
                     <div class="media-body">
-                        <h3 class="heading mb-3">Leverage your skills. What can you do? When and where can you do it?</h3>
-                        <p>Register and pick up your field of expertise.By putting you in touch with the person who is seeking the skill or service that you are offering,
-                            Weare enables sharing, exchanging, and trading and a return to the community values of old in the process. </p>
+                        <h3 class="heading mb-3">Leverage your skills. What can you do? When and where can you do
+                            it?</h3>
+                        <p>Register and pick up your field of expertise.By putting you in touch with the person who is
+                            seeking the skill or service that you are offering,
+                            Weare enables sharing, exchanging, and trading and a return to the community values of old
+                            in the process. </p>
                     </div>
                 </div>
             </div>
@@ -242,8 +278,9 @@
                     <div class="icon"><span class="flaticon-career"></span></div>
                     <div class="media-body">
                         <h3 class="heading mb-3">Search for people that can help you or your business</h3>
-                        <p>After you helped someone. They can either return the favour directly to you or to someone else in the Weare community.
-                           </p>
+                        <p>After you helped someone. They can either return the favour directly to you or to someone
+                            else in the Weare community.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -262,127 +299,6 @@
     </div>
 </section>
 
-
-
-
-<section class="ftco-section testimony-section">
-    <div class="container">
-        <div class="row justify-content-center mb-4">
-            <div class="col-md-7 text-center heading-section ftco-animate">
-                <span class="subheading">How does it work?</span>
-                <h2 class="mb-4">Do what you love, get what you need</h2>
-            </div>
-        </div>
-        <div class="row ftco-animate">
-            <div class="col-md-12">
-                <div class="carousel-testimony owl-carousel ftco-owl">
-                    <div class="item">
-                        <div class="testimony-wrap py-4">
-                            <div class="text">
-                                <p class="mb-4">I'm marketing manager I can create an effective instagram hashtag growth strategy, I need legal Consulting  </p>
-                                <div class="d-flex align-items-center">
-                                    <div class="user-img" style="background-image: url(images/photo-of-women.jpg)"></div>
-                                    <div class="pl-3">
-                                        <p class="name">Mariq Ivanova</p>
-                                        <span class="position">Marketing Manager</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="testimony-wrap py-4">
-                            <div class="text">
-                                <p class="mb-4">I will do patent search and trademark search for your invention or products. I need for someone that can care for my garden </p>
-                                <div class="d-flex align-items-center">
-                                    <div class="user-img" style="background-image: url(images/businesswomen-businesswoman-interview-meeting-70292.jpg)"></div>
-                                    <div class="pl-3">
-                                        <p class="name">Katerina Hristova</p>
-                                        <span class="position">Legal Consulting</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="testimony-wrap py-4">
-                            <div class="text">
-                                <p class="mb-4">Find any service you need. Post what you like to do. Get someone else to do the jobs you dislike.</p>
-                                <div class="d-flex align-items-center">
-                                    <div class="user-img" style="background-image: url(images/dog.jpg)"></div>
-                                    <div class="pl-3">
-                                        <p class="name">Dimitar Ivanov</p>
-                                        <span class="position">Dog walker</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="testimony-wrap py-4">
-                            <div class="text">
-                                <p class="mb-4">You can repair things ? Fix things locally and use the WEare  anywhere in the World.</p>
-                                <div class="d-flex align-items-center">
-                                    <div class="user-img" style="background-image: url(images/man-fixing.jpg)"></div>
-                                    <div class="pl-3">
-                                        <p class="name">Petar Mangurov</p>
-                                        <span class="position">Auto Mechanic </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="testimony-wrap py-4">
-                            <div class="text">
-                                <p class="mb-4">I'm a hairdresser  and i can help you with my services</p>
-                                <div class="d-flex align-items-center">
-                                    <div class="user-img" style="background-image: url(images/woman-getting-a-haircut-3992872.jpg)"></div>
-                                    <div class="pl-3">
-                                        <p class="name">Ralica Borisova</p>
-                                        <span class="position">Hairdresser</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="ftco-section ftco-candidates bg-primary">
-    <div class="container">
-        <div class="row justify-content-center pb-3">
-            <div class="col-md-10 heading-section heading-section-white text-center ftco-animate">
-                <span class="subheading">#WEare all together</span>
-                <h2 class="mb-4">Latest WEare people</h2>
-            </div>
-        </div>
-    </div>
-    <div class="container" th:if="${latestUsers!=null}">
-        <div class="row">
-            <div class="col-md-12 ftco-animate" >
-                <div class="carousel-candidates owl-carousel"  >
-                    <div class="item" th:each="user : ${latestUsers}">
-                       <div href="#" class="team text-center">
-
-                               <img class="img1" th:if="${user.getPersonalProfile().getPicture()==null}"
-                                 src="/images/blank-profile-picture.jpg" alt="Image"/>
-                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()!=null}"
-                                 th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
-                           <a th:href="@{'/auth/users/' + ${user.getUserId()} + '/profile'}" >   <h2 th:text="${user.getPersonalProfile().firstName+' '+user.getPersonalProfile().lastName}"
-                                th:type="text">Danica Lewis</h2>   </a>
-                            <span class="position" th:text=" ${user.getExpertiseProfile().getCategory().name}">Western City, UK</span>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-</section>
 
 <section class="ftco-section bg-light">
     <div class="container">
@@ -407,7 +323,7 @@
             </div>
             <div class="col-md-3 d-flex ftco-animate">
                 <div class="blog-entry align-self-stretch">
-                    <a  class="block-20" style="background-image: url('images/couple.jpg');">
+                    <a class="block-20" style="background-image: url('images/couple.jpg');">
                     </a>
                     <div class="text mt-3">
                         <h3 class="heading"> It is not about money or about generating a profit, but about
@@ -418,16 +334,16 @@
             </div>
             <div class="col-md-3 d-flex ftco-animate">
                 <div class="blog-entry align-self-stretch">
-                    <a  class="block-20" style="background-image: url('images/people-doing.jpg');">
+                    <a class="block-20" style="background-image: url('images/people-doing.jpg');">
                     </a>
                     <div class="text mt-3">
-                        <h3 class="heading">A community you can trust. Do  good and get something back. </h3>
+                        <h3 class="heading">A community you can trust. Do good and get something back. </h3>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 d-flex ftco-animate">
                 <div class="blog-entry align-self-stretch">
-                    <a  class="block-20" style="background-image: url('images/person_help.jpg');">
+                    <a class="block-20" style="background-image: url('images/person_help.jpg');">
                     </a>
                     <div class="text mt-3">
 
@@ -439,6 +355,38 @@
     </div>
 </section>
 
+<section class="ftco-section ftco-candidates bg-primary">
+    <div class="container">
+        <div class="row justify-content-center pb-3">
+            <div class="col-md-10 heading-section heading-section-white text-center ftco-animate">
+                <span class="subheading">#WEare all together</span>
+                <h2 class="mb-4">Latest WEare people</h2>
+            </div>
+        </div>
+    </div>
+    <div class="container" th:if="${latestUsers!=null}">
+        <div class="row">
+            <div class="col-md-12 ftco-animate">
+                <div class="carousel-candidates owl-carousel">
+                    <div class="item" th:each="user : ${latestUsers}">
+                        <div href="#" class="team text-center">
+
+                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()==null}"
+                                 src="/images/blank-profile-picture.jpg" alt="Image"/>
+                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()!=null}"
+                                 th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
+                            <a th:href="@{'/auth/users/' + ${user.getUserId()} + '/profile'}"><h2
+                                    th:text="${user.getPersonalProfile().firstName+' '+user.getPersonalProfile().lastName}"
+                                    th:type="text">Danica Lewis</h2></a>
+                            <span class="position" th:text=" ${user.getExpertiseProfile().getCategory().name}">Western City, UK</span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <section th:insert="fragments/sing-up :: sing-up"></section>
 

@@ -97,9 +97,12 @@
 					<i class="ion-ios-arrow-forward"></i></a></span> <span class="mr-3">
                     <a th:href="@{'/search?searchParam1='+${user.getExpertiseProfile().getCategory().name}+'&searchParam2=&index=0&size=10'}"
                        th:text="${user.getExpertiseProfile().getCategory().name}">Professionals</a></span></p>
-                <h1 class="mb-3 bread"
+                <h1 class="mb-3 bread"  th:if="${user.personalProfile.firstName!=null}"
                     th:text="${user.getPersonalProfile().getFirstName()+' '+user.getPersonalProfile().getLastName()}">
-                    Explore all posts</h1>
+                    username</h1>
+                <h1 class="mb-3 bread"  th:if="${user.personalProfile.firstName==null}"
+                    th:text="*{username}">
+                    username</h1>
             </div>
         </div>
     </div>
@@ -176,8 +179,11 @@
                         </div>
                         <div class="col-lg-12">
                             <div class="text pl-md-4">
-                                <h1 class="mr-3 text-black"
+                                <h1 class="mr-3 text-black" th:if="${user.personalProfile.firstName!=null}"
                                     th:text="*{personalProfile.firstName+' '+personalProfile.lastName}"
+                                    th:type="text"></h1>
+                                <h1 class="mr-3 text-black" th:if="${user.personalProfile.firstName==null}"
+                                    th:text="*{username}"
                                     th:type="text"></h1>
                                 <p><span
                                         th:text=" ${user.getExpertiseProfile().getCategory().name}">Professional</span>

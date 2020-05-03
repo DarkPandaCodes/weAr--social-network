@@ -1,6 +1,4 @@
 package com.community.weare.Models;
-
-import com.community.weare.Constrains.ValidPassword;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,7 +22,6 @@ public class User implements UserDetails {
     private String username;
 
     @JsonBackReference
-    @ValidPassword
     @Column(name = "password", nullable = false)
     private String password;
 
