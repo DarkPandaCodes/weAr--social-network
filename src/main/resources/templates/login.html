@@ -43,7 +43,7 @@
                     TO admin zone</a></li>
                 <!--                <li class="nav-item"><a sec:authorize="!isAuthenticated()" th:href="@{'/auth'}" class="nav-link">GO-->
                 <!--                    TO personal zone</a></li>-->
-                <li class="nav-item"><a sec:authorize="isAuthenticated()"
+                <li class="nav-item"><a sec:authorize="isAuthenticated()" th:if="${user!=null}"
                                         th:href="@{'/auth/users/' + ${user.userId} + '/profile'}" class="nav-link">Personal
                     Profile</a></li>
                 <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Latest Posts</a></li>

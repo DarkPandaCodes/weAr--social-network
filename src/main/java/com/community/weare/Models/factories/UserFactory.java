@@ -1,11 +1,10 @@
 package com.community.weare.Models.factories;
 
 import com.community.weare.Models.*;
-import com.community.weare.Models.dao.UserModel;
+import com.community.weare.Models.dto.UserModel;
 import com.community.weare.Models.dto.UserDTO;
 import com.community.weare.Models.dto.UserDtoRequest;
 import com.community.weare.Repositories.RoleRepository;
-import com.community.weare.Repositories.SkillCategoryRepository;
 import com.community.weare.Repositories.SkillRepository;
 import com.community.weare.Repositories.UserRepository;
 import org.modelmapper.ModelMapper;

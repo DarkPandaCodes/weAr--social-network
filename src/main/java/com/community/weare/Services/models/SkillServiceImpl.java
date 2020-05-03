@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import static com.community.weare.utils.ErrorMessages.SKILL_NOT_FOUND;
+
 @Transactional
 @Service
 public class SkillServiceImpl implements SkillService {
@@ -33,7 +35,7 @@ public class SkillServiceImpl implements SkillService {
     @Override
     public Skill getOne(int skillId) {
         if (!skillRepository.existsById(skillId)) {
-            throw new EntityNotFoundException("Skill does't exist");
+            throw new EntityNotFoundException(SKILL_NOT_FOUND);
         }
         return skillRepository.getOne(skillId);
     }
@@ -47,7 +49,7 @@ public class SkillServiceImpl implements SkillService {
     @Override
     public void editSkill(int skillId, String skill) {
         if (!skillRepository.existsById(skillId)) {
-            throw new EntityNotFoundException("Skill doesnt exist");
+            throw new EntityNotFoundException(SKILL_NOT_FOUND);
         }
         Skill skillToEdit = skillRepository.getOne(skillId);
         skillToEdit.setSkill(skill);
@@ -57,7 +59,7 @@ public class SkillServiceImpl implements SkillService {
     @Override
     public void deleteSkill(int skillId) {
         if (!skillRepository.existsById(skillId)) {
-            throw new EntityNotFoundException("Skill doesnt exist");
+            throw new EntityNotFoundException(SKILL_NOT_FOUND);
         }
         Skill skillToDelete = skillRepository.getOne(skillId);
         skillRepository.delete(skillToDelete);

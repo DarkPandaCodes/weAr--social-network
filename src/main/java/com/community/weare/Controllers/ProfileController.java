@@ -3,7 +3,7 @@ package com.community.weare.Controllers;
 import com.community.weare.Exceptions.EntityNotFoundException;
 import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.*;
-import com.community.weare.Models.dao.UserModel;
+import com.community.weare.Models.dto.UserModel;
 import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
 import com.community.weare.Models.dto.UserDtoRequest;
@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 
-import static com.community.weare.utils.HttpMessages.*;
+import static com.community.weare.utils.ErrorMessages.*;
 
 @Controller
 @RequestMapping("/auth/users")

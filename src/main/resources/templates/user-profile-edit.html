@@ -212,10 +212,10 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="birthDayE" class="col-4 col-form-label">birthday in format YYYY-MM-DD </label>
+                                    <label for="birthDayE" class="col-4 col-form-label">birthday*</label>
                                     <div class="col-8">
-                                        <input id="birthDayE" th:type="text" th:field="*{birthYear}"
-                                               placeholder="YYYY-MM-DD" class="form-control here"
+                                        <input id="birthDayE" th:type="date" th:field="*{birthYear}"
+                                                value="1900-00-01" class="form-control here"
                                                required="required">
                                         <label class="error" th:errors="*{birthYear}"></label>
                                     </div>
@@ -288,7 +288,6 @@
         </div>
 
     </div>
-
     <div class="row"   >
         <div class="tab-pane col-md-9 pb-5 pt-5" role="tabpanel" id="profile-expertise">
             <div class="card">

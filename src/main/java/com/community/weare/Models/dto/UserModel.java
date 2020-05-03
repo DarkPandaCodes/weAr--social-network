@@ -1,43 +1,43 @@
-package com.community.weare.Models.dao;
+package com.community.weare.Models.dto;
 
-import com.community.weare.Constrains.ValidPassword;
+
 import com.community.weare.Models.City;
 import com.community.weare.Models.Sex;
+import com.community.weare.utils.ValidationMessages;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.community.weare.utils.ValidationMessages.*;
+import static com.community.weare.utils.ValidationPatterns.EMAIL_VALID_PATTERN;
+import static com.community.weare.utils.ValidationPatterns.NAMES_MIN_LEN;
+
 public class UserModel {
     private int id;
-    @Size(min = 2, message = "The username must have at least 2 symbols!")
+    @Size(min = NAMES_MIN_LEN, message = USERNAME_SIZE_MSG)
     private String username;
     private List<String> authorities;
-    @Pattern(regexp = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$", message = "this doesn't look like valid email")
+    @Pattern(regexp =EMAIL_VALID_PATTERN , message = VALID_EMAIL)
     private String email;
-    @Size(min = 2, message = "The first name must have at least 3 symbols!")
+    @Size(min = NAMES_MIN_LEN, message = FIRST_NAME_SIZE_MSG)
     private String firstName;
-    @Size(min = 2, message = "The last name must have at least 3 symbols!")
+    @Size(min = NAMES_MIN_LEN, message = LAST_NAME_SIZE_MSG)
     private String lastNAme;
     private Sex gender;
     private City city;
 
 
+    private String birthInput;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate birthYear;
 
-    @Size(max = 250, message = "Personal review must have be max 250 symbols!")
+    @Size(max = 250, message = PERSONAL_REVIEW_MSG)
     private String personalReview;
-    //    private String picture;
+
     private String expertise;
     private List<String> skills = new ArrayList<>();
 

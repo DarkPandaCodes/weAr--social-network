@@ -3,7 +3,7 @@ package com.community.weare.Services.users;
 
 import com.community.weare.Exceptions.*;
 import com.community.weare.Models.*;
-import com.community.weare.Models.dao.UserModel;
+import com.community.weare.Models.dto.UserModel;
 import com.community.weare.Repositories.ExpertiseRepository;
 import com.community.weare.Repositories.PersonalInfoRepository;
 import com.community.weare.Repositories.UserRepository;
@@ -20,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.Collection;
+
+import static com.community.weare.utils.ErrorMessages.DUPLICATE;
+import static com.community.weare.utils.ErrorMessages.NOT_FOUND;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -48,7 +51,7 @@ public class UserServiceImpl implements UserService {
     public int registerUser(User user, Category category) {
 
         if (isUserDuplicate(user)) {
-            throw new DuplicateEntityException("User with this username already exist");
+            throw new DuplicateEntityException(DUPLICATE);
         }
         PersonalProfile personalProfile
                 = personalInfoRepository.saveAndFlush(new PersonalProfile());
@@ -101,7 +104,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(int id) {
-        return userRepository.findById(id).orElseThrow(new EntityNotFoundException("User not found!"));
+        return userRepository.findById(id).orElseThrow(new EntityNotFoundException(NOT_FOUND));
     }
 
     @Override

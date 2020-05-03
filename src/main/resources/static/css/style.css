@@ -9090,8 +9090,16 @@ h1, h2, h3, h4, h5,
     position: relative;
     padding: 4em 0;
     background: #206dfb; }
+.ftco-section-parallax1 .parallax-img {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: relative;
+    padding: 4em 0;
+    background: rgba(253, 171, 68, 0.78); }
   .ftco-section-parallax .heading-section-white h2 {
     font-weight: 400 !important; }
+
 
 .aside-stretch {
   background: #528efc; }

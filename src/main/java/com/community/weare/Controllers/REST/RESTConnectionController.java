@@ -17,8 +17,7 @@ import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.util.*;
 
-import static com.community.weare.utils.HttpMessages.ERROR_NOT_FOUND_MESSAGE_FORMAT;
-import static com.community.weare.utils.HttpMessages.NOT_AUTHORISED;
+import static com.community.weare.utils.ErrorMessages.NOT_AUTHORISED;
 
 @RestController
 @RequestMapping("/api/auth")

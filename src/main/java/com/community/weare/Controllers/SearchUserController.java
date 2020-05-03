@@ -5,20 +5,17 @@ import com.community.weare.Models.Page;
 import com.community.weare.Models.User;
 import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.community.weare.utils.ErrorMessages.NOT_SEARCH_RESULT;
 
 
 @Controller
@@ -55,7 +52,7 @@ public class SearchUserController {
             model.addAttribute("users", users);
 
             if (users.isEmpty()) {
-                throw new EntityNotFoundException("There are no users existing in this search criteria.");
+                throw new EntityNotFoundException(NOT_SEARCH_RESULT);
             }
 
         } catch (EntityNotFoundException e) {

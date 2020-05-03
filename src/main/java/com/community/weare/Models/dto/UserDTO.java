@@ -1,7 +1,8 @@
 package com.community.weare.Models.dto;
 
-import com.community.weare.Constrains.ValidPassword;
+
 import com.community.weare.Models.Category;
+import com.community.weare.utils.ValidationMessages;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.validation.constraints.Pattern;
@@ -9,21 +10,23 @@ import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Set;
 
+import static com.community.weare.utils.ValidationMessages.*;
+import static com.community.weare.utils.ValidationPatterns.*;
+
 public class UserDTO {
 
-    @Pattern(regexp = "^[a-zA-Z]*$",message = "username requires no whitespaces, only character")
+    @Pattern(regexp = USER_NAME_VALID_PATTERN, message = USERNAME_NO_WHITE_SPACES)
     private String username;
 
-
-//    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\\s).{4,8}$",message = "Password  requires one lower case letter, one upper case letter, one digit, 6-13 length, and no spaces.")
+    @Size(min = PASSWORD_MIN_LEN, message = PASSWORD_SIZE_MSG)
     private String password;
 
     private String confirmPassword;
 
-    @Pattern(regexp = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$",message = "please sing up with valid email")
+    @Pattern(regexp = EMAIL_VALID_PATTERN, message = VALID_EMAIL)
     private String email;
 
-   private Category category;
+    private Category category;
 
     private List<String> authorities;
 

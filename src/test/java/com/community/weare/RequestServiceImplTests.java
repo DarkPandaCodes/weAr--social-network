@@ -20,6 +20,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static com.community.weare.Factory.*;
 
@@ -36,19 +37,12 @@ public class RequestServiceImplTests {
     UserService userService;
 
     @Test
-    public void getAllCitiesShould_callRepository() {
+    public void getAllRequstsShould_callRepository() {
         User sender = createUser();
         User receiver = createUser2();
         Request request = new Request();
-//        request.setSender(sender);
-//        request.setReceiver(receiver);
-//        request.setId(1);
-//        request.setTimeStamp(LocalDateTime.now());
-//        Principal principal = () -> "tedi";
-//        user = setAuthorities(user);
-
-        //act
-//        Mockito.when(requestRepository.saveAndFlush(request)).thenReturn(request);
+        request.setSender(sender);
+        request.setReceiver(receiver);
         requestService.createRequest(sender,receiver);
 
         Mockito.verify(requestRepository,Mockito.times(1)).saveAndFlush(request);
@@ -56,21 +50,5 @@ public class RequestServiceImplTests {
     }
 
 
-//    @Test
-//    public void upgradeProfileShould_callRepository() {
-//        //arrange
-//        User user = createUser();
-//        user.setUserId(1);
-//        Principal principal = () -> "tedi";
-//        user = setAuthorities(user);
-//        PersonalProfile personalProfile = new PersonalProfile();
-//
-//        //act
-//        profileService.upgradeProfile(principal.getName(), user, personalProfile);
-//        userService.ifNotProfileOrAdminOwnerThrow(principal.getName(),user);
-//
-//        //assert
-//        Mockito.verify(personalInfoRepository, Mockito.times(1)).saveAndFlush(personalProfile);
-//    }
 
 }

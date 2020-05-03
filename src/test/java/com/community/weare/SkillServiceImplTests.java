@@ -47,12 +47,7 @@ public class SkillServiceImplTests {
     @Test
     public void getAllSkillsShould_callRepository() {
         //arrange
-//        User user = createUser();
-//        user.setUserId(1);
-//        Principal principal = () -> "tedi";
-//        user = setAuthorities(user);
-//        PersonalProfile personalProfile = new PersonalProfile();
-          Sort sort=Sort.by(Sort.Direction.ASC, "skill");
+         Sort sort=Sort.by(Sort.Direction.ASC, "skill");
 
         //act
         skillMockService.findAll(sort);
@@ -63,12 +58,6 @@ public class SkillServiceImplTests {
     @Test
     public void getOneShould_callRepository() {
         //arrange
-//        User user = createUser();
-//        user.setUserId(1);
-//        Principal principal = () -> "tedi";
-//        user = setAuthorities(user);
-//        PersonalProfile personalProfile = new PersonalProfile();
-//        Sort sort=Sort.by(Sort.Direction.ASC, "skill");
         Skill skill=new Skill();
         skill.setSkill("ssss");
         skill.setSkillId(1);
@@ -86,12 +75,6 @@ public class SkillServiceImplTests {
     @Test
     public void editShould_callRepository() {
         //arrange
-//        User user = createUser();
-//        user.setUserId(1);
-//        Principal principal = () -> "tedi";
-//        user = setAuthorities(user);
-//        PersonalProfile personalProfile = new PersonalProfile();
-//        Sort sort=Sort.by(Sort.Direction.ASC, "skill");
         Skill skill=new Skill();
         skill.setSkill("ssss");
         skill.setSkillId(1);
@@ -108,12 +91,6 @@ public class SkillServiceImplTests {
     @Test
     public void findOrCreateShould_callRepository() {
         //arrange
-//        User user = createUser();
-//        user.setUserId(1);
-//        Principal principal = () -> "tedi";
-//        user = setAuthorities(user);
-//        PersonalProfile personalProfile = new PersonalProfile();
-//        Sort sort=Sort.by(Sort.Direction.ASC, "skill");
         Skill skill=new Skill();
         skill.setSkill("ssss");
         skill.setSkillId(1);
@@ -152,21 +129,5 @@ public class SkillServiceImplTests {
         });
     }
 
-//    @Test
-//    public void upgradeProfileShould_callRepository() {
-//        //arrange
-//        User user = createUser();
-//        user.setUserId(1);
-//        Principal principal = () -> "tedi";
-//        user = setAuthorities(user);
-//        PersonalProfile personalProfile = new PersonalProfile();
-//
-//        //act
-//        profileService.upgradeProfile(principal.getName(), user, personalProfile);
-//        userService.ifNotProfileOrAdminOwnerThrow(principal.getName(),user);
-//
-//        //assert
-//        Mockito.verify(personalInfoRepository, Mockito.times(1)).saveAndFlush(personalProfile);
-//    }
 
 }
