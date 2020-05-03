@@ -11,6 +11,7 @@ import com.community.weare.Models.factories.ExpertiseProfileFactory;
 import com.community.weare.Models.factories.PersonalProfileFactory;
 import com.community.weare.Models.factories.UserFactory;
 import com.community.weare.Services.SkillCategoryService;
+import com.community.weare.Services.connections.RequestService;
 import com.community.weare.Services.contents.PostService;
 import com.community.weare.Services.models.SkillService;
 import com.community.weare.Services.users.PersonalInfoService;
@@ -41,19 +42,19 @@ public class ProfileController {
     private final UserService userService;
     private final ExpertiseProfileFactory expertiseProfileFactory;
     private final SkillCategoryService skillCategoryService;
-    private final SkillService skillService;
+    private final RequestService requestService;
     private final PersonalInfoService personalInfoService;
     private final PersonalProfileFactory personalProfileFactory;
     private final UserFactory userFactory;
     private final PostService postService;
 
     @Autowired
-    public ProfileController(UserService userService, ExpertiseProfileFactory expertiseProfileFactory, SkillCategoryService skillCategoryService, SkillService skillService, PersonalInfoService personalInfoService,
+    public ProfileController(UserService userService, ExpertiseProfileFactory expertiseProfileFactory, SkillCategoryService skillCategoryService, RequestService requestService, PersonalInfoService personalInfoService,
                              PersonalProfileFactory personalProfileFactory, UserFactory userFactory, PostService postService) {
         this.userService = userService;
         this.expertiseProfileFactory = expertiseProfileFactory;
         this.skillCategoryService = skillCategoryService;
-        this.skillService = skillService;
+        this.requestService = requestService;
         this.personalInfoService = personalInfoService;
         this.personalProfileFactory = personalProfileFactory;
         this.userFactory = userFactory;
@@ -71,7 +72,6 @@ public class ProfileController {
             int size = 4;
             modelAndView.addObject("index", index);
             modelAndView.addObject("size", size);
-
             Slice<Post> postSlice = postService.findSliceWithPosts
                     (index, size, "date", user, principal.getName());
 
@@ -83,17 +83,22 @@ public class ProfileController {
                 modelAndView.addObject("posts", postsOfUser);
                 modelAndView.addObject("index", index);
             }
-
-
+            boolean isOwner = userService.isOwner(principal.getName(), user);
+            if (isOwner) {
+                modelAndView.addObject("requestMessage",
+                        requestService.getAllRequestsForUser(user, principal.getName()).size());
+            } else if (principal != null) {
+                User principalUser = userService.getUserByUserName(principal.getName());
+                modelAndView.addObject("isSend", requestService.getByUsers(user, principalUser) != null);
+            }
             modelAndView.addObject("hasNext", postSlice.hasNext());
-            modelAndView.addObject("userDisable", new User());
             modelAndView.addObject("user", user);
+            modelAndView.addObject("userDisable", new User());
             modelAndView.addObject("userRequest", new UserDtoRequest());
-            modelAndView.addObject("friends", user.isFriend(principal.getName()));
-            modelAndView.addObject("isOwner", userService.isOwner(principal.getName(), user));
-            modelAndView.addObject("isAdmin", userService.isAdmin(principal));
-
             modelAndView.addObject("pageRequest", new Page());
+            modelAndView.addObject("friends", user.isFriend(principal.getName()));
+            modelAndView.addObject("isAdmin", userService.isAdmin(principal));
+            modelAndView.addObject("isOwner", isOwner);
 
         } catch (EntityNotFoundException e) {
             modelAndView.setStatus(HttpStatus.NOT_FOUND);

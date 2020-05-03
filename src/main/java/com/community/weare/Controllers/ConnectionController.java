@@ -46,7 +46,6 @@ public class ConnectionController {
 
             if (!userReceiver.isFriend(userSender.getUsername()) &&
                     requestService.getByUsers(userReceiver, userSender) == null) {
-
                 requestService.createRequest(userSender, userReceiver);
 
             } else if (userReceiver.isFriend(userSender.getUsername())) {
@@ -55,7 +54,8 @@ public class ConnectionController {
                 requestService.deleteRequest(request);
             }
         } catch (EntityNotFoundException e) {
-            model.addAttribute("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, "Request"));
+            model.addAttribute("error",
+                    String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, "Request"));
         }
         return "redirect:/auth/users/" + userToConnect.getId() + "/profile";
     }
@@ -99,7 +99,7 @@ public class ConnectionController {
 
         try {
             if (request.isApproved()) {
-                User receiver=userService.getUserById(request.getReceiver().getUserId());
+                User receiver = userService.getUserById(request.getReceiver().getUserId());
                 approvedRequest = requestService.approveRequest(request.getId(), receiver, principal.getName());
                 userService.addToFriendList(approvedRequest);
                 model.addAttribute("user", receiver);

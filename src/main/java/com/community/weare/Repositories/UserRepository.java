@@ -25,7 +25,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "SELECT u,e from User as u join u.expertiseProfile as e where e.category.name like :expertise")
     List<User> getAllByExpertise(@Param("expertise") String expertise);
 
-    @Query(value = "SELECT u from User as u where u.expertiseProfile.category.name like :expertise")
+    @Query(value = "SELECT u from User as u where u.expertiseProfile.category.name like %:expertise%")
     Slice<User> getAllByExpertise(Pageable page,@Param("expertise") String expertise);
 
     @Query(value = "SELECT u,p from User as u join u.personalProfile " +
@@ -37,17 +37,17 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> getByFirstName(@Param("firstName") String firstName);
 
 
-    @Query(value = "SELECT u from User as u where u.personalProfile.firstName like :firstName and u.personalProfile.lastName like :lastName")
+    @Query(value = "SELECT u from User as u where u.personalProfile.firstName like %:firstName% and u.personalProfile.lastName like %:lastName%")
     Slice<User> getByFirstNameLastName(Pageable page,@Param("firstName") String firstName, @Param("lastName") String lastName);
 
-    @Query(value = "SELECT u from User as u where u.personalProfile.firstName like :firstName")
+    @Query(value = "SELECT u from User as u where u.personalProfile.firstName like %:firstName%")
     Slice<User> getByFirstName(Pageable page,@Param("firstName") String firstName);
 
     @Query(value = "SELECT u from User as u order by u.personalProfile.memberSince desc ")
     Slice<User>findAllBy(Pageable page);
 
-    @Query(value = "SELECT u from User as u where u.personalProfile.firstName like :firstName and  u.personalProfile.lastName like :lastName " +
-            "and u.expertiseProfile.category.name like :expertise")
+    @Query(value = "SELECT u from User as u where u.personalProfile.firstName like %:firstName% and  u.personalProfile.lastName like %:lastName% " +
+            "and u.expertiseProfile.category.name like %:expertise%")
     Slice<User> getUsersByFirstNameLastNameExpertise(Pageable pageable, @Param("expertise") String expertise,
                                                      @Param("firstName") String firstName, @Param("lastName")String lastName);
     @Query(value = "SELECT u from User as u where u.personalProfile.firstName like :firstName  " +

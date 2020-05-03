@@ -165,7 +165,63 @@
     </div>
 </div>
 
+<section class="ftco-section ftco-candidates ftco-candidates-2 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 pr-lg-4">
+                <div class="row">
+                    <div class="col-md-12" th:if="${users!=0}" th:each="user : ${users}">
+                        <div class="team d-md-flex p-4 bg-white">
 
+                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()==null}"
+                                 src="/images/blank-profile-picture.jpg" alt="Image">
+
+                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()!=null}"
+                                 th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
+
+                            <div class="text pl-md-4">
+                                <span class="location mb-0" th:if="${user.getPersonalProfile().getLocation()!=null}"
+                                      th:text="${user.getPersonalProfile().getLocation().getCity().city}">Western City, UK</span>
+                                <a th:href="@{'/auth/users/' + ${user.getUserId()} + '/profile'}">
+                                    <h2 class="mr-3 text-black" th:if="${user.personalProfile.firstName!=null}"
+                                        th:text="${user.getPersonalProfile().firstName+' '+user.getPersonalProfile().lastName}"
+                                        th:type="text"> Ivan Petrov</h2>
+                                    <h2 class="mr-3 text-black" th:if="${user.personalProfile.firstName==null}"
+                                        th:text="${user.username}"
+                                        th:type="text"> Ivan Petrov</h2></a>
+                                <span class="position" th:text=" ${user.getExpertiseProfile().getCategory().name}">Expertise</span>
+                                <p th:text="${user.getPersonalProfile().personalReview}" class="mb-2">Far far away,
+                                    behind the word mountains, far from the countries Vokalia and Consonantia, there
+                                    live the blind texts.</p>
+                                <p th:if="${user.getPersonalProfile().memberSince!=null}" class="proile-rating">
+                                    Member since : <span class="seen"
+                                                         th:text=" ${user.getPersonalProfile().getMemberSince()}">8/10</span>
+                                </p>
+                                <p><a th:href="@{'/auth/users/' + ${user.getUserId()} + '/profile'}"
+                                      class="btn btn-primary">See Profile</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form th:class="load-form" th:object="${page}" method="get">
+                    <label>
+                        <input type="hidden" data-th-value="${page.getSearchParam2()}"
+                               th:value="${page.getSearchParam2()}" th:field="*{searchParam2}" class="mb-2"/>
+                        <input type="hidden" data-th-value="${page.getSearchParam1()}"
+                               th:value="${page.getSearchParam1()}" th:field="*{searchParam1}" class="mb-2"/>
+                        <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}"
+                               th:field="*{index}" class="mb-2"/>
+                        <input type="hidden" data-th-value="${page.getSize()}" th:value="${page.getSize()}"
+                               th:field="*{size}" class="mb-2"/>
+
+                    </label>
+                    <input th:if="${users!=null} and ${hasNext}" class="btn btn-primary" type="submit"
+                           th:value="${page.hasNext() ? 'Load More':'There are no users'}"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
 
 <section class="ftco-section testimony-section">
     <div class="container">
@@ -309,63 +365,7 @@
     </div>
 </section>
 
-<section class="ftco-section ftco-candidates ftco-candidates-2 bg-light">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 pr-lg-4">
-                <div class="row">
-                    <div class="col-md-12" th:if="${users!=0}" th:each="user : ${users}">
-                        <div class="team d-md-flex p-4 bg-white">
 
-                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()==null}"
-                                 src="/images/blank-profile-picture.jpg" alt="Image">
-
-                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()!=null}"
-                                 th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
-
-                            <div class="text pl-md-4">
-                                <span class="location mb-0" th:if="${user.getPersonalProfile().getLocation()!=null}"
-                                      th:text="${user.getPersonalProfile().getLocation().getCity().city}">Western City, UK</span>
-                                <a th:href="@{'/auth/users/' + ${user.getUserId()} + '/profile'}">
-                                    <h2 class="mr-3 text-black" th:if="${user.personalProfile.firstName!=null}"
-                                        th:text="${user.getPersonalProfile().firstName+' '+user.getPersonalProfile().lastName}"
-                                        th:type="text"> Ivan Petrov</h2>
-                                    <h2 class="mr-3 text-black" th:if="${user.personalProfile.firstName==null}"
-                                        th:text="${user.username}"
-                                        th:type="text"> Ivan Petrov</h2></a>
-                                <span class="position" th:text=" ${user.getExpertiseProfile().getCategory().name}">Expertise</span>
-                                <p th:text="${user.getPersonalProfile().personalReview}" class="mb-2">Far far away,
-                                    behind the word mountains, far from the countries Vokalia and Consonantia, there
-                                    live the blind texts.</p>
-                                <p th:if="${user.getPersonalProfile().memberSince!=null}" class="proile-rating">
-                                    Member since : <span class="seen"
-                                                         th:text=" ${user.getPersonalProfile().getMemberSince()}">8/10</span>
-                                </p>
-                                <p><a th:href="@{'/auth/users/' + ${user.getUserId()} + '/profile'}"
-                                      class="btn btn-primary">See Profile</a></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <form th:class="load-form" th:object="${page}" method="get">
-                    <label>
-                        <input type="hidden" data-th-value="${page.getSearchParam2()}"
-                               th:value="${page.getSearchParam2()}" th:field="*{searchParam2}" class="mb-2"/>
-                        <input type="hidden" data-th-value="${page.getSearchParam1()}"
-                               th:value="${page.getSearchParam1()}" th:field="*{searchParam1}" class="mb-2"/>
-                        <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}"
-                               th:field="*{index}" class="mb-2"/>
-                        <input type="hidden" data-th-value="${page.getSize()}" th:value="${page.getSize()}"
-                               th:field="*{size}" class="mb-2"/>
-
-                    </label>
-                    <input th:if="${users!=null} and ${hasNext}" class="btn btn-primary" type="submit"
-                           th:value="${page.hasNext() ? 'Load More':'There are no users'}"/>
-                </form>
-            </div>
-        </div>
-    </div>
-</section>
 
 <section th:insert="fragments/sing-up :: sing-up"></section>
 

@@ -65,9 +65,6 @@
                 <li class="nav-item"><a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{'/admin'}" class="nav-link">GO
                     TO admin zone</a></li>
 
-                <li class="nav-item"><a th:if="${user!=null}" sec:authorize="isAuthenticated()"
-                                        th:href="@{'/auth/users/' + ${user.getUserId()} + '/profile'}" class="nav-link">Personal
-                    Profile</a></li>
                 <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Latest Posts</a></li>
                 <li class="nav-item"><a th:href="@{/about-us}" class="nav-link">About us</a></li>
                 <li class="nav-item cta cta-colored"><a th:href="@{/posts/auth/newPost}"
@@ -133,22 +130,21 @@
             <input class="btn btn-primary" type="submit" th:value="${user.isEnabled() ? 'disable':'enable'}"/>
         </form>
     </div>
+
     <div th:if="${isOwner}" class=" col-2 p-3">
         <form action="#" th:action="@{'/auth/connection/'+${user.getUserId()}+'/request'}"
               th:object="${pageRequest}"
               method="get"
               class="search-job">
-
             <label>
-
                 <input type="hidden" data-th-value="${pageRequest.getIndex()}"
                        th:value="${pageRequest.getIndex()}" th:field="*{index}" class="mb-2"/>
                 <input type="hidden" data-th-value="4" th:value="4" th:field="*{size}" class="mb-2"/>
-
             </label>
-            <input class="btn btn-primary" type="submit" value="View my Requests"/>
+            <input class="btn btn-primary" type="submit" th:value="${requestMessage>=1 ? 'New Friend Requsts':'No Requests'}"/>
         </form>
     </div>
+
     <div class=" container d-flex bd-highlight team justify-content-center p-5 bg-white">
         <div class="col-2">
             <form th:if="${!isOwner}" sec:authorize="isAuthenticated()" action="#"
@@ -163,6 +159,7 @@
                 <input class="btn btn-primary" type="submit" th:value="${friends} ? 'disconnect': 'connect'"/>
             </form>
         </div>
+        <div th:if="${isSend} and ${!isOwner}">Good job! You have send friend request!</div>
         <div class="col-8 ">
             <div class="team p-4 bg-white">
                 <div method="post" th:object="${user}">
@@ -260,6 +257,15 @@
                                             <p th:if="*{personalProfile.location!=null}"
                                                th:text="*{personalProfile.location.city.city}">Web Developer and
                                                 Designer</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Friend list</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p
+                                               th:text="*{friendList.size()+' friends'}"></p>
                                         </div>
                                     </div>
                                     <div class="row">
