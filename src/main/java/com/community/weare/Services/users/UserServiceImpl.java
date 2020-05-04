@@ -16,13 +16,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.IOException;
 import java.security.Principal;
+import java.util.Base64;
 import java.util.Collection;
 
-import static com.community.weare.utils.ErrorMessages.DUPLICATE;
-import static com.community.weare.utils.ErrorMessages.NOT_FOUND;
+import static com.community.weare.utils.ErrorMessages.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -49,7 +51,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public int registerUser(User user, Category category) {
-
         if (isUserDuplicate(user)) {
             throw new DuplicateEntityException(DUPLICATE);
         }
@@ -65,6 +66,14 @@ public class UserServiceImpl implements UserService {
         userRepository.saveAndFlush(user);
         return user.getUserId();
 
+    }
+
+    @Override
+    public void editPictureUser(User userToUpdate, String principal, User userToCheck, MultipartFile file,
+                                PersonalProfile personalProfile) throws IOException {
+        userToUpdate.getPersonalProfile().setPicture(Base64.getEncoder().encodeToString(file.getBytes()));
+        userToUpdate.getPersonalProfile().setPicturePrivacy(personalProfile.isPicturePrivacy());
+        updateUser(userToUpdate,principal,userToCheck);
     }
 
     @Override
@@ -115,7 +124,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Slice<User> findSliceWithUsers(int index, int size, String param) {
         if (size == 0 && index == 0) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(NOT_FOUND);
         }
         Pageable page = PageRequest.of(index, size, Sort.by(param).descending());
         return userRepository.findAllBy(page);
@@ -123,7 +132,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Slice<User> findSliceWithLatestUsers(Pageable pageable) {
-
         return userRepository.findAllBy(pageable);
     }
 
@@ -146,15 +154,17 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User updateUser(User user, String principal, User userToCheck) {
+    public User updateUser(User userToUpdate, String principal, User userToCheck) {
         ifNotProfileOrAdminOwnerThrow(principal, userToCheck);
-        return userRepository.saveAndFlush(user);
+        return userRepository.saveAndFlush(userToUpdate);
     }
 
     @Transactional
     @Override
     public ExpertiseProfile updateExpertise(User user,
-                                            ExpertiseProfile expertiseProfileMerged, String principal, User userToCheck) {
+                                            ExpertiseProfile expertiseProfileMerged,
+                                            String principal,
+                                            User userToCheck) {
         ifNotProfileOrAdminOwnerThrow(principal, userToCheck);
         ExpertiseProfile profileDB = expertiseRepository.
                 findById(user.getExpertiseProfile().getId()).orElseThrow(new EntityNotFoundException());
@@ -196,26 +206,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public void ifNotProfileOwnerThrow(String principal, User user) {
         if (!principal.equals(user.getUsername())) {
-            throw new InvalidOperationException("User isn't authorised");
+            throw new InvalidOperationException(NOT_AUTHORISED);
         }
     }
 
     @Override
     public void ifNotProfileOrAdminOwnerThrow(String principal, User user) {
         User admin = userRepository.findByUsername(principal)
-                .orElseThrow(new EntityNotFoundException("User not found"));
+                .orElseThrow(new EntityNotFoundException(NOT_FOUND));
         if (!(admin.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")) ||
                 user.getUsername().equals(principal))) {
-            throw new InvalidOperationException("User isn't authorised");
+            throw new InvalidOperationException(NOT_AUTHORISED);
         }
     }
 
     @Override
     public void ifNotAdminThrow(String name, User user) {
         User admin = userRepository.findByUsername(name)
-                .orElseThrow(new EntityNotFoundException("User not found"));
+                .orElseThrow(new EntityNotFoundException(NOT_FOUND));
         if (admin.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new InvalidOperationException("User isn't authorised");
+            throw new InvalidOperationException(NOT_AUTHORISED);
         }
     }
 
@@ -227,13 +237,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isAdmin(Principal principal) {
         User admin = userRepository.findByUsername(principal
-                .getName()).orElseThrow(new EntityNotFoundException("This user doesn't exist"));
+                .getName()).orElseThrow(new EntityNotFoundException(NOT_FOUND));
         return admin.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
     }
 
     @Override
     public Slice<User> getAllUsersByCriteria(int index, int size, String name, String expertise) {
+
+        if (index==0&&size==0){
+            throw new EntityNotFoundException(RESULT_NOT_FOUND);
+        }
         Pageable pageable = PageRequest.of(index, size, Sort.by("username"));
+
         if (!name.isEmpty() && expertise.isEmpty()) {
             return getUserByFirstNameLastName(pageable, name);
 

@@ -173,10 +173,10 @@
                     <div class="col-md-12" th:if="${users!=0}" th:each="user : ${users}">
                         <div class="team d-md-flex p-4 bg-white">
 
-                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()==null}"
+                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()==null} or ${user.getPersonalProfile().isPicturePrivacy()} "
                                  src="/images/blank-profile-picture.jpg" alt="Image">
 
-                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()!=null}"
+                            <img class="img1" th:if="${user.getPersonalProfile().getPicture()!=null} and ${!user.getPersonalProfile().isPicturePrivacy()}"
                                  th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" alt=""/>
 
                             <div class="text pl-md-4">
@@ -216,7 +216,7 @@
 
                     </label>
                     <input th:if="${users!=null} and ${hasNext}" class="btn btn-primary" type="submit"
-                           th:value="${page.hasNext() ? 'Load More':'There are no users'}"/>
+                           value="Load more"/>
                 </form>
             </div>
         </div>

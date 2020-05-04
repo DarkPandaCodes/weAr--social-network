@@ -25,7 +25,7 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-
+    @JsonBackReference
     @Column(name = "email", nullable = false)
     private String email;
 
@@ -38,6 +38,7 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "authority", referencedColumnName = "authority"))
     private Set<Role> authorities = new HashSet<>();
 
+    @JsonBackReference
     @OneToOne
     @JoinColumn(name = "personal_profile_id", referencedColumnName = "id")
     private PersonalProfile personalProfile;

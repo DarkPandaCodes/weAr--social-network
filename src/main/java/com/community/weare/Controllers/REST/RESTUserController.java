@@ -26,8 +26,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.*;
 
-import static com.community.weare.utils.ErrorMessages.ERROR_NOT_FOUND_MESSAGE_FORMAT;
-import static com.community.weare.utils.ErrorMessages.NOT_AUTHORISED;
+import static com.community.weare.utils.ErrorMessages.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -58,7 +57,7 @@ public class RESTUserController {
             User userDB = mapperHelper.convertDTOtoUSER(userDTO);
             userService.registerUser(userDB, userDTO.getCategory());
             User user = userService.getUserByUserName(userDTO.getUsername());
-            return String.format("User with name %s and id %d was created",
+            return String.format(USER_WAS_CREATED,
                     user.getUsername(), user.getUserId());
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
@@ -70,7 +69,8 @@ public class RESTUserController {
 
     @PostMapping("/auth/{id}/personal")
     public PersonalProfile upgradeUserPersonalProfile(@PathVariable(name = "id") int id,
-                                                      @RequestBody @Valid PersonalProfile personalProfile, Principal principal) {
+                                                      @RequestBody @Valid PersonalProfile personalProfile,
+                                                      Principal principal) {
         try {
             User user = userService.getUserById(id);
             PersonalProfile personalProfileDB = personalProfileFactory.mergePersonalProfiles(personalProfile, user.getPersonalProfile());
@@ -87,18 +87,21 @@ public class RESTUserController {
 
     @PostMapping("/auth/{id}/expertise")
     public ExpertiseProfile upgradeUserExpertiseProfile(@PathVariable(name = "id") int id,
-                                                        @RequestBody @Valid ExpertiseProfileDTO expertiseProfileDTO, Principal principal) {
+                                                        @RequestBody @Valid ExpertiseProfileDTO expertiseProfileDTO,
+                                                        Principal principal) {
         try {
             User user = userService.getUserById(id);
-            ExpertiseProfile expertiseProfile = expertiseProfileFactory.convertDTOtoExpertiseProfile(expertiseProfileDTO);
-            ExpertiseProfile expertiseProfileDb = expertiseProfileFactory.mergeExpertProfile(expertiseProfile, user.getExpertiseProfile());
+            ExpertiseProfile expertiseProfile = expertiseProfileFactory.
+                    convertDTOtoExpertiseProfile(expertiseProfileDTO);
+            ExpertiseProfile expertiseProfileDb = expertiseProfileFactory.
+                    mergeExpertProfile(expertiseProfile, user.getExpertiseProfile());
             return userService.updateExpertise(user, expertiseProfileDb, principal.getName(), user);
         } catch (InvalidOperationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, NOT_AUTHORISED);
         } catch (ValidationEntityException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ("User not found"));
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, NOT_FOUND);
         }
 
     }
@@ -110,7 +113,8 @@ public class RESTUserController {
             userService.ifNotProfileOrAdminOwnerThrow(principal, user);
             return mapperHelper.convertUSERtoModel(user);
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
         } catch (InvalidOperationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, NOT_AUTHORISED);
         }
@@ -138,28 +142,24 @@ public class RESTUserController {
         }
     }
 
-    @GetMapping("")
+    @PostMapping("")
     public List<User> getUsers(@RequestBody Page page) {
         try {
             List<User> users = new ArrayList<>();
-
             Slice<User> userSlice = userService.getAllUsersByCriteria(page.getIndex(),
                     page.getSize(), page.getSearchParam2(), page.getSearchParam1());
 
-            if (userSlice.hasContent() && userSlice.getContent().size() == page.getSize()) {
-                page.setIndex(userSlice.nextOrLastPageable().getPageNumber());
-                page.setSize(userSlice.nextOrLastPageable().getPageSize());
-                page.setNext(userSlice.hasNext());
-            } else if (userSlice.getNumberOfElements() >= 1) {
-                userSlice = userService.getAllUsersByCriteria(page.getIndex(),
-                        userSlice.getNumberOfElements(), page.getSearchParam2(), page.getSearchParam1());
+            if (userSlice.hasContent()) {
+                users = userSlice.getContent();
             }
-            users = userSlice.getContent();
+
             if (users.isEmpty()) {
-                throw new EntityNotFoundException("There are no users existing in this search criteria.");
+                throw new EntityNotFoundException
+                        (NOT_SEARCH_RESULT);
             } else {
                 return users;
             }
+
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));

@@ -94,13 +94,14 @@ public class ConnectionController {
 
     @Transactional
     @PostMapping("/request/approve")
-    public String approveRequests(@ModelAttribute(name = "requestN") Request request, Principal principal, Model model) {
-        Request approvedRequest = new Request();
+    public String approveRequests(@ModelAttribute(name = "requestN") Request request,
+                                  Principal principal, Model model) {
+
 
         try {
             if (request.isApproved()) {
                 User receiver = userService.getUserById(request.getReceiver().getUserId());
-                approvedRequest = requestService.approveRequest(request.getId(), receiver, principal.getName());
+                Request approvedRequest = requestService.approveRequest(request.getId(), receiver, principal.getName());
                 userService.addToFriendList(approvedRequest);
                 model.addAttribute("user", receiver);
                 model.addAttribute("requests", requestService.getAllRequestsForUser(approvedRequest.getReceiver(), principal.getName()));

@@ -5,7 +5,9 @@ import com.community.weare.Models.dto.UserModel;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Collection;
 
@@ -23,6 +25,8 @@ public interface UserService extends UserDetailsService {
     User disableEnableUser(String principal, int userId);
 
     boolean isUserDuplicate(User user);
+
+
 
     User updateUser(User user, String principal, User userToCheck);
 
@@ -55,4 +59,7 @@ public interface UserService extends UserDetailsService {
     Slice<User> findSliceWithUsers(int index, int size, String username);
 
     Slice<User> findSliceWithLatestUsers(Pageable pageable);
+
+    void editPictureUser(User userToCheck, String name, User userToCheck1,
+                         MultipartFile file, PersonalProfile personalProfile) throws IOException;
 }

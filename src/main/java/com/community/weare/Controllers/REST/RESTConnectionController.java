@@ -44,18 +44,21 @@ public class RESTConnectionController {
                     requestService.getByUsers(userReceiver, userSender) == null) {
 
                 requestService.createRequest(userSender, userReceiver);
-                return String.format("%s send friend request to %s", userSender.getUsername(), userReceiver.getUsername());
+                return String.format("%s send friend request to %s",
+                        userSender.getUsername(), userReceiver.getUsername());
 
             } else if (userReceiver.isFriend(userSender.getUsername())) {
                 Request request = requestService.getByUsersApproved(userReceiver, userSender);
                 userService.removeFromFriendsList(request);
                 requestService.deleteRequest(request);
-                return String.format("%s disconnected from %s", userSender.getUsername(), userReceiver.getUsername());
+                return String.format("%s disconnected from %s",
+                        userSender.getUsername(), userReceiver.getUsername());
             }
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return String.format("%s can't connect to %s", principal.getName(), userToConnect.getUsername());
+        return String.format("%s can't connect to %s",
+                principal.getName(), userToConnect.getUsername());
     }
 
     @GetMapping("/users/{id}/request/")
@@ -72,7 +75,9 @@ public class RESTConnectionController {
 
     @Transactional
     @PostMapping("/users/{id}/request/approve")
-    public String approveRequests(@PathVariable(name = "id") int userId, @RequestParam(name = "requestId") int requestId, Principal principal, Model model) {
+    public String approveRequests(@PathVariable(name = "id") int userId,
+                                  @RequestParam(name = "requestId") int requestId,
+                                  Principal principal) {
         try {
             User receiver = userService.getUserById(userId);
             Request approvedRequest =

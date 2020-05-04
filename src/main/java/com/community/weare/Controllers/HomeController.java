@@ -35,7 +35,8 @@ public class HomeController {
     @GetMapping("/about-us")
     public String aboutUs(Principal principal, Model model) {
         if (principal != null) {
-            model.addAttribute("UserPrincipal", userService.getUserByUserName(principal.getName()));
+            model.addAttribute("UserPrincipal",
+                    userService.getUserByUserName(principal.getName()));
         }
         return "aboutUs";
     }
@@ -44,7 +45,6 @@ public class HomeController {
     @RequestMapping(value = {"/", "/auth"}, method = RequestMethod.GET)
     public String showAuthPage(Principal principal, Model model) {
         model.addAttribute("page", new Page());
-
         model.addAttribute("latestUsers",
                 userService.findSliceWithLatestUsers(PageRequest.of(0, 5)));
         if (principal != null) {
@@ -54,10 +54,5 @@ public class HomeController {
         return "index_new";
     }
 
-    @ModelAttribute(name = "categories")
-    public void addExpertiseList(Model model) {
-        List<Category> expertise = skillCategoryService.getAll();
-        model.addAttribute("categories", expertise);
-    }
 }
 

@@ -8,12 +8,10 @@ import com.community.weare.Models.dto.ExpertiseProfileDTO;
 import com.community.weare.Models.dto.UserDTO;
 import com.community.weare.Models.dto.UserDtoRequest;
 import com.community.weare.Models.factories.ExpertiseProfileFactory;
-import com.community.weare.Models.factories.PersonalProfileFactory;
 import com.community.weare.Models.factories.UserFactory;
 import com.community.weare.Services.SkillCategoryService;
 import com.community.weare.Services.connections.RequestService;
 import com.community.weare.Services.contents.PostService;
-import com.community.weare.Services.models.SkillService;
 import com.community.weare.Services.users.PersonalInfoService;
 import com.community.weare.Services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,25 +36,25 @@ import static com.community.weare.utils.ErrorMessages.*;
 @RequestMapping("/auth/users")
 public class ProfileController {
     private static final String TYPE = "USER";
+    private static final int INIT_START_POST_PAGE = 0;
+    private static final int INIT_SIZE_POST_PAGE = 4;
 
     private final UserService userService;
     private final ExpertiseProfileFactory expertiseProfileFactory;
     private final SkillCategoryService skillCategoryService;
     private final RequestService requestService;
     private final PersonalInfoService personalInfoService;
-    private final PersonalProfileFactory personalProfileFactory;
     private final UserFactory userFactory;
     private final PostService postService;
 
     @Autowired
-    public ProfileController(UserService userService, ExpertiseProfileFactory expertiseProfileFactory, SkillCategoryService skillCategoryService, RequestService requestService, PersonalInfoService personalInfoService,
-                             PersonalProfileFactory personalProfileFactory, UserFactory userFactory, PostService postService) {
+    public ProfileController(UserService userService, ExpertiseProfileFactory expertiseProfileFactory, SkillCategoryService skillCategoryService, RequestService requestService,
+                             PersonalInfoService personalInfoService, UserFactory userFactory, PostService postService) {
         this.userService = userService;
         this.expertiseProfileFactory = expertiseProfileFactory;
         this.skillCategoryService = skillCategoryService;
         this.requestService = requestService;
         this.personalInfoService = personalInfoService;
-        this.personalProfileFactory = personalProfileFactory;
         this.userFactory = userFactory;
         this.postService = postService;
     }
@@ -68,28 +66,31 @@ public class ProfileController {
 
         try {
             User user = userService.getUserById(id);
-            int index = 0;
-            int size = 4;
+
+            int index = INIT_START_POST_PAGE;
+            int size = INIT_SIZE_POST_PAGE;
+
             modelAndView.addObject("index", index);
             modelAndView.addObject("size", size);
+
             Slice<Post> postSlice = postService.findSliceWithPosts
                     (index, size, "date", user, principal.getName());
 
-            List<Post> postsOfUser = new ArrayList<>();
-
             if (postSlice.hasContent()) {
-                postsOfUser = postSlice.getContent();
+                List<Post> postsOfUser = postSlice.getContent();
                 index += 1;
                 modelAndView.addObject("posts", postsOfUser);
                 modelAndView.addObject("index", index);
             }
+
             boolean isOwner = userService.isOwner(principal.getName(), user);
             if (isOwner) {
                 modelAndView.addObject("requestMessage",
                         requestService.getAllRequestsForUser(user, principal.getName()).size());
             } else if (principal != null) {
                 User principalUser = userService.getUserByUserName(principal.getName());
-                modelAndView.addObject("isSend", requestService.getByUsers(user, principalUser) != null);
+                modelAndView.addObject("isSend",
+                        requestService.getByUsers(user, principalUser) != null);
             }
             modelAndView.addObject("hasNext", postSlice.hasNext());
             modelAndView.addObject("user", user);
@@ -102,7 +103,8 @@ public class ProfileController {
 
         } catch (EntityNotFoundException e) {
             modelAndView.setStatus(HttpStatus.NOT_FOUND);
-            return modelAndView.addObject("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
+            return modelAndView.addObject("error",
+                    String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
         }
         return modelAndView;
     }
@@ -114,12 +116,11 @@ public class ProfileController {
         ModelAndView modelAndView = new ModelAndView("post-fragment :: postFragment");
         try {
             User user = userService.getUserById(id);
-            List<Post> postsOfUser = new ArrayList<>();
             Slice<Post> postSlice = postService.findSliceWithPosts
                     (index, size, "date", user, principal.getName());
 
             if (postSlice.hasContent()) {
-                postsOfUser = postSlice.getContent();
+                List<Post> postsOfUser = postSlice.getContent();
                 index += 1;
                 modelAndView.addObject("posts", postsOfUser);
                 modelAndView.addObject("hasNext", postSlice.hasNext());
@@ -131,7 +132,8 @@ public class ProfileController {
 
         } catch (EntityNotFoundException e) {
             modelAndView.setStatus(HttpStatus.NOT_FOUND);
-            return modelAndView.addObject("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
+            return modelAndView.addObject("error",
+                    String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
         }
 
         return modelAndView;
@@ -158,7 +160,8 @@ public class ProfileController {
             model.addAttribute("user", user);
 
         } catch (EntityNotFoundException e) {
-            model.addAttribute("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
+            model.addAttribute("error",
+                    String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
         } catch (InvalidOperationException e) {
             model.addAttribute("error", NOT_AUTHORISED);
         }
@@ -168,12 +171,14 @@ public class ProfileController {
 
     @PostMapping("/{id}/profile/personal")
     public String editUserProfile(@PathVariable(name = "id") int id,
-                                  @ModelAttribute @Valid UserModel userModel, BindingResult bindingResult, Principal principal, Model model) {
+                                  @ModelAttribute @Valid UserModel userModel,
+                                  BindingResult bindingResult, Principal principal, Model model) {
         User userToCheck = userService.getUserById(userModel.getId());
         model.addAttribute("userToEdit", userModel);
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("error", bindingResult.getFieldError().getDefaultMessage());
+            model.addAttribute("error",
+                    bindingResult.getFieldError().getDefaultMessage());
             return "user-profile-edit";
         }
         try {
@@ -181,6 +186,7 @@ public class ProfileController {
             User userToSave = userFactory.mergeUserAndModel(userToCheck, userModel);
             personalInfoService.upgradeProfile(principal.getName(), userToCheck, userToSave.getPersonalProfile());
         } catch (EntityNotFoundException e) {
+
             model.addAttribute("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
         } catch (InvalidOperationException e) {
             model.addAttribute("error", NOT_AUTHORISED);
@@ -193,13 +199,15 @@ public class ProfileController {
                                   @ModelAttribute User user, Principal principal, Model model) throws IOException {
         try {
             User userToCheck = userService.getUserById(id);
+
             if (file != null) {
-                userToCheck.getPersonalProfile().setPicture(Base64.getEncoder().encodeToString(file.getBytes()));
-                userToCheck.getPersonalProfile().setPicturePrivacy(user.getPersonalProfile().isPicturePrivacy());
+                userService.editPictureUser(userToCheck, principal.getName(),
+                        userToCheck,file,user.getPersonalProfile());
             }
-            userService.updateUser(userToCheck, principal.getName(), userToCheck);
+
         } catch (EntityNotFoundException e) {
-            model.addAttribute("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
+            model.addAttribute("error",
+                    String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
         } catch (InvalidOperationException e) {
             model.addAttribute("error", NOT_AUTHORISED);
         }
@@ -240,7 +248,8 @@ public class ProfileController {
                         (userToCheck, expertiseProfile, principal.getName(), userToCheck);
             }
         } catch (EntityNotFoundException e) {
-            model.addAttribute("error", String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
+            model.addAttribute("error",
+                    String.format(ERROR_NOT_FOUND_MESSAGE_FORMAT, TYPE));
         } catch (InvalidOperationException e) {
             model.addAttribute("error", NOT_AUTHORISED);
         }

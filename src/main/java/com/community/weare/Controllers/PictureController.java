@@ -29,7 +29,8 @@ public class PictureController {
         User user = userService.getUserById(id);
         if (user.getPersonalProfile().getPicture() != null) {
             response.setContentType("image/jpeg");
-            InputStream is = new ByteArrayInputStream(Base64.getDecoder().decode(user.getPersonalProfile().getPicture()));
+            InputStream is = new ByteArrayInputStream(Base64.getDecoder().
+                    decode(user.getPersonalProfile().getPicture()));
             IOUtils.copy(is, response.getOutputStream());
         }
     }

@@ -4,6 +4,7 @@ import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.Page;
 import com.community.weare.Models.User;
 import com.community.weare.Services.users.UserService;
+import com.community.weare.utils.ErrorMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,8 @@ import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.community.weare.utils.ErrorMessages.*;
 
 @Controller
 @RequestMapping("/admin")
@@ -35,13 +38,13 @@ public class AdminController {
         if (principal != null) {
             User user = userService.getUserByUserName(principal.getName());
             model.addAttribute("user", user);
-            model.addAttribute("page",new Page());
+            model.addAttribute("page", new Page());
         }
         return "admin";
     }
 
     @GetMapping("/users")
-    public String showAllUsersPage(@ModelAttribute (name = "page")Page page,
+    public String showAllUsersPage(@ModelAttribute(name = "page") Page page,
                                    Model model, Principal principal) {
         try {
             User user = userService.getUserByUserName(principal.getName());
@@ -57,12 +60,12 @@ public class AdminController {
                 model.addAttribute("users", userList);
             }
             if (userList.isEmpty()) {
-                model.addAttribute("error", "There are no users");
+                model.addAttribute("error", NOT_SEARCH_RESULT);
             }
             model.addAttribute("hasNext", userSlice.hasNext());
 
         } catch (EntityNotFoundException e) {
-          throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         return "admin_users";
     }
@@ -73,11 +76,11 @@ public class AdminController {
         try {
             userService.disableEnableUser(principal.getName(), user.getUserId());
         } catch (EntityNotFoundException e) {
-            modelAndView.addObject("error", "User not found");
+            modelAndView.addObject("error", NOT_FOUND);
             modelAndView.setStatus(HttpStatus.NOT_FOUND);
             return modelAndView;
         } catch (InvalidOperationException e) {
-            modelAndView.addObject("error", "User not authorised");
+            modelAndView.addObject("error", NOT_AUTHORISED);
             modelAndView.setStatus(HttpStatus.UNAUTHORIZED);
             return modelAndView;
         }
