@@ -231,17 +231,7 @@ public class UserServiceImplTests {
                 times(1)).getAllByExpertise(pageable, "Marketing");
     }
 
-    @Test
-    public void getAllUsersByExpertiseShould_ReturnUsers_WhenUsersExists() {
 
-       Pageable pageable=PageRequest.of(1,5,Sort.by("username").ascending());
-
-       mockUserService.getAllUsersByCriteria(1,5,"Milena","Marketing");
-
-        Mockito.verify(userRepository,
-                times(1)).getUsersByFirstNameAndExpertise(pageable,"Marketing","Milena");
-
-    }
 
     @Test
     public void updateUserShould_CallRepository() {
