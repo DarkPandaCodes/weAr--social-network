@@ -1,4 +1,3 @@
-
 # WEare social network
 Teodora Ivanova, Stanimir Kolev
  
@@ -90,7 +89,7 @@ administer all major information objects in the system. They should be able to:
  - Request and approve for connection
       
  - Users
-  	- GET, UPDATE, CREATE Opearitons
+  	- GET, UPDATE, CREATE Operaitons
 
 
    
@@ -109,7 +108,7 @@ Backend
 
 Frontend
 - Spring MVC Framework with Thymeleaf template engine for generating the UI
-- AJAX for making asynchronous requests to the server where you find it appropriate.
+- AJAX for making asynchronous requests to the server 
 - Bootstrap, HTML & CSS 
 
 
