@@ -19,6 +19,7 @@ import java.util.List;
 
 @Service
 public class CommentServiceImpl implements CommentService {
+    private static final int ALGORITHM_EFFECT_COMMENTS = 3;
 
     private CommentRepository commentRepository;
     private PostRepository postRepository;
@@ -77,6 +78,8 @@ public class CommentServiceImpl implements CommentService {
         }
         Post post = comment.getPost();
         post.getComments().add(comment);
+        int currentRank = post.getRank();
+        post.setRank(currentRank + ALGORITHM_EFFECT_COMMENTS);
         postRepository.save(post);
         return commentRepository.save(comment);
     }
@@ -140,6 +143,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public void deleteComment(int commentId, Principal principal) {
         if (principal == null) {
             throw new InvalidOperationException("User isn't authorised");
@@ -149,8 +153,12 @@ public class CommentServiceImpl implements CommentService {
                     ("Comment with id %d does not exists", commentId));
         }
         Comment comment = commentRepository.getOne(commentId);
+        Post post = comment.getPost();
         userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), comment.getUser());
         commentRepository.delete(comment);
+        int currentRank = post.getRank();
+        post.setRank(currentRank - ALGORITHM_EFFECT_COMMENTS);
+        postRepository.saveAndFlush(post);
     }
 
     @Override

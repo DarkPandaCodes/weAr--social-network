@@ -41,9 +41,11 @@
 
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item cta mr-md-1"><a sec:authorize="!isAuthenticated()" th:href="@{/register}" class="nav-link">REGISTER</a>
+                <li class="nav-item cta mr-md-1"><a sec:authorize="!isAuthenticated()" th:href="@{/register}"
+                                                    class="nav-link">REGISTER</a>
                 </li>
-                <li class="nav-item cta cta cta-colored"><a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="nav-link">SIGN
+                <li class="nav-item cta cta cta-colored"><a sec:authorize="!isAuthenticated()" th:href="@{/login}"
+                                                            class="nav-link">SIGN
                     IN</a></li>
 
                 <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
@@ -54,16 +56,28 @@
                                         th:href="@{'/auth/users/' + ${user.userId} + '/profile'}" class="nav-link">Personal
                     Profile</a></li>
                 <li class="nav-item"><a th:href="@{/posts}" class="nav-link">Latest Posts</a></li>
+<!--                <li class="nav-item cta mr-md-1"><a th:href="@{/admin}" class="nav-link"-->
+<!--                                                    sec:authorize="isAuthenticated()"-->
+<!--                                                    method="post">Refresh rank-all-posts</a></li>-->
+                <form action="#" class="browse-form"  method="post">
+                    <div class="form-group">
+
+
+                    </div>
+                    <input type="submit" value="Refresh rank-all-posts" class="btn py-3 px-4 btn-primary">
+                </form>
                 <li class="nav-item cta cta-colored">
-                <form action="#" th:action="@{/admin/users}" th:object="${page}"
-                      method="get"
-                      class="search-job">
-                    <label>
-                        <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}" th:field="*{index}" class="mb-2"/>
-                        <input type="hidden" data-th-value="10" th:value="10" th:field="*{size}" class="mb-2"/>
-                    </label>
-                    <input  class="nav-item cta cta-colored" type="submit" value="View Users"/>
-                </form></li>
+                    <form action="#" th:action="@{/admin/users}" th:object="${page}"
+                          method="get"
+                          class="search-job">
+                        <label>
+                            <input type="hidden" data-th-value="${page.getIndex()}" th:value="${page.getIndex()}"
+                                   th:field="*{index}" class="mb-2"/>
+                            <input type="hidden" data-th-value="10" th:value="10" th:field="*{size}" class="mb-2"/>
+                        </label>
+                        <input class="nav-item cta cta-colored" type="submit" value="View Users"/>
+                    </form>
+                </li>
                 <li class="nav-item"><a sec:authorize="isAuthenticated()" th:href="@{/logout}"
                                         class="nav-link">LOGOUT</a></li>
 
@@ -75,7 +89,7 @@
     </div>
 </nav>
 
-<div  class="hero-wrap hero-wrap-2"
+<div class="hero-wrap hero-wrap-2"
      style="background-image: url('../static/images/bg_1.jpg');"
      data-stellar-background-ratio="0.5">
     <div class="overlay"></div>
@@ -86,7 +100,7 @@
 					<i class="ion-ios-arrow-forward"></i></a></span> <span class="mr-3">
                     <a>Professionals</a></span></p>
                 <h1 class="mb-3 bread">
-                   Users Controller</h1>
+                    Users Controller</h1>
             </div>
         </div>
     </div>
@@ -99,7 +113,7 @@
                 <div class="row">
                     <div class="col-md-12" th:if="${users!=0}" th:each="user : ${users}">
                         <div class="team d-md-flex p-4 bg-white">
-                            <img  class="img1" th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}" >
+                            <img class="img1" th:src="@{'/users/' + ${user.getUserId()} + '/userImage'}">
 
                             <div class="text pl-md-4">
                                 <span class="location mb-0" th:if="${user.getPersonalProfile().getLocation()!=null}"
@@ -108,12 +122,13 @@
                                     <h2 class="mr-3 text-black"
                                         th:text="${user.getPersonalProfile().firstName+' '+user.getPersonalProfile().lastName}"
                                         th:type="text"> Ivan Petrov</h2></a>
-                                <span class="position"  th:text=" ${user.getExpertiseProfile().getCategory().name}">Expertise</span>
+                                <span class="position" th:text=" ${user.getExpertiseProfile().getCategory().name}">Expertise</span>
                                 <p th:text="${user.getPersonalProfile().personalReview}" class="mb-2">Far far away,
                                     behind the word mountains, far from the countries Vokalia and Consonantia, there
                                     live the blind texts.</p>
                                 <p th:if="${user.getPersonalProfile().memberSince!=null}" class="proile-rating">
-                                    Member since : <span  class="seen" th:text=" ${user.getPersonalProfile().getMemberSince()}">8/10</span>
+                                    Member since : <span class="seen"
+                                                         th:text=" ${user.getPersonalProfile().getMemberSince()}">8/10</span>
                                 </p>
                                 <p><a th:href="@{'/auth/users/' + ${user.getUserId()} + '/profile'}"
                                       class="btn btn-primary">See Profile</a></p>
@@ -149,7 +164,7 @@
             </div>
             <div class="col-md-3 d-flex ftco-animate">
                 <div class="blog-entry align-self-stretch">
-                    <a  class="block-20" style="background-image: url('images/couple.jpg');">
+                    <a class="block-20" style="background-image: url('images/couple.jpg');">
                     </a>
                     <div class="text mt-3">
                         <h3 class="heading"> It is not about money or about generating a profit, but about
@@ -160,16 +175,16 @@
             </div>
             <div class="col-md-3 d-flex ftco-animate">
                 <div class="blog-entry align-self-stretch">
-                    <a  class="block-20" style="background-image: url('images/people-doing.jpg');">
+                    <a class="block-20" style="background-image: url('images/people-doing.jpg');">
                     </a>
                     <div class="text mt-3">
-                        <h3 class="heading">A community you can trust. Do  good and get something back. </h3>
+                        <h3 class="heading">A community you can trust. Do good and get something back. </h3>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 d-flex ftco-animate">
                 <div class="blog-entry align-self-stretch">
-                    <a  class="block-20" style="background-image: url('images/person_help.jpg');">
+                    <a class="block-20" style="background-image: url('images/person_help.jpg');">
                     </a>
                     <div class="text mt-3">
 

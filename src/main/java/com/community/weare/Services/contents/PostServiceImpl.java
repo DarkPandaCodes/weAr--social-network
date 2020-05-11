@@ -22,14 +22,16 @@ import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.community.weare.utils.ErrorMessages.NOT_AUTHORISED;
+
 @Service
 public class PostServiceImpl implements PostService {
 
-    private static final double ALGORITHM_EFFECT_LIKES = -1.0;
-    private static final double ALGORITHM_EFFECT_COMMENTS = -3.0;
-    private static final double ALGORITHM_EFFECT_TIME = 1.0;
-    private static final double ALGORITHM_EFFECT_FRIENDS = -10.0;
-    private static final double ALGORITHM_EFFECT_MULTI_POSTS = 10.0;
+    private static final int ALGORITHM_EFFECT_LIKES = 1;
+    private static final int ALGORITHM_EFFECT_COMMENTS = 3;
+    private static final int ALGORITHM_EFFECT_TIME = 1;
+    //    private static final int ALGORITHM_EFFECT_FRIENDS = -10;
+    private static final int ALGORITHM_EFFECT_MULTI_POSTS = -10;
 
     private PostRepository postRepository;
     private UserService userService;
@@ -54,6 +56,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<Post> findAllSortedByUserAndTime(Sort sort) {
+        return postRepository.findAll(
+                Sort.by(Sort.Direction.ASC, "user")
+                        .and(Sort.by(Sort.Direction.DESC, "postId")));
+    }
+
+    @Override
     public List<Post> findAllByUser(String userName, Principal principal) {
         User postCreator = userService.getUserByUserName(userName);
         List<Post> allUserPosts = postRepository.findAllByUserUsername
@@ -75,7 +84,7 @@ public class PostServiceImpl implements PostService {
             throw new EntityNotFoundException();
         }
         Pageable page = PageRequest.of(startIndex, pageSize, Sort.by(sortParam).descending());
-        if (user.isFriend(principal)||user.getUsername().equals(principal)) {
+        if (user.isFriend(principal) || user.getUsername().equals(principal)) {
             return postRepository.findAllByUserUsername(page, user.getUsername());
         } else {
             return postRepository.findAllByUserUsernamePublic(page, user.getUsername());
@@ -85,8 +94,8 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public List<Post> findAllPostsByAlgorithm(Sort sort, Principal principal) {
-        List<Post> allPost = postRepository.findAll(Sort.by(Sort.Direction.DESC, "postId"));
-        return applyAlgorithm(principal, allPost);
+        return postRepository.findAll(Sort.by(Sort.Direction.DESC, "rank"));
+
     }
 
     @Override
@@ -142,7 +151,9 @@ public class PostServiceImpl implements PostService {
         Set<Post> set = new LinkedHashSet<>(list1);
         set.addAll(list2);
         List<Post> listResult = new ArrayList<>(set);
-        return applyAlgorithm(principal, listResult);
+        return listResult.stream()
+                .sorted(Comparator.comparing(Post::getRank).reversed())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -168,7 +179,11 @@ public class PostServiceImpl implements PostService {
         if (post.getContent().length() > 1000) {
             throw new InvalidOperationException("Content size must be up to 1000 symbols");
         }
-        return postRepository.save(post);
+        postRepository.save(post);
+        post.setRank(post.getPostId() * ALGORITHM_EFFECT_TIME);
+        postRepository.saveAndFlush(post);
+        refreshRankOfGroupOfPosts(findAllByUser(post.getUser().getUsername(), principal));
+        return post;
     }
 
     @Override
@@ -186,7 +201,7 @@ public class PostServiceImpl implements PostService {
             throw new DuplicateEntityException("You already liked this");
         }
         postToLike.getLikes().add(user);
-        double currentRank = postToLike.getRank();
+        int currentRank = postToLike.getRank();
         postToLike.setRank(currentRank + ALGORITHM_EFFECT_LIKES);
         postToLike.setLiked(true);
         postRepository.save(postToLike);
@@ -207,7 +222,7 @@ public class PostServiceImpl implements PostService {
             throw new EntityNotFoundException("Before dislike you must like");
         }
         postToDislike.getLikes().remove(user);
-        double currentRank = postToDislike.getRank();
+        int currentRank = postToDislike.getRank();
         postToDislike.setRank(currentRank - ALGORITHM_EFFECT_LIKES);
         postToDislike.setLiked(false);
         postRepository.save(postToDislike);
@@ -246,11 +261,13 @@ public class PostServiceImpl implements PostService {
         }
         Post postToDelete = getOne(postId, principal);
         userService.ifNotProfileOrAdminOwnerThrow(principal.getName(), postToDelete.getUser());
+        User user = postToDelete.getUser();
         postToDelete.getLikes().clear();
         postToDelete.getComments().clear();
         postRepository.save(postToDelete);
         commentService.deleteCommentByPostPostId(postId);
         postRepository.delete(postToDelete);
+        refreshRankOfGroupOfPosts(findAllByUser(user.getUsername(), principal));
     }
 
     @Override
@@ -261,48 +278,95 @@ public class PostServiceImpl implements PostService {
         return postRepository.getOne(postId).getComments();
     }
 
-    private List<Post> applyAlgorithm(Principal principal, List<Post> postList) {
-        List<Post> sortedListByDate = postList.stream()
-                .sorted(Comparator.comparing(Post::getPostId).reversed())
+//    private List<Post> applyAlgorithm(Principal principal, List<Post> postList) {
+//        List<Post> sortedListByDate = postList.stream()
+//                .sorted(Comparator.comparing(Post::getPostId).reversed())
+//                .collect(Collectors.toList());
+//
+//        for (int i = 0; i < sortedListByDate.size(); i++) {
+//            int timeEffect = i * ALGORITHM_EFFECT_TIME;
+//            int numberOfPostsForMonth = 0;
+//            Post currentPost = sortedListByDate.get(i);
+//            List<Post> allPostsOfUser = postRepository.findAllByUserUsername
+//                    (Sort.by(Sort.Direction.DESC, "postId"), currentPost.getUser().getUsername());
+//            int likesEffect = currentPost.getLikes().size() * ALGORITHM_EFFECT_LIKES;
+//            int commentsEffect = currentPost.getComments().size() * ALGORITHM_EFFECT_COMMENTS;
+//            int friendsEffect = 0;
+////            if (principal != null) {
+////                User loggedUser = userService.getUserByUserName(principal.getName());
+////                friendsEffect = loggedUser.isFriend
+////                        (currentPost.getUser().getUsername()) ? 1 * ALGORITHM_EFFECT_FRIENDS : 0;
+////            } else {
+////                friendsEffect = 0;
+////            }
+//            String monthOfCurrentPost = currentPost.getDate().substring(3, 10);
+//            String monthOfPreviousPost;
+//
+//            for (Post post : allPostsOfUser) {
+//                if (currentPost.getPostId() == post.getPostId()) {
+//                    break;
+//                }
+//                monthOfPreviousPost = post.getDate().substring(3, 10);
+//                if (monthOfCurrentPost.equals(monthOfPreviousPost)) {
+//                    numberOfPostsForMonth++;
+//                }
+//            }
+//            int multiPostsEffect = numberOfPostsForMonth * ALGORITHM_EFFECT_MULTI_POSTS;
+//            numberOfPostsForMonth = 0;
+//
+//            currentPost.setRank(timeEffect + likesEffect + commentsEffect + friendsEffect + multiPostsEffect);
+//            postRepository.save(currentPost);
+//        }
+//        return sortedListByDate.stream()
+//                .sorted(Comparator.comparing(Post::getRank))
+//                .collect(Collectors.toList());
+//    }
+
+//    private void updateRankOfPostsOfUser(User user) {
+//        List<Post> userPosts = postRepository.findAllByUserUsername
+//                (Sort.by(Sort.Direction.DESC, "postId"), user.getUsername());
+//        if (userPosts.size() > 1) {
+//            for (int i = 1; i < userPosts.size(); i++) {
+//                int currentRank = userPosts.get(i).getRank();
+//                userPosts.get(i).setRank(currentRank + i * ALGORITHM_EFFECT_MULTI_POSTS);
+//                postRepository.saveAndFlush(userPosts.get(i));
+//            }
+//        }
+//    }
+
+    public int refreshRankOfGroupOfPosts(List<Post> posts) {
+        List<Post> sortedList = posts.stream()
+                .sorted(Comparator.comparing((Post p) -> p.getUser().getUsername())
+                        .thenComparing(Post::getPostId).reversed())
                 .collect(Collectors.toList());
 
-        for (int i = 0; i < sortedListByDate.size(); i++) {
-            double timeEffect = i * ALGORITHM_EFFECT_TIME;
-            int numberOfPostsForMonth = 0;
-            Post currentPost = sortedListByDate.get(i);
-            List<Post> allPostsOfUser = postRepository.findAllByUserUsername
-                    (Sort.by(Sort.Direction.DESC, "postId"), currentPost.getUser().getUsername());
-            double likesEffect = currentPost.getLikes().size() * ALGORITHM_EFFECT_LIKES;
-            double commentsEffect = currentPost.getComments().size() * ALGORITHM_EFFECT_COMMENTS;
-            double friendsEffect;
-            if (principal != null) {
-                User loggedUser = userService.getUserByUserName(principal.getName());
-                friendsEffect = loggedUser.isFriend
-                        (currentPost.getUser().getUsername()) ? 1 * ALGORITHM_EFFECT_FRIENDS : 0;
+        User userOfPreviousPost = new User();
+        String monthOfPreviousPost = "";
+        int postsCounter = 0;
+        for (Post currentPost : sortedList) {
+            int likes = currentPost.getLikes().size();
+            int comments = currentPost.getComments().size();
+            int time = currentPost.getPostId();
+            int numberOfPostForThisMonth = 0;
+
+            String userName = currentPost.getUser().getUsername();
+            if (userName.equals(userOfPreviousPost.getUsername()) &&
+                    monthOfPreviousPost.equals(currentPost.getDate().substring(3, 10))) {
+                postsCounter++;
+                numberOfPostForThisMonth = postsCounter;
             } else {
-                friendsEffect = 0;
+                postsCounter = 0;
+                userOfPreviousPost = currentPost.getUser();
+                monthOfPreviousPost = currentPost.getDate().substring(3, 10);
             }
-            String monthOfCurrentPost = currentPost.getDate().substring(3, 10);
-            String monthOfPreviousPost;
 
-            for (Post post : allPostsOfUser) {
-                if (currentPost.getPostId() == post.getPostId()) {
-                    break;
-                }
-                monthOfPreviousPost = post.getDate().substring(3, 10);
-                if (monthOfCurrentPost.equals(monthOfPreviousPost)) {
-                    numberOfPostsForMonth++;
-                }
-            }
-            double multiPostsEffect = numberOfPostsForMonth * ALGORITHM_EFFECT_MULTI_POSTS;
-            numberOfPostsForMonth = 0;
-
-            currentPost.setRank(timeEffect + likesEffect + commentsEffect + friendsEffect + multiPostsEffect);
-            postRepository.save(currentPost);
+            currentPost.setRank(likes * ALGORITHM_EFFECT_LIKES
+                    + comments * ALGORITHM_EFFECT_COMMENTS
+                    + time * ALGORITHM_EFFECT_TIME
+                    + numberOfPostForThisMonth * ALGORITHM_EFFECT_MULTI_POSTS);
         }
-        return sortedListByDate.stream()
-                .sorted(Comparator.comparing(Post::getRank))
-                .collect(Collectors.toList());
+        postRepository.saveAll(sortedList);
+        return sortedList.size();
     }
 
     @Override

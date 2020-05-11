@@ -2,11 +2,13 @@ package com.community.weare.Controllers;
 
 import com.community.weare.Exceptions.InvalidOperationException;
 import com.community.weare.Models.Page;
+import com.community.weare.Models.Post;
 import com.community.weare.Models.User;
+import com.community.weare.Services.contents.PostService;
 import com.community.weare.Services.users.UserService;
-import com.community.weare.utils.ErrorMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,10 +28,12 @@ import static com.community.weare.utils.ErrorMessages.*;
 public class AdminController {
     private static final String TYPE = "USER";
     private final UserService userService;
+    private final PostService postService;
 
     @Autowired
-    public AdminController(UserService userService) {
+    public AdminController(UserService userService, PostService postService) {
         this.userService = userService;
+        this.postService = postService;
     }
 
     @GetMapping("")
@@ -41,6 +45,14 @@ public class AdminController {
             model.addAttribute("page", new Page());
         }
         return "admin";
+    }
+
+    @PostMapping("")
+    public String refreshRankOfAllPosts(Principal principal, Model model, Sort sort) {
+        userService.ifNotAdminThrow(principal.getName(), new User());
+        List<Post> allPosts = postService.findAllSortedByUserAndTime(sort);
+        postService.refreshRankOfGroupOfPosts(allPosts);
+        return "redirect:/admin";
     }
 
     @GetMapping("/users")

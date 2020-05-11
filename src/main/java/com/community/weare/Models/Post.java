@@ -47,7 +47,7 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
-    private double rank;
+    private int rank;
 
     @Transient
     @NotNull
@@ -146,11 +146,11 @@ public class Post {
         return getUser().getExpertiseProfile().getCategory();
     }
 
-    public double getRank() {
+    public int getRank() {
         return rank;
     }
 
-    public void setRank(double rank) {
+    public void setRank(int rank) {
         this.rank = rank;
     }
 }

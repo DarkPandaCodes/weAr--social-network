@@ -16,6 +16,8 @@ public interface PostService {
 
     List<Post> findAll(Sort sort);
 
+    List<Post> findAllSortedByUserAndTime(Sort sort);
+
     List<Post> findAllByUser(String userName, Principal principal);
 
     Slice<Post> findSliceWithPosts(int pageIndex,int pageSize, String sortParam, User user,String principal );
@@ -53,6 +55,8 @@ public interface PostService {
     void deletePost(int postId, Principal principal);
 
     List<Comment> showComments(int postId);
+
+    int refreshRankOfGroupOfPosts(List<Post> posts);
 
     void ifNotAuthorizedToVewPostThrow(Principal principal, Post post);
 }
