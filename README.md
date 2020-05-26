@@ -1,7 +1,7 @@
 # WEare social network
 Teodora Ivanova, Stanimir Kolev
  
-**[Link](https://stark-badlands-75635.herokuapp.com/) The project
+**[WE are social network](https://stark-badlands-75635.herokuapp.com/) The project
 **[Link](https://gitlab.com/tediivanova.pr/weare-social-network) to GitLab:**
 **[Link](https://trello.com/b/nfoZQXWh/social-network-final-project) to Trello Board:**
 
